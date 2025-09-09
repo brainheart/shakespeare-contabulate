@@ -1,0 +1,19 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# Virtual environment
+venv/
+env/
+
+# macOS
+.DS_Store
+
+# Editor backups
+*~
+
+# Generated data
+public/data/
+
+# Logs
+*.log
