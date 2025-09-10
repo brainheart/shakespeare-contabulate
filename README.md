@@ -4,14 +4,7 @@ This repository builds word/phrase counts and character aggregates from TEI XML 
 
 Usage
 
-Option 1 (Makefile):
-```bash
-make build      # generate outputs
-make clean      # remove generated outputs
-make regenerate # clean then build
-```
-
-Option 2 (direct):
+Generate the JSON outputs (reads TEI files under `tei/` and writes to `public/data` and `public/lines`):
 ```bash
 python3 build.py
 ```
@@ -27,5 +20,5 @@ Outputs (in `public/data`):
 Notes
 
 - Requires Python 3.8+; `lxml` is optional (std lib parser is used now).
-- Generated directories `public/data/` and `public/lines/` are ignored by git; regenerate them with `make build`.
+- Generated directories `public/data/` and `public/lines/` are ignored by git; regenerate them with the command above.
 - To run on a subset of TEIs, place only those files in `tei/` and rebuild.
