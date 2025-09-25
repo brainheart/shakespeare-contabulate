@@ -43,6 +43,9 @@ def parse_play(path: Path, play_id: int):
     scenes = []; lines_map = {}
     token_idx = {}; token2_idx={}; token3_idx={}
     characters = {}; tokens_char_tmp = {}
+    # character-level bigrams & trigrams temporary stores
+    tokens_char2_tmp = {}
+    tokens_char3_tmp = {}
 
     def is_div_type(e, typ):
         return localname(e.tag) == "div" and e.attrib.get("type","").lower()==typ
@@ -110,9 +113,15 @@ def parse_play(path: Path, play_id: int):
                     for i in range(len(toks)-1):
                         bg = toks[i] + " " + toks[i+1]
                         scene_bigrams[bg] = scene_bigrams.get(bg,0)+1
+                        for nm in speakers:
+                            d2 = tokens_char2_tmp.setdefault((play_id,nm), {})
+                            d2[bg] = d2.get(bg,0)+1
                     for i in range(len(toks)-2):
                         tg = toks[i] + " " + toks[i+1] + " " + toks[i+2]
                         scene_trigrams[tg] = scene_trigrams.get(tg,0)+1
+                        for nm in speakers:
+                            d3 = tokens_char3_tmp.setdefault((play_id,nm), {})
+                            d3[tg] = d3.get(tg,0)+1
                 for nm in speakers or ["UNKNOWN"]:
                     key = (play_id, nm)
                     agg = characters.get(key)
@@ -139,17 +148,17 @@ def parse_play(path: Path, play_id: int):
     play_row = {"play_id": play_id, "title": title, "genre": genre, "first_performance_year": first_year,
                 "num_acts": len(acts) if acts else 0, "num_scenes": play_num_scenes, "num_speeches": play_num_speeches,
                 "total_words": play_total_words, "total_lines": play_total_lines}
-    return scenes, lines_map, token_idx, token2_idx, token3_idx, characters, tokens_char_tmp, play_row
+    return scenes, lines_map, token_idx, token2_idx, token3_idx, characters, tokens_char_tmp, tokens_char2_tmp, tokens_char3_tmp, play_row
 
 def build(tei_dir: Path, out_dir: Path):
     data_dir = out_dir / "data"
     lines_dir = out_dir / "lines"
     data_dir.mkdir(parents=True, exist_ok=True)
     lines_dir.mkdir(parents=True, exist_ok=True)
-    plays=[]; scenes_all=[]; token_idx_all={}; token2_idx_all={}; token3_idx_all={}; characters_rows=[]; tokens_char_idx={}
+    plays=[]; scenes_all=[]; token_idx_all={}; token2_idx_all={}; token3_idx_all={}; characters_rows=[]; tokens_char_idx={}; tokens_char2_idx={}; tokens_char3_idx={}
     play_id=1
     for path in sorted(tei_dir.glob("*.xml")):
-        scenes, lines_map, token_idx, token2_idx, token3_idx, characters, tokens_char_tmp, play_row = parse_play(path, play_id)
+        scenes, lines_map, token_idx, token2_idx, token3_idx, characters, tokens_char_tmp, tokens_char2_tmp, tokens_char3_tmp, play_row = parse_play(path, play_id)
         scenes_all.extend(scenes)
         for sid, arr in lines_map.items():
             (lines_dir / f"{sid}.json").write_text(json.dumps(arr, ensure_ascii=False), encoding="utf-8")
@@ -170,6 +179,16 @@ def build(tei_dir: Path, out_dir: Path):
             if cid is None: continue
             for tok, cnt in tokdict.items():
                 tokens_char_idx.setdefault(tok, []).append((cid, cnt))
+        for (pid, nm), tokdict in tokens_char2_tmp.items():
+            cid = name_to_id.get((pid, nm))
+            if cid is None: continue
+            for tok, cnt in tokdict.items():
+                tokens_char2_idx.setdefault(tok, []).append((cid, cnt))
+        for (pid, nm), tokdict in tokens_char3_tmp.items():
+            cid = name_to_id.get((pid, nm))
+            if cid is None: continue
+            for tok, cnt in tokdict.items():
+                tokens_char3_idx.setdefault(tok, []).append((cid, cnt))
         plays.append(play_row); play_id += 1
     (data_dir / "plays.json").write_text(json.dumps(plays, ensure_ascii=False), encoding="utf-8")
     (data_dir / "chunks.json").write_text(json.dumps(scenes_all, ensure_ascii=False), encoding="utf-8")
@@ -178,6 +197,8 @@ def build(tei_dir: Path, out_dir: Path):
     (data_dir / "tokens2.json").write_text(json.dumps(token2_idx_all, ensure_ascii=False), encoding="utf-8")
     (data_dir / "tokens3.json").write_text(json.dumps(token3_idx_all, ensure_ascii=False), encoding="utf-8")
     (data_dir / "tokens_char.json").write_text(json.dumps(tokens_char_idx, ensure_ascii=False), encoding="utf-8")
+    (data_dir / "tokens_char2.json").write_text(json.dumps(tokens_char2_idx, ensure_ascii=False), encoding="utf-8")
+    (data_dir / "tokens_char3.json").write_text(json.dumps(tokens_char3_idx, ensure_ascii=False), encoding="utf-8")
     return {"play_count": len(plays), "scene_count": len(scenes_all)}
 
 
