@@ -10,7 +10,10 @@
     select, button { padding: 0.4rem; font-size: 1rem; }
     table { border-collapse: collapse; width: 100%; margin-top: 1rem; }
     th, td { border: 1px solid #ddd; padding: 0.5rem; text-align: left; }
-    th { background: #f5f5f5; position: sticky; top: 0; cursor: pointer; }
+    th { background: #f5f5f5; position: sticky; top: 0; cursor: pointer; user-select: none; }
+    th:hover { background: #e8e8e8; }
+    th.sorted-asc::after { content: ' ▲'; color: #666; }
+    th.sorted-desc::after { content: ' ▼'; color: #666; }
     .controls { display:flex; flex-wrap: wrap; gap: .75rem; align-items: center; margin-bottom: .5rem; }
     .muted { color: #666; font-size: 0.9rem; }
     .chip { display:inline-block; padding: 0 .5rem; background:#eef; border-radius:.5rem; }
@@ -142,9 +145,19 @@
       th.addEventListener('click', () => {
         if (sortKey === c.key) sortDir = (sortDir === 'asc' ? 'desc' : 'asc');
         else { sortKey = c.key; sortDir = c.defaultDir || 'desc'; }
-        doSearch();
+        renderRows(buildRows(q.value.trim()));
       });
       theadRow.appendChild(th);
+    });
+    updateSortIndicators();
+  }
+  
+  function updateSortIndicators(){
+    theadRow.querySelectorAll('th').forEach(th => {
+      th.classList.remove('sorted-asc', 'sorted-desc');
+      if (th.dataset.key === sortKey) {
+        th.classList.add(sortDir === 'asc' ? 'sorted-asc' : 'sorted-desc');
+      }
     });
   }
   function sortRows(rows){
@@ -328,6 +341,7 @@
     tbody.innerHTML='';
     if (!rows || rows.length===0){ tbody.innerHTML = '<tr><td colspan="8" class="muted">No results.</td></tr>'; return; }
     rows = sortRows(rows);
+    updateSortIndicators();
     const cols = Array.from(theadRow.children).map(th => th.dataset.key);
     for (const r of rows) {
       const tr = document.createElement('tr');
