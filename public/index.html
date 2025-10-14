@@ -255,13 +255,12 @@
       for (const [scene_id, count] of allPostings){
         const m = chunkById.get(scene_id); if (!m || !playsSel.has(m.play_id)) continue;
         const d = denomFor(n,'scene',m);
-        rows.push({ play_title: m.play_title, genre:m.genre, play_id:m.play_id, act:m.act, scene:m.scene, heading:m.heading, count, pct: d? count/d : 0, scene_id });
+        rows.push({ play_title: m.play_title, genre:m.genre, play_id:m.play_id, act:m.act, scene:m.scene, count, pct: d? count/d : 0, scene_id });
       }
       setHeaders([
         {key:'play_title', label:'Play', defaultDir:'asc'},
         {key:'act', label:'Act'},
         {key:'scene', label:'Scene'},
-        {key:'heading', label:'Heading', defaultDir:'asc'},
         {key:'count', label:'Count'},
         {key:'pct', label:`% of ${n===1?'scene words':n===2?'scene bigrams':'scene trigrams'}`},
       ]);
