@@ -18,14 +18,15 @@
     #details { margin-top: 1rem; }
     .hit { background: yellow; }
     .sr { font-size: .9rem; color: #333; }
+    .warning { color: #d63; font-size: .9rem; }
   </style>
 </head>
 <body>
   <h1>Shakespeare Tabular Search</h1>
-  <p class="muted">Search single words, bigrams, or trigrams. Choose granularity, plays, and sort columns.</p>
+  <p class="muted">Search single words, bigrams, or trigrams. Use regex patterns (e.g., <code>love.*thee</code>) or literal text.</p>
 
   <div class="controls">
-    <label>Query <input id="q" type="text" placeholder="e.g., blood | mortal coil | the whirling"></label>
+    <label>Query <input id="q" type="text" placeholder="e.g., blood | mortal coil | love.*thee"></label>
     <label>Granularity
       <select id="gran">
         <option value="play">Play</option>
@@ -34,6 +35,16 @@
         <option value="character">Character</option>
       </select>
     </label>
+    <label title="Force search in specific n-gram index (auto-detects by default)">
+      N-gram:
+      <select id="ngramMode">
+        <option value="auto" selected>Auto</option>
+        <option value="1">Unigrams</option>
+        <option value="2">Bigrams</option>
+        <option value="3">Trigrams</option>
+      </select>
+    </label>
+    <label><input type="checkbox" id="useRegex"> Regex mode</label>
     <button id="go">Search</button>
     <span id="status" class="chip">loading…</span>
     <span id="denom" class="muted"></span>
@@ -57,6 +68,8 @@
   const q = document.getElementById('q');
   const gran = document.getElementById('gran');
   const go = document.getElementById('go');
+  const useRegex = document.getElementById('useRegex');
+  const ngramMode = document.getElementById('ngramMode');
   const playsFilter = document.getElementById('playsFilter');
   const theadRow = document.getElementById('headRow');
   const tbody = document.querySelector('#results tbody');
@@ -69,9 +82,9 @@
     return res.json();
   }
 
-  let chunks=[], tokens={}, tokens2={}, tokens3={}, plays=[], characters=[], tokensChar={};
+  let chunks=[], tokens={}, tokens2={}, tokens3={}, plays=[], characters=[], tokensChar={}, tokensChar2={}, tokensChar3={};
   try {
-    [chunks, tokens, tokens2, tokens3, plays, characters, tokensChar] = await Promise.all([
+    [chunks, tokens, tokens2, tokens3, plays, characters, tokensChar, tokensChar2, tokensChar3] = await Promise.all([
       loadJSON('data/chunks.json'),
       loadJSON('data/tokens.json'),
       loadJSON('data/tokens2.json'),
@@ -79,6 +92,8 @@
       loadJSON('data/plays.json'),
       loadJSON('data/characters.json'),
       loadJSON('data/tokens_char.json'),
+      loadJSON('data/tokens_char2.json'),
+      loadJSON('data/tokens_char3.json'),
     ]);
     status.textContent = 'ready';
   } catch(e) {
@@ -152,25 +167,79 @@
     return Math.max(0, tw - (n-1));
   }
 
+  function aggregatePostings(postingsArray, n) {
+    // Merge multiple token postings (for regex matches)
+    const merged = new Map();
+    for (const postings of postingsArray) {
+      for (const [id, count] of postings) {
+        merged.set(id, (merged.get(id) || 0) + count);
+      }
+    }
+    return Array.from(merged.entries());
+  }
+
   function buildRows(query){
+    const isRegex = useRegex.checked;
+    const ngramModeVal = ngramMode.value;
     const terms = query.trim().toLowerCase().split(/\s+/).filter(Boolean);
-    const n = Math.min(terms.length, 3);
+    let n = Math.min(terms.length, 3);
+    
+    // Override n if user explicitly selected n-gram mode
+    if (ngramModeVal !== 'auto') {
+      n = parseInt(ngramModeVal);
+    }
+
     const playsSel = selectedPlayIds();
     const granVal = gran.value;
 
-    if (granVal==='character' && n>1){
-      theadRow.innerHTML='';
-      tbody.innerHTML = '<tr><td class="muted">Character view supports single-word queries for now.</td></tr>';
+    // Character view limitation
+    if (granVal === 'character' && n > 3) {
+      theadRow.innerHTML = '';
+      tbody.innerHTML = '<tr><td class="muted">Character view supports up to trigrams.</td></tr>';
       return null;
     }
 
-    const idx = (n===1?tokens : n===2?tokens2 : tokens3);
-    const key = terms.slice(0,n).join(' ');
-    const postings = idx[key] || [];
+    const idx = (granVal === 'character') 
+      ? (n === 1 ? tokensChar : n === 2 ? tokensChar2 : tokensChar3)
+      : (n === 1 ? tokens : n === 2 ? tokens2 : tokens3);
+
+    let allPostings = [];
+
+    if (isRegex) {
+      // Regex mode: match pattern against all token keys
+      try {
+        const pattern = new RegExp(query.trim(), 'i');
+        const matchingKeys = Object.keys(idx).filter(k => pattern.test(k));
+        
+        if (matchingKeys.length === 0) {
+          theadRow.innerHTML = '';
+          tbody.innerHTML = '<tr><td class="muted">No tokens matched regex pattern.</td></tr>';
+          denomText.textContent = '';
+          return null;
+        }
+        
+        // Show warning if too many matches (performance)
+        if (matchingKeys.length > 1000) {
+          denomText.textContent = '⚠️ Pattern matched ' + matchingKeys.length + ' tokens (showing aggregated results)';
+        }
+
+        // Aggregate all matching tokens
+        allPostings = aggregatePostings(matchingKeys.map(k => idx[k]), n);
+      } catch (e) {
+        theadRow.innerHTML = '';
+        tbody.innerHTML = `<tr><td class="warning">Invalid regex: ${e.message}</td></tr>`;
+        return null;
+      }
+    } else {
+      // Literal mode: exact match
+      const key = terms.slice(0, n).join(' ');
+      allPostings = idx[key] || [];
+    }
+
     const rows = [];
 
     if (granVal==='scene'){
-      for (const [scene_id, count] of postings){
+      for (const [scene_id, count] of allPostings){
         const m = chunkById.get(scene_id); if (!m || !playsSel.has(m.play_id)) continue;
         const d = denomFor(n,'scene',m);
         rows.push({ play_title: m.play_title, genre:m.genre, play_id:m.play_id, act:m.act, scene:m.scene, heading:m.heading, count, pct: d? count/d : 0, scene_id });
@@ -189,7 +258,7 @@
 
     if (granVal==='act'){
       const tmp = new Map();
-      for (const [scene_id,c] of postings){
+      for (const [scene_id,c] of allPostings){
         const m = chunkById.get(scene_id); if (!m || !playsSel.has(m.play_id)) continue;
         const k = `${m.play_id}:${m.act}`;
         tmp.set(k, (tmp.get(k)||0) + c);
@@ -212,7 +281,7 @@
 
     if (granVal==='play'){
       const tmp = new Map();
-      for (const [scene_id,c] of postings){
+      for (const [scene_id,c] of allPostings){
         const m = chunkById.get(scene_id); if (!m || !playsSel.has(m.play_id)) continue;
         tmp.set(m.play_id, (tmp.get(m.play_id)||0) + c);
       }
@@ -237,22 +306,20 @@
     }
 
     if (granVal==='character'){
-      const key1 = terms[0]; // only unigrams supported
-      const postingsUni = tokensChar[key1] || [];
-      for (const [char_id, count] of postingsUni){
+      for (const [char_id, count] of allPostings){
         const c = charactersById.get(char_id);
         if (!c || !playsSel.has(c.play_id)) continue;
-        const denom = denomFor(1,'character',c);
+        const denom = denomFor(n,'character',c);
         rows.push({ play_title:c.play_title, name:c.name, total_words_spoken:c.total_words_spoken||0, count, pct: denom? count/denom : 0 });
       }
       setHeaders([
         {key:'play_title', label:'Play', defaultDir:'asc'},
         {key:'name', label:'Character', defaultDir:'asc'},
         {key:'count', label:'Count'},
-        {key:'pct', label:'% of character words'},
+        {key:'pct', label:`% of character ${n===1?'words':n===2?'bigrams':'trigrams'}`},
         {key:'total_words_spoken', label:'Char. total words'},
       ]);
-      denomText.textContent = 'Denominator: total words spoken by character';
+      denomText.textContent = n===1?'Denominator: total words spoken by character':'Denominator: total contiguous '+(n===2?'bigrams':'trigrams')+' spoken by character';
       return rows;
     }
   }
@@ -272,13 +339,23 @@
   function doSearch(){
     const query = q.value.trim();
     if (!query){ tbody.innerHTML = ''; details.innerHTML=''; denomText.textContent=''; return; }
-    let sortKey = 'count', sortDir = 'desc';
+    sortKey = 'count';
+    sortDir = 'desc';
     const rows = buildRows(query);
     if (rows) renderRows(rows);
   }
 
   go.addEventListener('click', doSearch);
   q.addEventListener('keydown', e => { if (e.key==='Enter') doSearch(); });
+
+  // Auto-detect regex patterns
+  q.addEventListener('input', () => {
+    const val = q.value;
+    const hasRegexChars = /[.*+?^${}()|[\]\\]/.test(val);
+    if (hasRegexChars && !useRegex.checked) {
+      useRegex.checked = true;
+    }
+  });
 
   // initial state
   gran.value = 'play';
