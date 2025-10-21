@@ -33,6 +33,7 @@
     <label>Granularity
       <select id="gran">
         <option value="play">Play</option>
+        <option value="genre">Genre</option>
         <option value="act">Act</option>
         <option value="scene" selected>Scene</option>
         <option value="character">Character</option>
@@ -314,6 +315,31 @@
         {key:'pct', label:`% of ${n===1?'play words':n===2?'play bigrams':'play trigrams'}`},
       ]);
       denomText.textContent = n===1?'Denominator: total words in play':'Denominator: total contiguous '+(n===2?'bigrams':'trigrams')+' in play';
+      return rows;
+    }
+
+    if (granVal==='genre'){
+      const tmp = new Map();
+      const genreTotals = new Map();
+      // Aggregate counts and totals by genre
+      for (const [scene_id,c] of allPostings){
+        const m = chunkById.get(scene_id); if (!m || !playsSel.has(m.play_id)) continue;
+        const genre = m.genre || 'unknown';
+        tmp.set(genre, (tmp.get(genre)||0) + c);
+        genreTotals.set(genre, (genreTotals.get(genre)||0) + (m.total_words||0));
+      }
+      for (const [genre,count] of tmp.entries()){
+        const totalWords = genreTotals.get(genre) || 0;
+        const denom = Math.max(0, totalWords - (n-1));
+        rows.push({ genre, total_words: totalWords, count, pct: denom? count/denom : 0 });
+      }
+      setHeaders([
+        {key:'genre', label:'Genre', defaultDir:'asc'},
+        {key:'total_words', label:'Word count'},
+        {key:'count', label:'Count'},
+        {key:'pct', label:`% of ${n===1?'genre words':n===2?'genre bigrams':'genre trigrams'}`},
+      ]);
+      denomText.textContent = n===1?'Denominator: total words in genre':'Denominator: total contiguous '+(n===2?'bigrams':'trigrams')+' in genre';
       return rows;
     }
 
