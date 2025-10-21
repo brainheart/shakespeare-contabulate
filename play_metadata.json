@@ -1,0 +1,263 @@
+{
+  "plays": [
+    {
+      "filename": "a-midsummer-nights-dream_TEIsimple_FolgerShakespeare.xml",
+      "title": "A Midsummer Night's Dream",
+      "genre": "comedy",
+      "first_performance_year": 1595,
+      "notes": "One of Shakespeare's most popular comedies"
+    },
+    {
+      "filename": "alls-well-that-ends-well_TEIsimple_FolgerShakespeare.xml",
+      "title": "All's Well That Ends Well",
+      "genre": "comedy",
+      "first_performance_year": 1604,
+      "notes": "Problem play or dark comedy"
+    },
+    {
+      "filename": "antony-and-cleopatra_TEIsimple_FolgerShakespeare.xml",
+      "title": "Antony and Cleopatra",
+      "genre": "tragedy",
+      "first_performance_year": 1606,
+      "notes": "Roman tragedy"
+    },
+    {
+      "filename": "as-you-like-it_TEIsimple_FolgerShakespeare.xml",
+      "title": "As You Like It",
+      "genre": "comedy",
+      "first_performance_year": 1599,
+      "notes": "Pastoral comedy"
+    },
+    {
+      "filename": "coriolanus_TEIsimple_FolgerShakespeare.xml",
+      "title": "Coriolanus",
+      "genre": "tragedy",
+      "first_performance_year": 1608,
+      "notes": "Roman tragedy"
+    },
+    {
+      "filename": "cymbeline_TEIsimple_FolgerShakespeare.xml",
+      "title": "Cymbeline",
+      "genre": "romance",
+      "first_performance_year": 1610,
+      "notes": "Late romance"
+    },
+    {
+      "filename": "hamlet_TEIsimple_FolgerShakespeare.xml",
+      "title": "Hamlet",
+      "genre": "tragedy",
+      "first_performance_year": 1600,
+      "notes": "Perhaps the most famous tragedy"
+    },
+    {
+      "filename": "henry-iv-part-1_TEIsimple_FolgerShakespeare.xml",
+      "title": "Henry IV, Part 1",
+      "genre": "history",
+      "first_performance_year": 1597,
+      "notes": "First part of the Henriad"
+    },
+    {
+      "filename": "henry-iv-part-2_TEIsimple_FolgerShakespeare.xml",
+      "title": "Henry IV, Part 2",
+      "genre": "history",
+      "first_performance_year": 1598,
+      "notes": "Second part of the Henriad"
+    },
+    {
+      "filename": "henry-v_TEIsimple_FolgerShakespeare.xml",
+      "title": "Henry V",
+      "genre": "history",
+      "first_performance_year": 1599,
+      "notes": "Conclusion of the Henriad"
+    },
+    {
+      "filename": "henry-vi-part-1_TEIsimple_FolgerShakespeare.xml",
+      "title": "Henry VI, Part 1",
+      "genre": "history",
+      "first_performance_year": 1591,
+      "notes": "First of the early history plays"
+    },
+    {
+      "filename": "henry-vi-part-2_TEIsimple_FolgerShakespeare.xml",
+      "title": "Henry VI, Part 2",
+      "genre": "history",
+      "first_performance_year": 1591,
+      "notes": "Second part of the early trilogy"
+    },
+    {
+      "filename": "henry-vi-part-3_TEIsimple_FolgerShakespeare.xml",
+      "title": "Henry VI, Part 3",
+      "genre": "history",
+      "first_performance_year": 1591,
+      "notes": "Final part of the early trilogy"
+    },
+    {
+      "filename": "henry-viii_TEIsimple_FolgerShakespeare.xml",
+      "title": "Henry VIII",
+      "genre": "history",
+      "first_performance_year": 1613,
+      "notes": "Late history, possibly co-written with Fletcher"
+    },
+    {
+      "filename": "julius-caesar_TEIsimple_FolgerShakespeare.xml",
+      "title": "Julius Caesar",
+      "genre": "tragedy",
+      "first_performance_year": 1599,
+      "notes": "Roman tragedy"
+    },
+    {
+      "filename": "king-john_TEIsimple_FolgerShakespeare.xml",
+      "title": "King John",
+      "genre": "history",
+      "first_performance_year": 1596,
+      "notes": "Standalone history play"
+    },
+    {
+      "filename": "king-lear_TEIsimple_FolgerShakespeare.xml",
+      "title": "King Lear",
+      "genre": "tragedy",
+      "first_performance_year": 1605,
+      "notes": "One of the great tragedies"
+    },
+    {
+      "filename": "loves-labors-lost_TEIsimple_FolgerShakespeare.xml",
+      "title": "Love's Labour's Lost",
+      "genre": "comedy",
+      "first_performance_year": 1594,
+      "notes": "Early comedy"
+    },
+    {
+      "filename": "macbeth_TEIsimple_FolgerShakespeare.xml",
+      "title": "Macbeth",
+      "genre": "tragedy",
+      "first_performance_year": 1606,
+      "notes": "Scottish tragedy"
+    },
+    {
+      "filename": "measure-for-measure_TEIsimple_FolgerShakespeare.xml",
+      "title": "Measure for Measure",
+      "genre": "comedy",
+      "first_performance_year": 1604,
+      "notes": "Problem play or dark comedy"
+    },
+    {
+      "filename": "much-ado-about-nothing_TEIsimple_FolgerShakespeare.xml",
+      "title": "Much Ado About Nothing",
+      "genre": "comedy",
+      "first_performance_year": 1598,
+      "notes": "Romantic comedy"
+    },
+    {
+      "filename": "othello_TEIsimple_FolgerShakespeare.xml",
+      "title": "Othello",
+      "genre": "tragedy",
+      "first_performance_year": 1604,
+      "notes": "Domestic tragedy"
+    },
+    {
+      "filename": "pericles_TEIsimple_FolgerShakespeare.xml",
+      "title": "Pericles",
+      "genre": "romance",
+      "first_performance_year": 1607,
+      "notes": "Romance, possibly co-written with George Wilkins"
+    },
+    {
+      "filename": "richard-ii_TEIsimple_FolgerShakespeare.xml",
+      "title": "Richard II",
+      "genre": "history",
+      "first_performance_year": 1595,
+      "notes": "Beginning of the second tetralogy"
+    },
+    {
+      "filename": "richard-iii_TEIsimple_FolgerShakespeare.xml",
+      "title": "Richard III",
+      "genre": "history",
+      "first_performance_year": 1592,
+      "notes": "Conclusion of the first tetralogy"
+    },
+    {
+      "filename": "romeo-and-juliet_TEIsimple_FolgerShakespeare.xml",
+      "title": "Romeo and Juliet",
+      "genre": "tragedy",
+      "first_performance_year": 1595,
+      "notes": "Early tragedy, the famous star-crossed lovers"
+    },
+    {
+      "filename": "the-comedy-of-errors_TEIsimple_FolgerShakespeare.xml",
+      "title": "The Comedy of Errors",
+      "genre": "comedy",
+      "first_performance_year": 1592,
+      "notes": "Shortest play, farce based on Plautus"
+    },
+    {
+      "filename": "the-merchant-of-venice_TEIsimple_FolgerShakespeare.xml",
+      "title": "The Merchant of Venice",
+      "genre": "comedy",
+      "first_performance_year": 1596,
+      "notes": "Comedy with dark themes"
+    },
+    {
+      "filename": "the-merry-wives-of-windsor_TEIsimple_FolgerShakespeare.xml",
+      "title": "The Merry Wives of Windsor",
+      "genre": "comedy",
+      "first_performance_year": 1597,
+      "notes": "Comedy featuring Falstaff"
+    },
+    {
+      "filename": "the-taming-of-the-shrew_TEIsimple_FolgerShakespeare.xml",
+      "title": "The Taming of the Shrew",
+      "genre": "comedy",
+      "first_performance_year": 1593,
+      "notes": "Early comedy"
+    },
+    {
+      "filename": "the-tempest_TEIsimple_FolgerShakespeare.xml",
+      "title": "The Tempest",
+      "genre": "romance",
+      "first_performance_year": 1611,
+      "notes": "Late romance, possibly Shakespeare's last solo play"
+    },
+    {
+      "filename": "the-two-gentlemen-of-verona_TEIsimple_FolgerShakespeare.xml",
+      "title": "The Two Gentlemen of Verona",
+      "genre": "comedy",
+      "first_performance_year": 1590,
+      "notes": "Early comedy, possibly his first"
+    },
+    {
+      "filename": "the-winters-tale_TEIsimple_FolgerShakespeare.xml",
+      "title": "The Winter's Tale",
+      "genre": "romance",
+      "first_performance_year": 1610,
+      "notes": "Late romance"
+    },
+    {
+      "filename": "timon-of-athens_TEIsimple_FolgerShakespeare.xml",
+      "title": "Timon of Athens",
+      "genre": "tragedy",
+      "first_performance_year": 1607,
+      "notes": "Possibly unfinished or co-written with Middleton"
+    },
+    {
+      "filename": "titus-andronicus_TEIsimple_FolgerShakespeare.xml",
+      "title": "Titus Andronicus",
+      "genre": "tragedy",
+      "first_performance_year": 1593,
+      "notes": "Early revenge tragedy"
+    },
+    {
+      "filename": "troilus-and-cressida_TEIsimple_FolgerShakespeare.xml",
+      "title": "Troilus and Cressida",
+      "genre": "comedy",
+      "first_performance_year": 1602,
+      "notes": "Problem play set during Trojan War"
+    },
+    {
+      "filename": "twelfth-night_TEIsimple_FolgerShakespeare.xml",
+      "title": "Twelfth Night",
+      "genre": "comedy",
+      "first_performance_year": 1601,
+      "notes": "Romantic comedy"
+    }
+  ]
+}

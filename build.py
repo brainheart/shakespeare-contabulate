@@ -21,24 +21,30 @@ def find_first_performance_year(root):
             if m: return int(m.group(0))
     return None
 
-def parse_play(path: Path, play_id: int):
+def parse_play(path: Path, play_id: int, metadata: dict = None):
     root = ET.parse(path).getroot()
-    # Title
-    title = None
-    for t in root.iter():
-        if localname(t.tag) == "title":
-            title = (t.text or "").strip()
-            if title: break
-    if not title: title = path.stem
-    # Genre
-    genre = None
-    for g in root.iter():
-        if localname(g.tag) in ("genre","term"):
-            txt = (g.text or "").strip().lower()
-            if txt in ("tragedy","comedy","history","romance","tragicomedy","problem play"):
-                genre = txt; break
-    if not genre: genre = "unknown"
-    first_year = find_first_performance_year(root)
+    # Title and metadata from external source if available
+    if metadata:
+        title = metadata.get("title", path.stem)
+        genre = metadata.get("genre", "unknown")
+        first_year = metadata.get("first_performance_year")
+    else:
+        # Fallback to TEI parsing
+        title = None
+        for t in root.iter():
+            if localname(t.tag) == "title":
+                title = (t.text or "").strip()
+                if title: break
+        if not title: title = path.stem
+        # Genre
+        genre = None
+        for g in root.iter():
+            if localname(g.tag) in ("genre","term"):
+                txt = (g.text or "").strip().lower()
+                if txt in ("tragedy","comedy","history","romance","tragicomedy","problem play"):
+                    genre = txt; break
+        if not genre: genre = "unknown"
+        first_year = find_first_performance_year(root)
 
     scenes = []; lines_map = {}
     token_idx = {}; token2_idx={}; token3_idx={}
@@ -155,10 +161,21 @@ def build(tei_dir: Path, out_dir: Path):
     lines_dir = out_dir / "lines"
     data_dir.mkdir(parents=True, exist_ok=True)
     lines_dir.mkdir(parents=True, exist_ok=True)
+    
+    # Load play metadata
+    metadata_path = Path(__file__).parent / "play_metadata.json"
+    play_metadata_map = {}
+    if metadata_path.exists():
+        with open(metadata_path, 'r', encoding='utf-8') as f:
+            metadata_json = json.load(f)
+            for item in metadata_json.get("plays", []):
+                play_metadata_map[item["filename"]] = item
+    
     plays=[]; scenes_all=[]; token_idx_all={}; token2_idx_all={}; token3_idx_all={}; characters_rows=[]; tokens_char_idx={}; tokens_char2_idx={}; tokens_char3_idx={}
     play_id=1
     for path in sorted(tei_dir.glob("*.xml")):
-        scenes, lines_map, token_idx, token2_idx, token3_idx, characters, tokens_char_tmp, tokens_char2_tmp, tokens_char3_tmp, play_row = parse_play(path, play_id)
+        metadata = play_metadata_map.get(path.name)
+        scenes, lines_map, token_idx, token2_idx, token3_idx, characters, tokens_char_tmp, tokens_char2_tmp, tokens_char3_tmp, play_row = parse_play(path, play_id, metadata)
         scenes_all.extend(scenes)
         for sid, arr in lines_map.items():
             (lines_dir / f"{sid}.json").write_text(json.dumps(arr, ensure_ascii=False), encoding="utf-8")
