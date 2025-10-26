@@ -29,13 +29,13 @@
   <p class="muted">Search single words, bigrams, or trigrams. Use regex patterns (e.g., <code>love.*thee</code>) or literal text.</p>
 
   <div class="controls">
-    <label>Query <input id="q" type="text" placeholder="e.g., blood | mortal coil | love.*thee"></label>
+    <label>Query <input id="q" type="text" placeholder="e.g., blood | mortal coil | love.*thee" value="death"></label>
     <label>Granularity
       <select id="gran">
         <option value="play">Play</option>
-        <option value="genre">Genre</option>
         <option value="act">Act</option>
         <option value="scene" selected>Scene</option>
+        <option value="genre">Genre</option>
         <option value="character">Character</option>
       </select>
     </label>
@@ -398,7 +398,7 @@
 
   // initial state
   gran.value = 'play';
-  q.value = 'mortal coil';
+  q.value = 'death';
   doSearch();
 })();
 </script>
