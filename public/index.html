@@ -5,23 +5,211 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Shakespeare Tabular Search</title>
   <style>
-    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 1rem; }
-    input[type="text"] { padding: 0.5rem; font-size: 1rem; width: 26rem; }
-    select, button { padding: 0.4rem; font-size: 1rem; }
-    table { border-collapse: collapse; width: 100%; margin-top: 1rem; }
-    th, td { border: 1px solid #ddd; padding: 0.5rem; text-align: left; }
-    th { background: #f5f5f5; position: sticky; top: 0; cursor: pointer; user-select: none; }
-    th:hover { background: #e8e8e8; }
-    th.sorted-asc::after { content: ' ▲'; color: #666; }
-    th.sorted-desc::after { content: ' ▼'; color: #666; }
-    .controls { display:flex; flex-wrap: wrap; gap: .75rem; align-items: center; margin-bottom: .5rem; }
-    .muted { color: #666; font-size: 0.9rem; }
-    .chip { display:inline-block; padding: 0 .5rem; background:#eef; border-radius:.5rem; }
-    #playsFilter { max-height: 8rem; overflow:auto; border:1px solid #ddd; padding:.5rem; }
-    #details { margin-top: 1rem; }
-    .hit { background: yellow; }
-    .sr { font-size: .9rem; color: #333; }
-    .warning { color: #d63; font-size: .9rem; }
+    :root {
+      --parchment: #f9f7f1;
+      --ink: #2b2b2b;
+      --burgundy: #8b1538;
+      --gold: #d4af37;
+      --border: #d4c5b0;
+      --shadow: rgba(43, 43, 43, 0.08);
+    }
+    body { 
+      font-family: 'Crimson Text', 'Georgia', 'Garamond', serif;
+      margin: 0;
+      padding: 2rem;
+      background: linear-gradient(to bottom, var(--parchment) 0%, #fefdfb 100%);
+      color: var(--ink);
+      line-height: 1.6;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    h1 { 
+      font-family: 'Cinzel', 'Georgia', serif;
+      color: var(--burgundy);
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      margin-bottom: 0.5rem;
+      text-shadow: 1px 1px 2px rgba(139, 21, 56, 0.1);
+    }
+    h1 a {
+      color: var(--burgundy);
+      text-decoration: none;
+      border-bottom: 2px solid transparent;
+      transition: border-color 0.2s;
+    }
+    h1 a:hover {
+      border-bottom-color: var(--gold);
+    }
+    code {
+      background: rgba(212, 175, 55, 0.1);
+      padding: 0.15rem 0.4rem;
+      border-radius: 3px;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 0.9em;
+    }
+    input[type="text"] { 
+      padding: 0.6rem 0.8rem;
+      font-size: 1rem;
+      width: 26rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: white;
+      font-family: 'Georgia', serif;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    input[type="text"]:focus {
+      outline: none;
+      border-color: var(--burgundy);
+      box-shadow: 0 0 0 3px rgba(139, 21, 56, 0.1);
+    }
+    select, button { 
+      padding: 0.5rem 0.8rem;
+      font-size: 1rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: white;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    button {
+      background: var(--burgundy);
+      color: white;
+      border-color: var(--burgundy);
+      font-weight: 500;
+      letter-spacing: 0.3px;
+    }
+    button:hover {
+      background: #6d1028;
+      box-shadow: 0 2px 4px var(--shadow);
+    }
+    select:hover {
+      border-color: var(--burgundy);
+    }
+    table { 
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 1rem;
+      background: white;
+      box-shadow: 0 1px 3px var(--shadow);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    th, td { 
+      border: 1px solid var(--border);
+      padding: 0.7rem 0.8rem;
+      text-align: left;
+    }
+    th { 
+      background: linear-gradient(to bottom, #faf8f3 0%, #f0ede5 100%);
+      position: sticky;
+      top: 0;
+      cursor: pointer;
+      user-select: none;
+      font-weight: 600;
+      color: var(--burgundy);
+      letter-spacing: 0.3px;
+      font-size: 0.95rem;
+      border-bottom: 2px solid var(--border);
+    }
+    th:hover { 
+      background: linear-gradient(to bottom, #f5f2ea 0%, #e8e4d8 100%);
+    }
+    th.sorted-asc::after { content: ' ▲'; color: var(--burgundy); }
+    th.sorted-desc::after { content: ' ▼'; color: var(--burgundy); }
+    tbody tr:hover {
+      background: rgba(212, 175, 55, 0.05);
+    }
+    tbody tr:nth-child(even) {
+      background: rgba(249, 247, 241, 0.3);
+    }
+    tbody tr:nth-child(even):hover {
+      background: rgba(212, 175, 55, 0.08);
+    }
+    .controls { 
+      display:flex;
+      flex-wrap: wrap;
+      gap: .75rem;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding: 1rem;
+      background: white;
+      border-radius: 6px;
+      box-shadow: 0 1px 3px var(--shadow);
+      border: 1px solid var(--border);
+    }
+    .muted { 
+      color: #665544;
+      font-size: 0.95rem;
+      font-style: italic;
+    }
+    .chip { 
+      display:inline-block;
+      padding: 0.2rem 0.7rem;
+      background: rgba(212, 175, 55, 0.15);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      border-radius: 1rem;
+      font-size: 0.9rem;
+      color: var(--ink);
+    }
+    #playsFilter { 
+      max-height: 8rem;
+      overflow:auto;
+      border: 1px solid var(--border);
+      padding: 0.7rem;
+      border-radius: 4px;
+      background: white;
+    }
+    details {
+      background: white;
+      padding: 0.5rem;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      margin-bottom: 1rem;
+      box-shadow: 0 1px 3px var(--shadow);
+    }
+    summary {
+      cursor: pointer;
+      padding: 0.5rem;
+      user-select: none;
+    }
+    summary:hover {
+      color: var(--burgundy);
+    }
+    #details { 
+      margin-top: 1.5rem;
+      padding: 1rem;
+      background: white;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      box-shadow: 0 1px 3px var(--shadow);
+    }
+    .hit { 
+      background: rgba(212, 175, 55, 0.3);
+      padding: 0 0.2rem;
+      border-radius: 2px;
+    }
+    .sr { 
+      font-size: 0.95rem;
+      color: #554433;
+    }
+    .warning { 
+      color: var(--burgundy);
+      font-size: 0.9rem;
+      font-style: italic;
+    }
+    label {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: var(--ink);
+      font-weight: 500;
+    }
+    input[type="checkbox"] {
+      width: 1.1rem;
+      height: 1.1rem;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
