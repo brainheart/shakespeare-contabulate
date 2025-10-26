@@ -243,7 +243,10 @@
   </div>
 
   <details>
-    <summary class="sr"><strong>Filter plays</strong> (default: all)</summary>
+    <summary class="sr"><strong>Filters & Display</strong> (default: all)</summary>
+    <div style="margin-bottom: 0.75rem;">
+      <label style="font-weight: 500;">Minimum hits: <input type="number" id="minHits" value="0" min="0" style="width: 5rem; padding: 0.4rem;"></label>
+    </div>
     <div id="playsFilter"></div>
   </details>
 
@@ -263,6 +266,7 @@
   const useRegex = document.getElementById('useRegex');
   const ngramMode = document.getElementById('ngramMode');
   const playsFilter = document.getElementById('playsFilter');
+  const minHits = document.getElementById('minHits');
   const theadRow = document.getElementById('headRow');
   const tbody = document.querySelector('#results tbody');
   const details = document.getElementById('details');
@@ -553,6 +557,12 @@
   function renderRows(rows){
     tbody.innerHTML='';
     if (!rows || rows.length===0){ tbody.innerHTML = '<tr><td colspan="8" class="muted">No results.</td></tr>'; return; }
+    // Filter by minimum hits
+    const minHitsVal = parseInt(minHits.value) || 0;
+    if (minHitsVal > 0) {
+      rows = rows.filter(r => (r.count || 0) >= minHitsVal);
+    }
+    if (rows.length === 0) { tbody.innerHTML = '<tr><td colspan="8" class="muted">No results match the minimum hits filter.</td></tr>'; return; }
     rows = sortRows(rows);
     updateSortIndicators();
     const cols = Array.from(theadRow.children).map(th => th.dataset.key);
@@ -574,6 +584,10 @@
 
   go.addEventListener('click', doSearch);
   q.addEventListener('keydown', e => { if (e.key==='Enter') doSearch(); });
+  minHits.addEventListener('input', () => {
+    const query = q.value.trim();
+    if (query) renderRows(buildRows(query));
+  });
 
   // Auto-detect regex patterns
   q.addEventListener('input', () => {
