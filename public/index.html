@@ -262,7 +262,7 @@
         {key:'play_title', label:'Play', defaultDir:'asc'},
         {key:'act', label:'Act'},
         {key:'scene', label:'Scene'},
-        {key:'count', label:'Count'},
+        {key:'count', label:'Hits'},
         {key:'pct', label:`% of ${n===1?'scene words':n===2?'scene bigrams':'scene trigrams'}`},
       ]);
       denomText.textContent = n===1?'Denominator: total words in scene':'Denominator: total contiguous '+(n===2?'bigrams':'trigrams')+' in scene';
@@ -285,7 +285,7 @@
       setHeaders([
         {key:'play_title', label:'Play', defaultDir:'asc'},
         {key:'act', label:'Act'},
-        {key:'count', label:'Count'},
+        {key:'count', label:'Hits'},
         {key:'pct', label:`% of ${n===1?'act words':n===2?'act bigrams':'act trigrams'}`},
       ]);
       denomText.textContent = n===1?'Denominator: total words in act':'Denominator: total contiguous '+(n===2?'bigrams':'trigrams')+' in act';
@@ -311,7 +311,7 @@
         {key:'first_year', label:'Year'},
         {key:'num_lines', label:'# lines'},
         {key:'total_words', label:'Word count'},
-        {key:'count', label:'Count'},
+        {key:'count', label:'Hits'},
         {key:'pct', label:`% of ${n===1?'play words':n===2?'play bigrams':'play trigrams'}`},
       ]);
       denomText.textContent = n===1?'Denominator: total words in play':'Denominator: total contiguous '+(n===2?'bigrams':'trigrams')+' in play';
@@ -336,7 +336,7 @@
       setHeaders([
         {key:'genre', label:'Genre', defaultDir:'asc'},
         {key:'total_words', label:'Word count'},
-        {key:'count', label:'Count'},
+        {key:'count', label:'Hits'},
         {key:'pct', label:`% of ${n===1?'genre words':n===2?'genre bigrams':'genre trigrams'}`},
       ]);
       denomText.textContent = n===1?'Denominator: total words in genre':'Denominator: total contiguous '+(n===2?'bigrams':'trigrams')+' in genre';
@@ -353,7 +353,7 @@
       setHeaders([
         {key:'play_title', label:'Play', defaultDir:'asc'},
         {key:'name', label:'Character', defaultDir:'asc'},
-        {key:'count', label:'Count'},
+        {key:'count', label:'Hits'},
         {key:'pct', label:`% of character ${n===1?'words':n===2?'bigrams':'trigrams'}`},
         {key:'total_words_spoken', label:'Char. total words'},
       ]);
