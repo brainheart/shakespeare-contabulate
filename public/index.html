@@ -600,12 +600,13 @@
       for (const [scene_id, count] of allPostings){
         const m = chunkById.get(scene_id); if (!m || !playsSel.has(m.play_id)) continue;
         const d = denomFor(n,'scene',m);
-        rows.push({ play_title: m.play_title, genre:m.genre, play_id:m.play_id, act:m.act, scene:m.scene, count, pct: d? count/d : 0, scene_id });
+        rows.push({ play_title: m.play_title, genre:m.genre, play_id:m.play_id, act:m.act, scene:m.scene, total_words:m.total_words||0, count, pct: d? count/d : 0, scene_id });
       }
       setHeaders([
         {key:'play_title', label:'Play', defaultDir:'asc'},
         {key:'act', label:'Act'},
         {key:'scene', label:'Scene'},
+        {key:'total_words', label: n===1 ? 'Word count' : n===2 ? 'Bigram count' : 'Trigram count'},
         {key:'count', label:'Hits'},
         {key:'pct', label:`% of ${n===1?'scene words':n===2?'scene bigrams':'scene trigrams'}`},
       ]);
@@ -615,20 +616,24 @@
 
     if (granVal==='act'){
       const tmp = new Map();
+      const actWordCounts = new Map();
       for (const [scene_id,c] of allPostings){
         const m = chunkById.get(scene_id); if (!m || !playsSel.has(m.play_id)) continue;
         const k = `${m.play_id}:${m.act}`;
         tmp.set(k, (tmp.get(k)||0) + c);
+        actWordCounts.set(k, (actWordCounts.get(k)||0) + (m.total_words||0));
       }
       for (const [k,count] of tmp.entries()){
         const [pid, actNum] = k.split(':').map(Number);
         const play = playsById.get(pid);
         const denom = denomFor(n,'act',{play_id:pid,act:actNum});
-        rows.push({ play_title: play.title, genre:play.genre, play_id:pid, act:actNum, count, pct: denom? count/denom : 0 });
+        const total_words = actWordCounts.get(k) || 0;
+        rows.push({ play_title: play.title, genre:play.genre, play_id:pid, act:actNum, total_words, count, pct: denom? count/denom : 0 });
       }
       setHeaders([
         {key:'play_title', label:'Play', defaultDir:'asc'},
         {key:'act', label:'Act'},
+        {key:'total_words', label: n===1 ? 'Word count' : n===2 ? 'Bigram count' : 'Trigram count'},
         {key:'count', label:'Hits'},
         {key:'pct', label:`% of ${n===1?'act words':n===2?'act bigrams':'act trigrams'}`},
       ]);
@@ -654,7 +659,7 @@
         {key:'genre', label:'Genre', defaultDir:'asc'},
         {key:'first_year', label:'Year'},
         {key:'num_lines', label:'# lines'},
-        {key:'total_words', label:'Word count'},
+        {key:'total_words', label: n===1 ? 'Word count' : n===2 ? 'Bigram count' : 'Trigram count'},
         {key:'count', label:'Hits'},
         {key:'pct', label:`% of ${n===1?'play words':n===2?'play bigrams':'play trigrams'}`},
       ]);
@@ -679,7 +684,7 @@
       }
       setHeaders([
         {key:'genre', label:'Genre', defaultDir:'asc'},
-        {key:'total_words', label:'Word count'},
+        {key:'total_words', label: n===1 ? 'Word count' : n===2 ? 'Bigram count' : 'Trigram count'},
         {key:'count', label:'Hits'},
         {key:'pct', label:`% of ${n===1?'genre words':n===2?'genre bigrams':'genre trigrams'}`},
       ]);
@@ -697,9 +702,9 @@
       setHeaders([
         {key:'play_title', label:'Play', defaultDir:'asc'},
         {key:'name', label:'Character', defaultDir:'asc'},
+        {key:'total_words_spoken', label: n===1 ? 'Word count' : n===2 ? 'Bigram count' : 'Trigram count'},
         {key:'count', label:'Hits'},
         {key:'pct', label:`% of character ${n===1?'words':n===2?'bigrams':'trigrams'}`},
-        {key:'total_words_spoken', label:'Char. total words'},
       ]);
       denomText.textContent = n===1?'Denominator: total words spoken by character':'Denominator: total contiguous '+(n===2?'bigrams':'trigrams')+' spoken by character';
       return rows;
