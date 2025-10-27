@@ -306,14 +306,10 @@
         <input id="q" type="text" placeholder="e.g., death, love.*thee, to be" value="death" style="flex: 1; min-width: 20rem; font-size: 1rem;">
         <button id="go" style="font-size: 1rem; padding: 0.6rem 1.2rem;">Search</button>
       </div>
-      <div style="margin-top: 0.5rem; display: flex; gap: 1rem; align-items: center;">
-        <span id="status" class="chip">loading…</span>
-        <span id="denom" class="muted"></span>
-      </div>
     </div>
 
     <details>
-      <summary class="sr"><strong>Filters & Display</strong> (default: all)</summary>
+      <summary class="sr"><strong>Filters & Display</strong></summary>
       <div style="margin-bottom: 0.75rem;">
         <label style="font-weight: 500;">Minimum hits: <input type="number" id="minHits" value="0" min="0" style="width: 5rem; padding: 0.4rem;"></label>
       </div>
@@ -369,7 +365,6 @@
 
 <script>
 (async function() {
-  const status = document.getElementById('status');
   const q = document.getElementById('q');
   const gran = document.getElementById('gran');
   const go = document.getElementById('go');
@@ -380,7 +375,6 @@
   const theadRow = document.getElementById('headRow');
   const tbody = document.querySelector('#results tbody');
   const ngramTableContainer = document.getElementById('ngramTableContainer');
-  const denomText = document.getElementById('denom');
 
   // Tab switching
   const tabBtns = document.querySelectorAll('.tab-btn');
@@ -422,10 +416,8 @@
       loadJSON('data/tokens_char2.json'),
       loadJSON('data/tokens_char3.json'),
     ]);
-    status.textContent = 'ready';
   } catch(e) {
-    status.textContent = 'failed to load data';
-    console.error(e);
+    console.error('Failed to load data:', e);
     return;
   }
 
@@ -569,13 +561,12 @@
         if (matchingKeys.length === 0) {
           theadRow.innerHTML = '';
           tbody.innerHTML = '<tr><td class="muted">No tokens matched regex pattern.</td></tr>';
-          denomText.textContent = '';
           return null;
         }
         
         // Show warning if too many matches (performance)
         if (matchingKeys.length > 1000) {
-          denomText.textContent = '⚠️ Pattern matched ' + matchingKeys.length + ' tokens (showing aggregated results)';
+          console.log('⚠️ Pattern matched ' + matchingKeys.length + ' tokens (showing aggregated results)');
         }
 
         // Aggregate all matching tokens
@@ -610,7 +601,6 @@
         {key:'count', label:'Hits'},
         {key:'pct', label:`% of ${n===1?'scene words':n===2?'scene bigrams':'scene trigrams'}`},
       ]);
-      denomText.textContent = n===1?'Denominator: total words in scene':'Denominator: total contiguous '+(n===2?'bigrams':'trigrams')+' in scene';
       return rows;
     }
 
@@ -637,7 +627,6 @@
         {key:'count', label:'Hits'},
         {key:'pct', label:`% of ${n===1?'act words':n===2?'act bigrams':'act trigrams'}`},
       ]);
-      denomText.textContent = n===1?'Denominator: total words in act':'Denominator: total contiguous '+(n===2?'bigrams':'trigrams')+' in act';
       return rows;
     }
 
@@ -663,7 +652,6 @@
         {key:'count', label:'Hits'},
         {key:'pct', label:`% of ${n===1?'play words':n===2?'play bigrams':'play trigrams'}`},
       ]);
-      denomText.textContent = n===1?'Denominator: total words in play':'Denominator: total contiguous '+(n===2?'bigrams':'trigrams')+' in play';
       return rows;
     }
 
@@ -688,7 +676,6 @@
         {key:'count', label:'Hits'},
         {key:'pct', label:`% of ${n===1?'genre words':n===2?'genre bigrams':'genre trigrams'}`},
       ]);
-      denomText.textContent = n===1?'Denominator: total words in genre':'Denominator: total contiguous '+(n===2?'bigrams':'trigrams')+' in genre';
       return rows;
     }
 
@@ -706,7 +693,6 @@
         {key:'count', label:'Hits'},
         {key:'pct', label:`% of character ${n===1?'words':n===2?'bigrams':'trigrams'}`},
       ]);
-      denomText.textContent = n===1?'Denominator: total words spoken by character':'Denominator: total contiguous '+(n===2?'bigrams':'trigrams')+' spoken by character';
       return rows;
     }
   }
@@ -934,7 +920,7 @@
 
   function doSearch(){
     const query = q.value.trim();
-    if (!query){ tbody.innerHTML = ''; ngramTableContainer.innerHTML=''; denomText.textContent=''; return; }
+    if (!query){ tbody.innerHTML = ''; ngramTableContainer.innerHTML=''; return; }
     sortKey = 'count';
     sortDir = 'desc';
     const rows = buildRows(query);
