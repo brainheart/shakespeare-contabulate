@@ -577,6 +577,8 @@
   }
 
   let sortKey = null, sortDir = 'desc';
+  let ngramsSortKey = 'totalCount', ngramsSortDir = 'desc';
+  
   function setHeaders(cols){
     theadRow.innerHTML='';
     cols.forEach(c => {
@@ -1189,43 +1191,90 @@
         const totalWords = segmentTotalWords[i];
         const pct = totalWords > 0 ? ((count / totalWords) * 100).toFixed(4) : '0.0000';
         row[`seg${i}_count`] = count;
-        row[`seg${i}_pct`] = pct;
+        row[`seg${i}_pct`] = parseFloat(pct);
       }
       // Calculate total count across all segments for sorting
       row.totalCount = segmentMaps.reduce((sum, map) => sum + (map.get(token) || 0), 0);
       rows.push(row);
     }
     
-    // Sort by total count descending
-    rows.sort((a, b) => b.totalCount - a.totalCount);
-    
-    // Store for pagination
+    // Store for pagination and sorting
     ngramsAllRows = rows;
     ngramsCurrentPage = 1;
+    ngramsSortKey = 'totalCount';
+    ngramsSortDir = 'desc';
+    
+    // Apply default sort
+    sortNgramsRows();
     
     // Build HTML table
     const ngramLabel = n === 1 ? 'Unigram' : n === 2 ? 'Bigram' : 'Trigram';
     let html = `<h3>${ngramLabel} Comparison Across ${segmentLabels.length} Segment${segmentLabels.length > 1 ? 's' : ''}</h3>`;
     const queryInfo = queryTerm ? ` matching "${queryTerm}"` : '';
     html += `<p class="muted">Showing ${rows.length} unique ${ngramLabel.toLowerCase()}s${queryInfo}</p>`;
-    html += '<table id="ngramsTable"><thead><tr><th style="width: 30%;">' + ngramLabel + '</th>';
+    html += '<table id="ngramsTable"><thead><tr><th class="sortable-header" data-key="token" style="width: 30%;">' + ngramLabel + '</th>';
     
     // Add column headers for each segment
     for (let i = 0; i < segmentLabels.length; i++) {
       if (displayMode === 'hits') {
-        html += `<th>${segmentLabels[i]}<br><span class="muted" style="font-weight: normal;">Hits</span></th>`;
+        html += `<th class="sortable-header" data-key="seg${i}_count">${segmentLabels[i]}<br><span class="muted" style="font-weight: normal;">Hits</span></th>`;
       } else if (displayMode === 'pct') {
-        html += `<th>${segmentLabels[i]}<br><span class="muted" style="font-weight: normal;">%</span></th>`;
+        html += `<th class="sortable-header" data-key="seg${i}_pct">${segmentLabels[i]}<br><span class="muted" style="font-weight: normal;">%</span></th>`;
       } else { // both
-        html += `<th>${segmentLabels[i]}<br><span class="muted" style="font-weight: normal;">Hits</span></th>`;
-        html += `<th>${segmentLabels[i]}<br><span class="muted" style="font-weight: normal;">%</span></th>`;
+        html += `<th class="sortable-header" data-key="seg${i}_count">${segmentLabels[i]}<br><span class="muted" style="font-weight: normal;">Hits</span></th>`;
+        html += `<th class="sortable-header" data-key="seg${i}_pct">${segmentLabels[i]}<br><span class="muted" style="font-weight: normal;">%</span></th>`;
       }
     }
     
     html += '</tr></thead><tbody id="ngramsTableBody"></tbody></table>';
     ngramTableContainer.innerHTML = html;
     
+    // Add click handlers to headers
+    document.querySelectorAll('#ngramsTable .sortable-header').forEach(th => {
+      th.style.cursor = 'pointer';
+      th.title = 'Click to sort';
+      th.addEventListener('click', () => {
+        const key = th.dataset.key;
+        if (ngramsSortKey === key) {
+          ngramsSortDir = (ngramsSortDir === 'asc' ? 'desc' : 'asc');
+        } else {
+          ngramsSortKey = key;
+          ngramsSortDir = (key === 'token' ? 'asc' : 'desc');
+        }
+        sortNgramsRows();
+        ngramsCurrentPage = 1;
+        renderNgramsComparisonPage();
+      });
+    });
+    
+    updateNgramsSortIndicators();
     renderNgramsComparisonPage();
+  }
+  
+  function sortNgramsRows() {
+    if (!ngramsSortKey || !ngramsAllRows.length) return;
+    
+    ngramsAllRows.sort((a, b) => {
+      const av = a[ngramsSortKey];
+      const bv = b[ngramsSortKey];
+      
+      if (typeof av === 'string' || typeof bv === 'string') {
+        return ngramsSortDir === 'asc' 
+          ? String(av).localeCompare(String(bv)) 
+          : String(bv).localeCompare(String(av));
+      }
+      
+      return ngramsSortDir === 'asc' ? (av - bv) : (bv - av);
+    });
+  }
+  
+  function updateNgramsSortIndicators() {
+    document.querySelectorAll('#ngramsTable .sortable-header').forEach(th => {
+      th.classList.remove('sorted-asc', 'sorted-desc');
+      if (th.dataset.key === ngramsSortKey) {
+        th.classList.add(ngramsSortDir === 'asc' ? 'sorted-asc' : 'sorted-desc');
+      }
+    });
   }
   
   function renderNgramsComparisonPage() {
@@ -1247,16 +1296,19 @@
         if (displayMode === 'hits') {
           html += `<td>${row[`seg${i}_count`]}</td>`;
         } else if (displayMode === 'pct') {
-          html += `<td>${row[`seg${i}_pct`]}%</td>`;
+          html += `<td>${row[`seg${i}_pct`].toFixed(4)}%</td>`;
         } else { // both
           html += `<td>${row[`seg${i}_count`]}</td>`;
-          html += `<td>${row[`seg${i}_pct`]}%</td>`;
+          html += `<td>${row[`seg${i}_pct`].toFixed(4)}%</td>`;
         }
       }
       
       tr.innerHTML = html;
       tbody.appendChild(tr);
     }
+    
+    // Update sort indicators
+    updateNgramsSortIndicators();
     
     // Update pagination controls
     const paginationDiv = document.getElementById('ngramsPagination');
