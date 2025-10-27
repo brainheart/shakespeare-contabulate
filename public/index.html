@@ -210,52 +210,158 @@
       height: 1.1rem;
       cursor: pointer;
     }
+    .tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+      margin-bottom: 1rem;
+      border-bottom: 2px solid var(--border);
+    }
+    .tab-btn {
+      padding: 0.7rem 1.2rem;
+      background: transparent;
+      border: none;
+      border-bottom: 3px solid transparent;
+      color: var(--ink);
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s;
+      margin-bottom: -2px;
+    }
+    .tab-btn:hover {
+      background: rgba(139, 21, 56, 0.05);
+      color: var(--burgundy);
+    }
+    .tab-btn.active {
+      color: var(--burgundy);
+      border-bottom-color: var(--burgundy);
+      background: transparent;
+    }
+    .tab-content {
+      margin-top: 0;
+    }
+    .tab-content .controls {
+      margin-top: 0;
+    }
+    .pagination {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 1rem;
+      padding: 0.75rem;
+      background: white;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      box-shadow: 0 1px 3px var(--shadow);
+    }
+    .pagination button {
+      padding: 0.4rem 0.8rem;
+      min-width: 2.5rem;
+    }
+    .pagination button:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      background: #ddd;
+    }
+    .pagination select {
+      padding: 0.4rem 0.6rem;
+    }
+    .pagination .page-info {
+      color: var(--ink);
+      font-weight: 500;
+    }
   </style>
 </head>
 <body>
   <h1><a href="../">Contabulate</a>: Shakespeare Tabular Search</h1>
   <p class="muted">Search for single words, bigrams, or trigrams across plays, acts, scence, characters, genres. Use regular expression patterns (e.g., <code>love.*thee</code>) or literal text.</p>
 
-  <div class="controls">
-    <label>Query <input id="q" type="text" placeholder="e.g., blood | mortal coil | love.*thee" value="death"></label>
-    <label>Granularity
-      <select id="gran">
-        <option value="play">Play</option>
-        <option value="act">Act</option>
-        <option value="scene" selected>Scene</option>
-        <option value="genre">Genre</option>
-        <option value="character">Character</option>
-      </select>
-    </label>
-    <label title="Force search in specific n-gram index (auto-detects by default)">
-      N-gram:
-      <select id="ngramMode">
-        <option value="auto" selected>Auto</option>
-        <option value="1">Unigrams</option>
-        <option value="2">Bigrams</option>
-        <option value="3">Trigrams</option>
-      </select>
-    </label>
-    <label><input type="checkbox" id="useRegex"> Regex mode</label>
-    <button id="go">Search</button>
-    <span id="status" class="chip">loading…</span>
-    <span id="denom" class="muted"></span>
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="segments">Rows are Corpus Segments</button>
+    <button class="tab-btn" data-tab="ngrams">Rows are Ngrams</button>
   </div>
 
-  <details>
-    <summary class="sr"><strong>Filters & Display</strong> (default: all)</summary>
-    <div style="margin-bottom: 0.75rem;">
-      <label style="font-weight: 500;">Minimum hits: <input type="number" id="minHits" value="0" min="0" style="width: 5rem; padding: 0.4rem;"></label>
+  <div class="tab-content" id="segmentsTab">
+    <div class="controls">
+      <label>Query <input id="q" type="text" placeholder="e.g., blood | mortal coil | love.*thee" value="death"></label>
+      <label>Granularity
+        <select id="gran">
+          <option value="play">Play</option>
+          <option value="act">Act</option>
+          <option value="scene" selected>Scene</option>
+          <option value="genre">Genre</option>
+          <option value="character">Character</option>
+        </select>
+      </label>
+      <label title="Force search in specific n-gram index (auto-detects by default)">
+        N-gram:
+        <select id="ngramMode">
+          <option value="auto" selected>Auto</option>
+          <option value="1">Unigrams</option>
+          <option value="2">Bigrams</option>
+          <option value="3">Trigrams</option>
+        </select>
+      </label>
+      <label><input type="checkbox" id="useRegex"> Regex mode</label>
+      <button id="go">Search</button>
+      <span id="status" class="chip">loading…</span>
+      <span id="denom" class="muted"></span>
     </div>
-    <div id="playsFilter"></div>
-  </details>
 
-  <table id="results">
-    <thead><tr id="headRow"></tr></thead>
-    <tbody></tbody>
-  </table>
+    <details>
+      <summary class="sr"><strong>Filters & Display</strong> (default: all)</summary>
+      <div style="margin-bottom: 0.75rem;">
+        <label style="font-weight: 500;">Minimum hits: <input type="number" id="minHits" value="0" min="0" style="width: 5rem; padding: 0.4rem;"></label>
+      </div>
+      <div id="playsFilter"></div>
+    </details>
 
-  <div id="details"></div>
+    <table id="results">
+      <thead><tr id="headRow"></tr></thead>
+      <tbody></tbody>
+    </table>
+    
+    <div class="pagination" id="segmentsPagination" style="display: none;">
+      <button id="segmentsFirstPage">First</button>
+      <button id="segmentsPrevPage">Prev</button>
+      <span class="page-info" id="segmentsPageInfo">Page 1 of 1</span>
+      <button id="segmentsNextPage">Next</button>
+      <button id="segmentsLastPage">Last</button>
+      <label>
+        Rows per page:
+        <select id="segmentsPageSize">
+          <option value="25">25</option>
+          <option value="50" selected>50</option>
+          <option value="100">100</option>
+          <option value="250">250</option>
+        </select>
+      </label>
+      <span class="page-info" id="segmentsTotalInfo"></span>
+    </div>
+  </div>
+
+  <div class="tab-content" id="ngramsTab" style="display: none;">
+    <div id="ngramTableContainer"></div>
+    
+    <div class="pagination" id="ngramsPagination" style="display: none;">
+      <button id="ngramsFirstPage">First</button>
+      <button id="ngramsPrevPage">Prev</button>
+      <span class="page-info" id="ngramsPageInfo">Page 1 of 1</span>
+      <button id="ngramsNextPage">Next</button>
+      <button id="ngramsLastPage">Last</button>
+      <label>
+        Rows per page:
+        <select id="ngramsPageSize">
+          <option value="25">25</option>
+          <option value="50">50</option>
+          <option value="100" selected>100</option>
+          <option value="250">250</option>
+          <option value="500">500</option>
+        </select>
+      </label>
+      <span class="page-info" id="ngramsTotalInfo"></span>
+    </div>
+  </div>
 
 <script>
 (async function() {
@@ -269,8 +375,29 @@
   const minHits = document.getElementById('minHits');
   const theadRow = document.getElementById('headRow');
   const tbody = document.querySelector('#results tbody');
-  const details = document.getElementById('details');
+  const ngramTableContainer = document.getElementById('ngramTableContainer');
   const denomText = document.getElementById('denom');
+
+  // Tab switching
+  const tabBtns = document.querySelectorAll('.tab-btn');
+  const segmentsTab = document.getElementById('segmentsTab');
+  const ngramsTab = document.getElementById('ngramsTab');
+  
+  tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const targetTab = btn.dataset.tab;
+      tabBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      
+      if (targetTab === 'segments') {
+        segmentsTab.style.display = 'block';
+        ngramsTab.style.display = 'none';
+      } else {
+        segmentsTab.style.display = 'none';
+        ngramsTab.style.display = 'block';
+      }
+    });
+  });
 
   async function loadJSON(path) {
     const res = await fetch(path);
@@ -319,6 +446,26 @@
   }
   function fmtPct(num) { return (num*100).toFixed(2) + '%'; }
 
+  // Pagination state
+  let segmentsCurrentPage = 1;
+  let segmentsPageSize = 50;
+  let segmentsAllRows = [];
+  
+  let ngramsCurrentPage = 1;
+  let ngramsPageSize = 100;
+  let ngramsAllRows = [];
+
+  // Pagination helper
+  function paginateArray(arr, page, pageSize) {
+    const start = (page - 1) * pageSize;
+    const end = start + pageSize;
+    return arr.slice(start, end);
+  }
+
+  function getTotalPages(totalRows, pageSize) {
+    return Math.max(1, Math.ceil(totalRows / pageSize));
+  }
+
   const actTotals = new Map();
   const playTotals = new Map();
   for (const r of chunks) {
@@ -338,7 +485,9 @@
       th.addEventListener('click', () => {
         if (sortKey === c.key) sortDir = (sortDir === 'asc' ? 'desc' : 'asc');
         else { sortKey = c.key; sortDir = c.defaultDir || 'desc'; }
-        renderRows(buildRows(q.value.trim()));
+        segmentsAllRows = sortRows(segmentsAllRows);
+        segmentsCurrentPage = 1;
+        renderSegmentsPage();
       });
       theadRow.appendChild(th);
     });
@@ -495,7 +644,7 @@
         const denom = denomFor(n,'play',{play_id:pid});
         const num_lines = p.total_lines ?? 0;
         const total_words = p.total_words ?? 0;
-        rows.push({ title:p.title, genre:p.genre, first_year:p.first_performance_year||'', num_lines, total_words, count, pct: denom? count/denom : 0 });
+        rows.push({ play_id:pid, title:p.title, genre:p.genre, first_year:p.first_performance_year||'', num_lines, total_words, count, pct: denom? count/denom : 0 });
       }
       setHeaders([
         {key:'title', label:'Play', defaultDir:'asc'},
@@ -556,26 +705,228 @@
 
   function renderRows(rows){
     tbody.innerHTML='';
-    if (!rows || rows.length===0){ tbody.innerHTML = '<tr><td colspan="8" class="muted">No results.</td></tr>'; return; }
+    if (!rows || rows.length===0){ 
+      tbody.innerHTML = '<tr><td colspan="8" class="muted">No results.</td></tr>'; 
+      document.getElementById('segmentsPagination').style.display = 'none';
+      return; 
+    }
+    
     // Filter by minimum hits
     const minHitsVal = parseInt(minHits.value) || 0;
     if (minHitsVal > 0) {
       rows = rows.filter(r => (r.count || 0) >= minHitsVal);
     }
-    if (rows.length === 0) { tbody.innerHTML = '<tr><td colspan="8" class="muted">No results match the minimum hits filter.</td></tr>'; return; }
+    if (rows.length === 0) { 
+      tbody.innerHTML = '<tr><td colspan="8" class="muted">No results match the minimum hits filter.</td></tr>'; 
+      document.getElementById('segmentsPagination').style.display = 'none';
+      return; 
+    }
+    
     rows = sortRows(rows);
     updateSortIndicators();
+    
+    // Store all rows and reset to page 1
+    segmentsAllRows = rows;
+    segmentsCurrentPage = 1;
+    
+    renderSegmentsPage();
+  }
+  
+  function renderSegmentsPage() {
+    const totalPages = getTotalPages(segmentsAllRows.length, segmentsPageSize);
+    const paginatedRows = paginateArray(segmentsAllRows, segmentsCurrentPage, segmentsPageSize);
+    
+    tbody.innerHTML = '';
     const cols = Array.from(theadRow.children).map(th => th.dataset.key);
-    for (const r of rows) {
+    const firstColKey = cols[0];
+    
+    for (const r of paginatedRows) {
       const tr = document.createElement('tr');
-      tr.innerHTML = cols.map(k => `<td>${(k==='pct') ? fmtPct(r[k]||0) : (r[k] ?? '')}</td>`).join('');
+      cols.forEach((k, idx) => {
+        const td = document.createElement('td');
+        if (k === 'pct') {
+          td.textContent = fmtPct(r[k]||0);
+        } else {
+          td.textContent = r[k] ?? '';
+        }
+        // Make first column clickable for drill-down
+        if (idx === 0 && r[k]) {
+          td.style.cursor = 'pointer';
+          td.style.color = 'var(--burgundy)';
+          td.style.textDecoration = 'underline';
+          td.style.fontWeight = '500';
+          td.addEventListener('click', () => showDrillDown(r, firstColKey));
+        }
+        tr.appendChild(td);
+      });
       tbody.appendChild(tr);
     }
+    
+    // Update pagination controls
+    const paginationDiv = document.getElementById('segmentsPagination');
+    paginationDiv.style.display = segmentsAllRows.length > 25 ? 'flex' : 'none';
+    
+    document.getElementById('segmentsPageInfo').textContent = `Page ${segmentsCurrentPage} of ${totalPages}`;
+    document.getElementById('segmentsTotalInfo').textContent = `(${segmentsAllRows.length} total rows)`;
+    
+    document.getElementById('segmentsFirstPage').disabled = segmentsCurrentPage === 1;
+    document.getElementById('segmentsPrevPage').disabled = segmentsCurrentPage === 1;
+    document.getElementById('segmentsNextPage').disabled = segmentsCurrentPage === totalPages;
+    document.getElementById('segmentsLastPage').disabled = segmentsCurrentPage === totalPages;
+  }
+
+  function showDrillDown(rowData, firstColKey) {
+    const granVal = gran.value;
+    const ngramModeVal = ngramMode.value;
+    let n = (ngramModeVal === 'auto') ? 1 : parseInt(ngramModeVal);
+    
+    // Determine which token index to use
+    const idx = (granVal === 'character') 
+      ? (n === 1 ? tokensChar : n === 2 ? tokensChar2 : tokensChar3)
+      : (n === 1 ? tokens : n === 2 ? tokens2 : tokens3);
+    
+    // Build frequency map for this specific entity
+    const freqMap = new Map();
+    
+    if (granVal === 'play') {
+      // Get all scenes in this play and aggregate tokens
+      const playId = rowData.play_id;
+      
+      for (const [token, postings] of Object.entries(idx)) {
+        let total = 0;
+        if (Array.isArray(postings)) {
+          for (const posting of postings) {
+            const [scene_id, count] = posting;
+            const chunk = chunkById.get(scene_id);
+            if (chunk && chunk.play_id === playId) {
+              total += count;
+            }
+          }
+        }
+        if (total > 0) freqMap.set(token, total);
+      }
+    } else if (granVal === 'genre') {
+      // Get all scenes in this genre
+      const genre = rowData.genre;
+      for (const [token, postings] of Object.entries(idx)) {
+        let total = 0;
+        if (Array.isArray(postings)) {
+          for (const posting of postings) {
+            const [scene_id, count] = posting;
+            const chunk = chunkById.get(scene_id);
+            if (chunk && chunk.genre === genre) total += count;
+          }
+        }
+        if (total > 0) freqMap.set(token, total);
+      }
+    } else if (granVal === 'act') {
+      // Get all scenes in this act of this play
+      const playId = rowData.play_id;
+      const actNum = rowData.act;
+      for (const [token, postings] of Object.entries(idx)) {
+        let total = 0;
+        if (Array.isArray(postings)) {
+          for (const posting of postings) {
+            const [scene_id, count] = posting;
+            const chunk = chunkById.get(scene_id);
+            if (chunk && chunk.play_id === playId && chunk.act === actNum) total += count;
+          }
+        }
+        if (total > 0) freqMap.set(token, total);
+      }
+    } else if (granVal === 'scene') {
+      // Get tokens in this specific scene
+      const sceneId = rowData.scene_id;
+      for (const [token, postings] of Object.entries(idx)) {
+        if (Array.isArray(postings)) {
+          for (const posting of postings) {
+            const [scene_id, count] = posting;
+            if (scene_id === sceneId) freqMap.set(token, count);
+          }
+        }
+      }
+    } else if (granVal === 'character') {
+      // Get tokens spoken by this character
+      const charName = rowData.name;
+      const playTitle = rowData.play_title;
+      // Find character_id
+      let charId = null;
+      for (const [id, c] of charactersById) {
+        if (c.name === charName && c.play_title === playTitle) {
+          charId = id;
+          break;
+        }
+      }
+      if (charId) {
+        for (const [token, postings] of Object.entries(idx)) {
+          if (Array.isArray(postings)) {
+            for (const posting of postings) {
+              const [char_id, count] = posting;
+              if (char_id === charId) freqMap.set(token, count);
+            }
+          }
+        }
+      }
+    }
+    
+    // Sort by frequency descending
+    const sortedTokens = Array.from(freqMap.entries())
+      .sort((a, b) => b[1] - a[1]);
+    
+    // Store all rows for pagination
+    ngramsAllRows = sortedTokens;
+    ngramsCurrentPage = 1;
+    
+    // Build HTML table
+    const ngramLabel = n === 1 ? 'Unigram' : n === 2 ? 'Bigram' : 'Trigram';
+    const entityLabel = rowData[firstColKey] || '';
+    let html = `<h3>All ${ngramLabel}s: ${entityLabel}</h3>`;
+    html += `<p class="muted">Showing ${sortedTokens.length} unique ${ngramLabel.toLowerCase()}s, sorted by frequency</p>`;
+    html += '<table id="ngramsTable"><thead><tr><th style="width: 60%;">' + ngramLabel + '</th><th>Frequency</th></tr></thead><tbody id="ngramsTableBody"></tbody></table>';
+    
+    ngramTableContainer.innerHTML = html;
+    
+    // Render first page
+    renderNgramsPage();
+    
+    // Switch to ngrams tab
+    tabBtns.forEach(b => b.classList.remove('active'));
+    document.querySelector('[data-tab="ngrams"]').classList.add('active');
+    segmentsTab.style.display = 'none';
+    ngramsTab.style.display = 'block';
+    ngramsTab.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  
+  function renderNgramsPage() {
+    const totalPages = getTotalPages(ngramsAllRows.length, ngramsPageSize);
+    const paginatedRows = paginateArray(ngramsAllRows, ngramsCurrentPage, ngramsPageSize);
+    
+    const tbody = document.getElementById('ngramsTableBody');
+    if (!tbody) return;
+    
+    tbody.innerHTML = '';
+    for (const [token, count] of paginatedRows) {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${token}</td><td>${count}</td>`;
+      tbody.appendChild(tr);
+    }
+    
+    // Update pagination controls
+    const paginationDiv = document.getElementById('ngramsPagination');
+    paginationDiv.style.display = ngramsAllRows.length > 25 ? 'flex' : 'none';
+    
+    document.getElementById('ngramsPageInfo').textContent = `Page ${ngramsCurrentPage} of ${totalPages}`;
+    document.getElementById('ngramsTotalInfo').textContent = `(${ngramsAllRows.length} total rows)`;
+    
+    document.getElementById('ngramsFirstPage').disabled = ngramsCurrentPage === 1;
+    document.getElementById('ngramsPrevPage').disabled = ngramsCurrentPage === 1;
+    document.getElementById('ngramsNextPage').disabled = ngramsCurrentPage === totalPages;
+    document.getElementById('ngramsLastPage').disabled = ngramsCurrentPage === totalPages;
   }
 
   function doSearch(){
     const query = q.value.trim();
-    if (!query){ tbody.innerHTML = ''; details.innerHTML=''; denomText.textContent=''; return; }
+    if (!query){ tbody.innerHTML = ''; ngramTableContainer.innerHTML=''; denomText.textContent=''; return; }
     sortKey = 'count';
     sortDir = 'desc';
     const rows = buildRows(query);
@@ -587,6 +938,62 @@
   minHits.addEventListener('input', () => {
     const query = q.value.trim();
     if (query) renderRows(buildRows(query));
+  });
+  
+  // Segments pagination controls
+  document.getElementById('segmentsFirstPage').addEventListener('click', () => {
+    segmentsCurrentPage = 1;
+    renderSegmentsPage();
+  });
+  document.getElementById('segmentsPrevPage').addEventListener('click', () => {
+    if (segmentsCurrentPage > 1) {
+      segmentsCurrentPage--;
+      renderSegmentsPage();
+    }
+  });
+  document.getElementById('segmentsNextPage').addEventListener('click', () => {
+    const totalPages = getTotalPages(segmentsAllRows.length, segmentsPageSize);
+    if (segmentsCurrentPage < totalPages) {
+      segmentsCurrentPage++;
+      renderSegmentsPage();
+    }
+  });
+  document.getElementById('segmentsLastPage').addEventListener('click', () => {
+    segmentsCurrentPage = getTotalPages(segmentsAllRows.length, segmentsPageSize);
+    renderSegmentsPage();
+  });
+  document.getElementById('segmentsPageSize').addEventListener('change', (e) => {
+    segmentsPageSize = parseInt(e.target.value);
+    segmentsCurrentPage = 1;
+    renderSegmentsPage();
+  });
+  
+  // Ngrams pagination controls
+  document.getElementById('ngramsFirstPage').addEventListener('click', () => {
+    ngramsCurrentPage = 1;
+    renderNgramsPage();
+  });
+  document.getElementById('ngramsPrevPage').addEventListener('click', () => {
+    if (ngramsCurrentPage > 1) {
+      ngramsCurrentPage--;
+      renderNgramsPage();
+    }
+  });
+  document.getElementById('ngramsNextPage').addEventListener('click', () => {
+    const totalPages = getTotalPages(ngramsAllRows.length, ngramsPageSize);
+    if (ngramsCurrentPage < totalPages) {
+      ngramsCurrentPage++;
+      renderNgramsPage();
+    }
+  });
+  document.getElementById('ngramsLastPage').addEventListener('click', () => {
+    ngramsCurrentPage = getTotalPages(ngramsAllRows.length, ngramsPageSize);
+    renderNgramsPage();
+  });
+  document.getElementById('ngramsPageSize').addEventListener('change', (e) => {
+    ngramsPageSize = parseInt(e.target.value);
+    ngramsCurrentPage = 1;
+    renderNgramsPage();
   });
 
   // Auto-detect regex patterns
