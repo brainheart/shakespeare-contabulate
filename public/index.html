@@ -283,29 +283,33 @@
 
   <div class="tab-content" id="segmentsTab">
     <div class="controls">
-      <label>Query <input id="q" type="text" placeholder="e.g., blood | mortal coil | love.*thee" value="death"></label>
-      <label>Granularity
-        <select id="gran">
+      <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; font-size: 1.05rem;">
+        <span style="font-weight: 600;">Find</span>
+        <select id="ngramMode" style="font-size: 1rem;">
+          <option value="1" selected>single word</option>
+          <option value="2">bigram</option>
+          <option value="3">trigram</option>
+        </select>
+        <span style="font-weight: 600;">hits by</span>
+        <select id="gran" style="font-size: 1rem;">
           <option value="play">Play</option>
+          <option value="genre">Genre</option>
           <option value="act">Act</option>
           <option value="scene" selected>Scene</option>
-          <option value="genre">Genre</option>
           <option value="character">Character</option>
         </select>
-      </label>
-      <label title="Force search in specific n-gram index (auto-detects by default)">
-        N-gram:
-        <select id="ngramMode">
-          <option value="auto" selected>Auto</option>
-          <option value="1">Unigrams</option>
-          <option value="2">Bigrams</option>
-          <option value="3">Trigrams</option>
+        <span style="font-weight: 600;">for the</span>
+        <select id="matchMode" style="font-size: 1rem;">
+          <option value="exact">exact term</option>
+          <option value="regex">regex pattern</option>
         </select>
-      </label>
-      <label><input type="checkbox" id="useRegex"> Regex mode</label>
-      <button id="go">Search</button>
-      <span id="status" class="chip">loading…</span>
-      <span id="denom" class="muted"></span>
+        <input id="q" type="text" placeholder="e.g., death, love.*thee, to be" value="death" style="flex: 1; min-width: 20rem; font-size: 1rem;">
+        <button id="go" style="font-size: 1rem; padding: 0.6rem 1.2rem;">Search</button>
+      </div>
+      <div style="margin-top: 0.5rem; display: flex; gap: 1rem; align-items: center;">
+        <span id="status" class="chip">loading…</span>
+        <span id="denom" class="muted"></span>
+      </div>
     </div>
 
     <details>
@@ -369,7 +373,7 @@
   const q = document.getElementById('q');
   const gran = document.getElementById('gran');
   const go = document.getElementById('go');
-  const useRegex = document.getElementById('useRegex');
+  const matchMode = document.getElementById('matchMode');
   const ngramMode = document.getElementById('ngramMode');
   const playsFilter = document.getElementById('playsFilter');
   const minHits = document.getElementById('minHits');
@@ -534,15 +538,11 @@
   }
 
   function buildRows(query){
-    const isRegex = useRegex.checked;
+    const isRegex = (matchMode.value === 'regex');
     const ngramModeVal = ngramMode.value;
-    const terms = query.trim().toLowerCase().split(/\s+/).filter(Boolean);
-    let n = Math.min(terms.length, 3);
     
-    // Override n if user explicitly selected n-gram mode
-    if (ngramModeVal !== 'auto') {
-      n = parseInt(ngramModeVal);
-    }
+    // Always use the explicitly selected n-gram mode
+    const n = parseInt(ngramModeVal);
 
     const playsSel = selectedPlayIds();
     const granVal = gran.value;
@@ -587,6 +587,9 @@
       }
     } else {
       // Literal mode: exact match
+      // For single words, just use the query as-is (lowercased)
+      // For bigrams/trigrams, split by whitespace and take first n terms
+      const terms = query.trim().toLowerCase().split(/\s+/).filter(Boolean);
       const key = terms.slice(0, n).join(' ');
       allPostings = idx[key] || [];
     }
@@ -778,7 +781,7 @@
   function showDrillDown(rowData, firstColKey) {
     const granVal = gran.value;
     const ngramModeVal = ngramMode.value;
-    let n = (ngramModeVal === 'auto') ? 1 : parseInt(ngramModeVal);
+    const n = parseInt(ngramModeVal);
     
     // Determine which token index to use
     const idx = (granVal === 'character') 
@@ -1000,8 +1003,8 @@
   q.addEventListener('input', () => {
     const val = q.value;
     const hasRegexChars = /[.*+?^${}()|[\]\\]/.test(val);
-    if (hasRegexChars && !useRegex.checked) {
-      useRegex.checked = true;
+    if (hasRegexChars && matchMode.value === 'exact') {
+      matchMode.value = 'regex';
     }
   });
 
