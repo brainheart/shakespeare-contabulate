@@ -284,7 +284,7 @@
   <div class="tab-content" id="segmentsTab">
     <div class="controls">
       <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; font-size: 1.05rem;">
-        <span style="font-weight: 600;">Find</span>
+        <span style="font-weight: 600;">Show</span>
         <select id="ngramMode" style="font-size: 1rem;">
           <option value="1" selected>single word</option>
           <option value="2">bigram</option>
@@ -298,13 +298,13 @@
           <option value="scene" selected>Scene</option>
           <option value="character">Character</option>
         </select>
-        <span style="font-weight: 600;">for the</span>
+        <span style="font-weight: 600;">matching the</span>
         <select id="matchMode" style="font-size: 1rem;">
           <option value="exact">exact term</option>
           <option value="regex">regex pattern</option>
         </select>
         <input id="q" type="text" placeholder="e.g., death, love.*thee, to be" value="death" style="flex: 1; min-width: 20rem; font-size: 1rem;">
-        <button id="go" style="font-size: 1rem; padding: 0.6rem 1.2rem;">Search</button>
+        <button id="go" style="font-size: 1rem; padding: 0.6rem 1.2rem;">Refresh</button>
       </div>
     </div>
 
@@ -342,25 +342,26 @@
 
   <div class="tab-content" id="ngramsTab" style="display: none;">
     <div class="controls">
-      <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; font-size: 1.05rem; margin-bottom: 0.75rem;">
+      <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; font-size: 1.05rem;">
         <span style="font-weight: 600;">Show</span>
+        <select id="ngramsDisplayMode" style="font-size: 1rem;">
+          <option value="hits">hit counts</option>
+          <option value="pct">hit %</option>
+          <option value="both" selected>hit counts & %</option>
+        </select>
+        <span style="font-weight: 600;">for</span>
         <select id="ngramsNgramMode" style="font-size: 1rem;">
           <option value="1" selected>single words</option>
           <option value="2">bigrams</option>
           <option value="3">trigrams</option>
         </select>
-        <span style="font-weight: 600;">with</span>
-        <select id="ngramsDisplayMode" style="font-size: 1rem;">
-          <option value="hits">hit counts</option>
-          <option value="pct">percentages</option>
-          <option value="both" selected>both</option>
+        <span style="font-weight: 600;">matching the</span>
+        <select id="ngramsMatchMode" style="font-size: 1rem;">
+          <option value="exact">exact term</option>
+          <option value="regex">regex pattern</option>
         </select>
-        <button id="ngramsRefresh" style="font-size: 1rem; padding: 0.6rem 1.2rem;">Refresh</button>
-      </div>
-      <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; font-size: 1.05rem;">
-        <label for="ngramsQuery" style="font-weight: 600;">Filter by term:</label>
         <input type="text" id="ngramsQuery" placeholder="(optional: leave blank to show all)" style="flex: 1; min-width: 200px; font-size: 1rem; padding: 0.5rem;">
-        <span class="muted" style="font-size: 0.9rem;">(leave blank to show all n-grams)</span>
+        <button id="ngramsRefresh" style="font-size: 1rem; padding: 0.6rem 1.2rem;">Refresh</button>
       </div>
     </div>
 
@@ -1087,6 +1088,7 @@
     const n = parseInt(document.getElementById('ngramsNgramMode').value);
     const displayMode = document.getElementById('ngramsDisplayMode').value;
     const queryTerm = document.getElementById('ngramsQuery').value.trim();
+    const ngramsMatchMode = document.getElementById('ngramsMatchMode').value;
     
     // Get appropriate indices (separate scene-level and character-level)
     let sceneIdx = {};
@@ -1178,8 +1180,19 @@
     // Filter by query if provided
     let tokensToShow = Array.from(allTokens);
     if (queryTerm) {
-      const lowerQuery = queryTerm.toLowerCase();
-      tokensToShow = tokensToShow.filter(token => token.toLowerCase().includes(lowerQuery));
+      if (ngramsMatchMode === 'regex') {
+        try {
+          const pattern = new RegExp(queryTerm, 'i');
+          tokensToShow = tokensToShow.filter(token => pattern.test(token));
+        } catch (e) {
+          ngramTableContainer.innerHTML = `<p class="warning">Invalid regex: ${e.message}</p>`;
+          return;
+        }
+      } else {
+        // Exact term matching (case-insensitive exact match)
+        const lowerQuery = queryTerm.toLowerCase();
+        tokensToShow = tokensToShow.filter(token => token.toLowerCase() === lowerQuery);
+      }
     }
     
     // Build rows with filtered tokens
@@ -1210,8 +1223,8 @@
     // Build HTML table
     const ngramLabel = n === 1 ? 'Unigram' : n === 2 ? 'Bigram' : 'Trigram';
     let html = `<h3>${ngramLabel} Comparison Across ${segmentLabels.length} Segment${segmentLabels.length > 1 ? 's' : ''}</h3>`;
-    const queryInfo = queryTerm ? ` matching "${queryTerm}"` : '';
-    html += `<p class="muted">Showing ${rows.length} unique ${ngramLabel.toLowerCase()}s${queryInfo}</p>`;
+    const matchInfo = queryTerm ? ` matching ${ngramsMatchMode === 'regex' ? 'pattern' : 'term'} "${queryTerm}"` : '';
+    html += `<p class="muted">Showing ${rows.length} unique ${ngramLabel.toLowerCase()}s${matchInfo}</p>`;
     html += '<table id="ngramsTable"><thead><tr><th class="sortable-header" data-key="token" style="width: 30%;">' + ngramLabel + '</th>';
     
     // Add column headers for each segment
@@ -1325,6 +1338,9 @@
   
   // Ngrams tab controls
   document.getElementById('ngramsRefresh').addEventListener('click', buildNgramsComparison);
+  document.getElementById('ngramsQuery').addEventListener('keydown', e => { 
+    if (e.key === 'Enter' && ngramsSelectedSegments.size > 0) buildNgramsComparison(); 
+  });
   document.getElementById('ngramsNgramMode').addEventListener('change', () => {
     if (ngramsSelectedSegments.size > 0) buildNgramsComparison();
   });
@@ -1333,7 +1349,7 @@
       renderNgramsComparisonPage();
     }
   });
-  document.getElementById('ngramsQuery').addEventListener('input', () => {
+  document.getElementById('ngramsMatchMode').addEventListener('change', () => {
     if (ngramsSelectedSegments.size > 0) buildNgramsComparison();
   });
 
