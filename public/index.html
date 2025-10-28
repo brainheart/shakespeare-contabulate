@@ -270,6 +270,15 @@
       color: var(--ink);
       font-weight: 500;
     }
+    .refresh-btn-pending {
+      background: var(--gold) !important;
+      border-color: var(--gold) !important;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.8; }
+    }
   </style>
 </head>
 <body>
@@ -421,6 +430,27 @@
   const tbody = document.querySelector('#results tbody');
   const ngramTableContainer = document.getElementById('ngramTableContainer');
 
+  // Pending changes tracking
+  let segmentsPendingChanges = false;
+  let ngramsPendingChanges = false;
+  
+  // Last search state for segments
+  let lastSegmentsState = {
+    query: '',
+    ngramMode: '',
+    gran: '',
+    matchMode: ''
+  };
+  
+  // Last search state for ngrams
+  let lastNgramsState = {
+    query: '',
+    ngramMode: '',
+    matchMode: '',
+    displayMode: '',
+    segments: new Set()
+  };
+
   // Tab switching
   const tabBtns = document.querySelectorAll('.tab-btn');
   const segmentsTab = document.getElementById('segmentsTab');
@@ -518,7 +548,10 @@
     
     // Add change listeners
     document.querySelectorAll('.ngram-segment-cb').forEach(cb => {
-      cb.addEventListener('change', updateNgramsSelectedSegments);
+      cb.addEventListener('change', () => {
+        updateNgramsSelectedSegments();
+        checkNgramsPendingChanges();
+      });
     });
   }
   initNgramsSelectors();
@@ -991,13 +1024,107 @@
     document.getElementById('ngramsLastPage').disabled = ngramsCurrentPage === totalPages;
   }
 
+  // Check if segments settings have changed
+  function checkSegmentsPendingChanges() {
+    const currentState = {
+      query: q.value.trim(),
+      ngramMode: ngramMode.value,
+      gran: gran.value,
+      matchMode: matchMode.value
+    };
+    
+    const hasChanges = 
+      currentState.query !== lastSegmentsState.query ||
+      currentState.ngramMode !== lastSegmentsState.ngramMode ||
+      currentState.gran !== lastSegmentsState.gran ||
+      currentState.matchMode !== lastSegmentsState.matchMode;
+    
+    segmentsPendingChanges = hasChanges;
+    updateSegmentsRefreshButton();
+  }
+  
+  function updateSegmentsRefreshButton() {
+    if (segmentsPendingChanges) {
+      go.classList.add('refresh-btn-pending');
+      go.textContent = 'Refresh ⟳';
+    } else {
+      go.classList.remove('refresh-btn-pending');
+      go.textContent = 'Refresh';
+    }
+  }
+  
+  function saveSegmentsState() {
+    lastSegmentsState = {
+      query: q.value.trim(),
+      ngramMode: ngramMode.value,
+      gran: gran.value,
+      matchMode: matchMode.value
+    };
+    segmentsPendingChanges = false;
+    updateSegmentsRefreshButton();
+  }
+  
+  // Check if ngrams settings have changed
+  function checkNgramsPendingChanges() {
+    const currentQuery = document.getElementById('ngramsQuery').value.trim();
+    const currentNgramMode = document.getElementById('ngramsNgramMode').value;
+    const currentMatchMode = document.getElementById('ngramsMatchMode').value;
+    const currentDisplayMode = document.getElementById('ngramsDisplayMode').value;
+    
+    // Create a comparable representation of selected segments
+    const currentSegmentsStr = Array.from(ngramsSelectedSegments)
+      .map(s => `${s.type}:${s.id}`)
+      .sort()
+      .join(',');
+    const lastSegmentsStr = Array.from(lastNgramsState.segments)
+      .map(s => `${s.type}:${s.id}`)
+      .sort()
+      .join(',');
+    
+    const hasChanges = 
+      currentQuery !== lastNgramsState.query ||
+      currentNgramMode !== lastNgramsState.ngramMode ||
+      currentMatchMode !== lastNgramsState.matchMode ||
+      currentDisplayMode !== lastNgramsState.displayMode ||
+      currentSegmentsStr !== lastSegmentsStr;
+    
+    ngramsPendingChanges = hasChanges;
+    updateNgramsRefreshButton();
+  }
+  
+  function updateNgramsRefreshButton() {
+    const refreshBtn = document.getElementById('ngramsRefresh');
+    if (ngramsPendingChanges) {
+      refreshBtn.classList.add('refresh-btn-pending');
+      refreshBtn.textContent = 'Refresh ⟳';
+    } else {
+      refreshBtn.classList.remove('refresh-btn-pending');
+      refreshBtn.textContent = 'Refresh';
+    }
+  }
+  
+  function saveNgramsState() {
+    lastNgramsState = {
+      query: document.getElementById('ngramsQuery').value.trim(),
+      ngramMode: document.getElementById('ngramsNgramMode').value,
+      matchMode: document.getElementById('ngramsMatchMode').value,
+      displayMode: document.getElementById('ngramsDisplayMode').value,
+      segments: new Set(Array.from(ngramsSelectedSegments).map(s => ({type: s.type, id: s.id})))
+    };
+    ngramsPendingChanges = false;
+    updateNgramsRefreshButton();
+  }
+
   function doSearch(){
     const query = q.value.trim();
     if (!query){ tbody.innerHTML = ''; ngramTableContainer.innerHTML=''; return; }
     sortKey = 'count';
     sortDir = 'desc';
     const rows = buildRows(query);
-    if (rows) renderRows(rows);
+    if (rows) {
+      renderRows(rows);
+      saveSegmentsState();
+    }
   }
 
   go.addEventListener('click', doSearch);
@@ -1269,6 +1396,7 @@
     
     updateNgramsSortIndicators();
     renderNgramsComparisonPage();
+    saveNgramsState();
   }
   
   function sortNgramsRows() {
@@ -1348,26 +1476,23 @@
   document.getElementById('ngramsQuery').addEventListener('keydown', e => { 
     if (e.key === 'Enter' && ngramsSelectedSegments.size > 0) buildNgramsComparison(); 
   });
-  document.getElementById('ngramsNgramMode').addEventListener('change', () => {
-    if (ngramsSelectedSegments.size > 0) buildNgramsComparison();
-  });
-  document.getElementById('ngramsDisplayMode').addEventListener('change', () => {
-    if (ngramsAllRows.length > 0 && ngramsAllRows[0].hasOwnProperty('seg0_count')) {
-      renderNgramsComparisonPage();
-    }
-  });
-  document.getElementById('ngramsMatchMode').addEventListener('change', () => {
-    if (ngramsSelectedSegments.size > 0) buildNgramsComparison();
-  });
+  document.getElementById('ngramsQuery').addEventListener('input', checkNgramsPendingChanges);
+  document.getElementById('ngramsNgramMode').addEventListener('change', checkNgramsPendingChanges);
+  document.getElementById('ngramsDisplayMode').addEventListener('change', checkNgramsPendingChanges);
+  document.getElementById('ngramsMatchMode').addEventListener('change', checkNgramsPendingChanges);
 
-  // Auto-detect regex patterns
+  // Segments tab controls - track changes
   q.addEventListener('input', () => {
     const val = q.value;
     const hasRegexChars = /[.*+?^${}()|[\]\\]/.test(val);
     if (hasRegexChars && matchMode.value === 'exact') {
       matchMode.value = 'regex';
     }
+    checkSegmentsPendingChanges();
   });
+  ngramMode.addEventListener('change', checkSegmentsPendingChanges);
+  gran.addEventListener('change', checkSegmentsPendingChanges);
+  matchMode.addEventListener('change', checkSegmentsPendingChanges);
 
   // initial state
   gran.value = 'play';
