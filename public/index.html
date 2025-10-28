@@ -377,19 +377,35 @@
     <details open>
       <summary class="sr"><strong>Select Segments to Compare</strong></summary>
       <div style="margin-bottom: 0.75rem;">
-        <p class="muted" style="margin: 0.5rem 0;">Select plays, acts, scenes, genres, or characters to compare their n-gram frequencies.</p>
-        <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 0.75rem;">
-          <div style="flex: 1; min-width: 200px;">
-            <strong>Plays</strong>
-            <div id="ngramsPlaySelector" style="max-height: 200px; overflow-y: auto; border: 1px solid var(--border); padding: 0.5rem; border-radius: 4px; margin-top: 0.25rem;"></div>
+        <p class="muted" style="margin: 0.5rem 0;">Search for and select plays, acts, scenes, genres, or characters to compare their n-gram frequencies.</p>
+        <div style="display: flex; gap: 1rem; margin-top: 0.75rem;">
+          <!-- Left column: Search and add segments -->
+          <div style="flex: 1; min-width: 300px;">
+            <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem; align-items: center;">
+              <input type="text" id="segmentSearchInput" placeholder="Search segments..." style="flex: 1; padding: 0.5rem;">
+              <select id="segmentTypeFilter" style="padding: 0.5rem;">
+                <option value="all">All types</option>
+                <option value="play">Plays</option>
+                <option value="genre">Genres</option>
+                <option value="act">Acts</option>
+                <option value="scene">Scenes</option>
+                <option value="character">Characters</option>
+              </select>
+            </div>
+            <div id="availableSegmentsList" style="max-height: 400px; overflow-y: auto; border: 1px solid var(--border); padding: 0.5rem; border-radius: 4px; background: white;">
+              <p class="muted" style="text-align: center; padding: 2rem;">Type to search for segments...</p>
+            </div>
           </div>
-          <div style="flex: 1; min-width: 200px;">
-            <strong>Genres</strong>
-            <div id="ngramsGenreSelector" style="border: 1px solid var(--border); padding: 0.5rem; border-radius: 4px; margin-top: 0.25rem;"></div>
-          </div>
-          <div style="flex: 1; min-width: 200px;">
-            <strong>Characters (top 20 by word count)</strong>
-            <div id="ngramsCharacterSelector" style="max-height: 200px; overflow-y: auto; border: 1px solid var(--border); padding: 0.5rem; border-radius: 4px; margin-top: 0.25rem;"></div>
+          
+          <!-- Right column: Selected segments -->
+          <div style="flex: 1; min-width: 300px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <strong>Selected Segments (<span id="selectedSegmentsCount">0</span>)</strong>
+              <button id="clearAllSegments" style="padding: 0.3rem 0.6rem; font-size: 0.9rem;">Clear All</button>
+            </div>
+            <div id="selectedSegmentsList" style="max-height: 400px; overflow-y: auto; border: 1px solid var(--border); padding: 0.5rem; border-radius: 4px; background: white;">
+              <p class="muted" style="text-align: center; padding: 2rem;">No segments selected</p>
+            </div>
           </div>
         </div>
       </div>
@@ -514,66 +530,215 @@
   }
   renderPlayFilter();
   
-  // Initialize ngrams selectors
-  function initNgramsSelectors() {
-    const playSelector = document.getElementById('ngramsPlaySelector');
-    const genreSelector = document.getElementById('ngramsGenreSelector');
-    const characterSelector = document.getElementById('ngramsCharacterSelector');
+  // Build all available segments list
+  let allAvailableSegments = [];
+  
+  function buildAvailableSegments() {
+    allAvailableSegments = [];
     
-    // Play selector
+    // Add plays
     plays.forEach(p => {
-      const div = document.createElement('div');
-      div.innerHTML = `<label><input type="checkbox" class="ngram-segment-cb" data-type="play" data-id="${p.play_id}" data-label="${p.title}"> ${p.title}</label>`;
-      playSelector.appendChild(div);
+      allAvailableSegments.push({
+        type: 'play',
+        id: p.play_id,
+        label: p.title,
+        meta: `${p.genre || 'Unknown'}, ${p.first_performance_year || 'Unknown year'}`,
+        searchText: `${p.title} ${p.genre || ''} play`.toLowerCase()
+      });
     });
     
-    // Genre selector
+    // Add genres
     const genres = [...new Set(plays.map(p => p.genre).filter(Boolean))];
     genres.forEach(g => {
-      const div = document.createElement('div');
-      div.innerHTML = `<label><input type="checkbox" class="ngram-segment-cb" data-type="genre" data-id="${g}" data-label="${g}"> ${g}</label>`;
-      genreSelector.appendChild(div);
+      allAvailableSegments.push({
+        type: 'genre',
+        id: g,
+        label: g,
+        meta: `Genre`,
+        searchText: `${g} genre`.toLowerCase()
+      });
     });
     
-    // Character selector (top 20 by word count)
-    const topChars = [...characters]
-      .sort((a, b) => (b.total_words_spoken || 0) - (a.total_words_spoken || 0))
-      .slice(0, 20);
-    topChars.forEach(c => {
-      const div = document.createElement('div');
-      const label = `${c.name} (${c.play_title})`;
-      div.innerHTML = `<label><input type="checkbox" class="ngram-segment-cb" data-type="character" data-id="${c.character_id}" data-label="${label}"> ${label}</label>`;
-      characterSelector.appendChild(div);
+    // Add acts
+    const acts = new Map();
+    chunks.forEach(chunk => {
+      const key = `${chunk.play_id}:${chunk.act}`;
+      if (!acts.has(key)) {
+        const play = playsById.get(chunk.play_id);
+        acts.set(key, {
+          type: 'act',
+          id: key,
+          label: `${play.title} - Act ${chunk.act}`,
+          meta: `Act`,
+          searchText: `${play.title} act ${chunk.act}`.toLowerCase()
+        });
+      }
+    });
+    allAvailableSegments.push(...acts.values());
+    
+    // Add scenes
+    chunks.forEach(chunk => {
+      const play = playsById.get(chunk.play_id);
+      allAvailableSegments.push({
+        type: 'scene',
+        id: chunk.scene_id,
+        label: `${play.title} - Act ${chunk.act}, Scene ${chunk.scene}`,
+        meta: `${chunk.total_words || 0} words`,
+        searchText: `${play.title} act ${chunk.act} scene ${chunk.scene}`.toLowerCase()
+      });
     });
     
-    // Add change listeners
-    document.querySelectorAll('.ngram-segment-cb').forEach(cb => {
-      cb.addEventListener('change', () => {
-        updateNgramsSelectedSegments();
+    // Add all characters (sorted by word count)
+    const sortedChars = [...characters].sort((a, b) => (b.total_words_spoken || 0) - (a.total_words_spoken || 0));
+    sortedChars.forEach(c => {
+      allAvailableSegments.push({
+        type: 'character',
+        id: c.character_id,
+        label: c.name,
+        meta: `${c.play_title}, ${c.total_words_spoken || 0} words`,
+        searchText: `${c.name} ${c.play_title} character`.toLowerCase()
+      });
+    });
+  }
+  
+  buildAvailableSegments();
+  
+  // Render available segments based on search
+  function renderAvailableSegments() {
+    const searchInput = document.getElementById('segmentSearchInput');
+    const typeFilter = document.getElementById('segmentTypeFilter');
+    const container = document.getElementById('availableSegmentsList');
+    
+    const searchTerm = searchInput.value.toLowerCase().trim();
+    const typeValue = typeFilter.value;
+    
+    // Filter segments
+    let filtered = allAvailableSegments.filter(seg => {
+      // Type filter
+      if (typeValue !== 'all' && seg.type !== typeValue) return false;
+      
+      // Search filter
+      if (searchTerm && !seg.searchText.includes(searchTerm)) return false;
+      
+      // Don't show already selected segments
+      const isSelected = Array.from(ngramsSelectedSegments).some(selected => 
+        selected.type === seg.type && String(selected.id) === String(seg.id)
+      );
+      if (isSelected) return false;
+      
+      return true;
+    });
+    
+    // Limit to 100 results for performance
+    if (filtered.length > 100) {
+      filtered = filtered.slice(0, 100);
+    }
+    
+    if (filtered.length === 0) {
+      container.innerHTML = '<p class="muted" style="text-align: center; padding: 2rem;">No segments found</p>';
+      return;
+    }
+    
+    container.innerHTML = '';
+    filtered.forEach(seg => {
+      const div = document.createElement('div');
+      div.style.cssText = 'display: flex; justify-content: space-between; align-items: center; padding: 0.4rem; margin-bottom: 0.25rem; border-bottom: 1px solid var(--border);';
+      
+      const typeLabel = seg.type.charAt(0).toUpperCase() + seg.type.slice(1);
+      div.innerHTML = `
+        <div style="flex: 1; min-width: 0;">
+          <div style="font-weight: 500;">${seg.label}</div>
+          <div class="muted" style="font-size: 0.85rem;">${seg.meta}</div>
+        </div>
+        <button class="add-segment-btn" data-type="${seg.type}" data-id="${seg.id}" data-label="${seg.label}" style="padding: 0.25rem 0.6rem; font-size: 0.85rem; white-space: nowrap;">Add</button>
+      `;
+      container.appendChild(div);
+    });
+    
+    // Add click handlers
+    container.querySelectorAll('.add-segment-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const segType = btn.dataset.type;
+        let segId = btn.dataset.id;
+        
+        // Parse numeric IDs for appropriate types
+        if (segType === 'play' || segType === 'character' || segType === 'scene') {
+          segId = parseInt(segId);
+        }
+        
+        ngramsSelectedSegments.add({
+          type: segType,
+          id: segId,
+          label: btn.dataset.label
+        });
+        
+        renderAvailableSegments();
+        renderSelectedSegments();
         checkNgramsPendingChanges();
       });
     });
   }
-  initNgramsSelectors();
   
-  function updateNgramsSelectedSegments() {
-    ngramsSelectedSegments.clear();
-    document.querySelectorAll('.ngram-segment-cb:checked').forEach(cb => {
-      const segType = cb.dataset.type;
-      let segId = cb.dataset.id;
+  // Render selected segments
+  function renderSelectedSegments() {
+    const container = document.getElementById('selectedSegmentsList');
+    const countSpan = document.getElementById('selectedSegmentsCount');
+    
+    countSpan.textContent = ngramsSelectedSegments.size;
+    
+    if (ngramsSelectedSegments.size === 0) {
+      container.innerHTML = '<p class="muted" style="text-align: center; padding: 2rem;">No segments selected</p>';
+      return;
+    }
+    
+    container.innerHTML = '';
+    const sortedSegments = Array.from(ngramsSelectedSegments).sort((a, b) => a.label.localeCompare(b.label));
+    
+    sortedSegments.forEach(seg => {
+      const div = document.createElement('div');
+      div.style.cssText = 'display: flex; justify-content: space-between; align-items: center; padding: 0.4rem; margin-bottom: 0.25rem; border-bottom: 1px solid var(--border);';
       
-      // Parse numeric IDs for plays and characters
-      if (segType === 'play' || segType === 'character') {
-        segId = parseInt(segId);
-      }
+      const typeLabel = seg.type.charAt(0).toUpperCase() + seg.type.slice(1);
+      div.innerHTML = `
+        <div style="flex: 1; min-width: 0;">
+          <div style="font-weight: 500;">${seg.label}</div>
+          <div class="muted" style="font-size: 0.85rem;">${typeLabel}</div>
+        </div>
+        <button class="remove-segment-btn" style="padding: 0.25rem 0.6rem; font-size: 0.85rem; background: #dc3545; border-color: #dc3545;">Remove</button>
+      `;
+      container.appendChild(div);
       
-      ngramsSelectedSegments.add({
-        type: segType,
-        id: segId,
-        label: cb.dataset.label
+      // Add remove handler
+      div.querySelector('.remove-segment-btn').addEventListener('click', () => {
+        ngramsSelectedSegments.delete(seg);
+        renderAvailableSegments();
+        renderSelectedSegments();
+        checkNgramsPendingChanges();
       });
     });
   }
+  
+  // Initialize segment selectors
+  function initSegmentSelectors() {
+    const searchInput = document.getElementById('segmentSearchInput');
+    const typeFilter = document.getElementById('segmentTypeFilter');
+    const clearAllBtn = document.getElementById('clearAllSegments');
+    
+    searchInput.addEventListener('input', renderAvailableSegments);
+    typeFilter.addEventListener('change', renderAvailableSegments);
+    
+    clearAllBtn.addEventListener('click', () => {
+      ngramsSelectedSegments.clear();
+      renderAvailableSegments();
+      renderSelectedSegments();
+      checkNgramsPendingChanges();
+    });
+    
+    // Initial render
+    renderSelectedSegments();
+  }
+  
+  initSegmentSelectors();
   
   function selectedPlayIds() {
     const ids = [];
@@ -581,6 +746,7 @@
     return new Set(ids);
   }
   function fmtPct(num) { return (num*100).toFixed(2) + '%'; }
+
 
   // Pagination state
   let segmentsCurrentPage = 1;
@@ -923,26 +1089,28 @@
     const ngramModeVal = ngramMode.value;
     const n = parseInt(ngramModeVal);
     
-    // First, uncheck all segment checkboxes
-    document.querySelectorAll('.ngram-segment-cb').forEach(cb => cb.checked = false);
+    // Clear current selections and add the appropriate segment
+    ngramsSelectedSegments.clear();
     
-    // Then check the appropriate segment based on granularity
-    let segmentFound = false;
+    let segmentToAdd = null;
     
     if (granVal === 'play') {
       const playId = rowData.play_id;
-      const cb = document.querySelector(`.ngram-segment-cb[data-type="play"][data-id="${playId}"]`);
-      if (cb) {
-        cb.checked = true;
-        segmentFound = true;
+      const play = playsById.get(playId);
+      if (play) {
+        segmentToAdd = {
+          type: 'play',
+          id: playId,
+          label: play.title
+        };
       }
     } else if (granVal === 'genre') {
       const genre = rowData.genre;
-      const cb = document.querySelector(`.ngram-segment-cb[data-type="genre"][data-id="${genre}"]`);
-      if (cb) {
-        cb.checked = true;
-        segmentFound = true;
-      }
+      segmentToAdd = {
+        type: 'genre',
+        id: genre,
+        label: genre
+      };
     } else if (granVal === 'character') {
       const charName = rowData.name;
       const playTitle = rowData.play_title;
@@ -951,31 +1119,35 @@
       for (const [id, c] of charactersById) {
         if (c.name === charName && c.play_title === playTitle) {
           charId = id;
+          segmentToAdd = {
+            type: 'character',
+            id: charId,
+            label: `${charName} (${playTitle})`
+          };
           break;
         }
       }
-      if (charId) {
-        const cb = document.querySelector(`.ngram-segment-cb[data-type="character"][data-id="${charId}"]`);
-        if (cb) {
-          cb.checked = true;
-          segmentFound = true;
-        }
-      }
     } else if (granVal === 'act') {
-      // For act, check the play
       const playId = rowData.play_id;
-      const cb = document.querySelector(`.ngram-segment-cb[data-type="play"][data-id="${playId}"]`);
-      if (cb) {
-        cb.checked = true;
-        segmentFound = true;
+      const actNum = rowData.act;
+      const play = playsById.get(playId);
+      if (play) {
+        segmentToAdd = {
+          type: 'act',
+          id: `${playId}:${actNum}`,
+          label: `${play.title} - Act ${actNum}`
+        };
       }
     } else if (granVal === 'scene') {
-      // For scene, check the play
-      const playId = rowData.play_id;
-      const cb = document.querySelector(`.ngram-segment-cb[data-type="play"][data-id="${playId}"]`);
-      if (cb) {
-        cb.checked = true;
-        segmentFound = true;
+      const sceneId = rowData.scene_id;
+      const chunk = chunkById.get(sceneId);
+      if (chunk) {
+        const play = playsById.get(chunk.play_id);
+        segmentToAdd = {
+          type: 'scene',
+          id: sceneId,
+          label: `${play.title} - Act ${chunk.act}, Scene ${chunk.scene}`
+        };
       }
     }
     
@@ -988,9 +1160,11 @@
     segmentsTab.style.display = 'none';
     ngramsTab.style.display = 'block';
     
-    // Update selected segments and build the comparison table
-    if (segmentFound) {
-      updateNgramsSelectedSegments();
+    // Add the segment and build the comparison table
+    if (segmentToAdd) {
+      ngramsSelectedSegments.add(segmentToAdd);
+      renderAvailableSegments();
+      renderSelectedSegments();
       buildNgramsComparison();
     }
     
@@ -1212,10 +1386,9 @@
 
   // Build ngrams comparison table
   function buildNgramsComparison() {
-    updateNgramsSelectedSegments();
-    
     if (ngramsSelectedSegments.size === 0) {
       ngramTableContainer.innerHTML = '<p class="muted">Select at least one segment to compare.</p>';
+      document.getElementById('ngramsPagination').style.display = 'none';
       return;
     }
     
@@ -1281,6 +1454,49 @@
             }
           }
           if (total > 0) freqMap.set(token, total);
+        }
+      } else if (seg.type === 'act') {
+        // Parse act ID (format: "playId:actNum")
+        const [playIdStr, actNumStr] = seg.id.split(':');
+        const playId = parseInt(playIdStr);
+        const actNum = parseInt(actNumStr);
+        
+        // Calculate total words for this act
+        for (const chunk of chunks) {
+          if (chunk.play_id === playId && chunk.act === actNum) {
+            totalWords += chunk.total_words || 0;
+          }
+        }
+        
+        // Use scene-level index
+        for (const [token, postings] of Object.entries(sceneIdx)) {
+          let total = 0;
+          if (Array.isArray(postings)) {
+            for (const posting of postings) {
+              const [scene_id, count] = posting;
+              const chunk = chunkById.get(scene_id);
+              if (chunk && chunk.play_id === playId && chunk.act === actNum) {
+                total += count;
+              }
+            }
+          }
+          if (total > 0) freqMap.set(token, total);
+        }
+      } else if (seg.type === 'scene') {
+        const sceneId = seg.id;
+        const chunk = chunkById.get(sceneId);
+        totalWords = chunk ? chunk.total_words : 0;
+        
+        // Use scene-level index
+        for (const [token, postings] of Object.entries(sceneIdx)) {
+          if (Array.isArray(postings)) {
+            for (const posting of postings) {
+              const [scene_id, count] = posting;
+              if (scene_id === sceneId) {
+                freqMap.set(token, count);
+              }
+            }
+          }
         }
       } else if (seg.type === 'character') {
         const charId = seg.id;
