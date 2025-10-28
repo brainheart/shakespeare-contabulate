@@ -700,13 +700,15 @@
       for (const [scene_id, count] of allPostings){
         const m = chunkById.get(scene_id); if (!m || !playsSel.has(m.play_id)) continue;
         const d = denomFor(n,'scene',m);
-        rows.push({ play_title: m.play_title, genre:m.genre, play_id:m.play_id, act:m.act, scene:m.scene, total_words:m.total_words||0, count, pct: d? count/d : 0, scene_id });
+        const totalWords = m.total_words || 0;
+        const ngramCount = Math.max(0, totalWords - (n - 1));
+        rows.push({ play_title: m.play_title, genre:m.genre, play_id:m.play_id, act:m.act, scene:m.scene, total_words:totalWords, ngram_count:ngramCount, count, pct: d? count/d : 0, scene_id });
       }
       setHeaders([
         {key:'play_title', label:'Play', defaultDir:'asc'},
         {key:'act', label:'Act'},
         {key:'scene', label:'Scene'},
-        {key:'total_words', label: n===1 ? 'Word count' : n===2 ? 'Bigram count' : 'Trigram count'},
+        {key:'ngram_count', label: n===1 ? 'Word count' : n===2 ? 'Bigram count' : 'Trigram count'},
         {key:'count', label:'Hits'},
         {key:'pct', label:`% of ${n===1?'scene words':n===2?'scene bigrams':'scene trigrams'}`},
       ]);
@@ -727,12 +729,13 @@
         const play = playsById.get(pid);
         const denom = denomFor(n,'act',{play_id:pid,act:actNum});
         const total_words = actWordCounts.get(k) || 0;
-        rows.push({ play_title: play.title, genre:play.genre, play_id:pid, act:actNum, total_words, count, pct: denom? count/denom : 0 });
+        const ngramCount = Math.max(0, total_words - (n - 1));
+        rows.push({ play_title: play.title, genre:play.genre, play_id:pid, act:actNum, total_words, ngram_count:ngramCount, count, pct: denom? count/denom : 0 });
       }
       setHeaders([
         {key:'play_title', label:'Play', defaultDir:'asc'},
         {key:'act', label:'Act'},
-        {key:'total_words', label: n===1 ? 'Word count' : n===2 ? 'Bigram count' : 'Trigram count'},
+        {key:'ngram_count', label: n===1 ? 'Word count' : n===2 ? 'Bigram count' : 'Trigram count'},
         {key:'count', label:'Hits'},
         {key:'pct', label:`% of ${n===1?'act words':n===2?'act bigrams':'act trigrams'}`},
       ]);
@@ -750,14 +753,15 @@
         const denom = denomFor(n,'play',{play_id:pid});
         const num_lines = p.total_lines ?? 0;
         const total_words = p.total_words ?? 0;
-        rows.push({ play_id:pid, title:p.title, genre:p.genre, first_year:p.first_performance_year||'', num_lines, total_words, count, pct: denom? count/denom : 0 });
+        const ngramCount = Math.max(0, total_words - (n - 1));
+        rows.push({ play_id:pid, title:p.title, genre:p.genre, first_year:p.first_performance_year||'', num_lines, total_words, ngram_count:ngramCount, count, pct: denom? count/denom : 0 });
       }
       setHeaders([
         {key:'title', label:'Play', defaultDir:'asc'},
         {key:'genre', label:'Genre', defaultDir:'asc'},
         {key:'first_year', label:'Year'},
         {key:'num_lines', label:'# lines'},
-        {key:'total_words', label: n===1 ? 'Word count' : n===2 ? 'Bigram count' : 'Trigram count'},
+        {key:'ngram_count', label: n===1 ? 'Word count' : n===2 ? 'Bigram count' : 'Trigram count'},
         {key:'count', label:'Hits'},
         {key:'pct', label:`% of ${n===1?'play words':n===2?'play bigrams':'play trigrams'}`},
       ]);
@@ -777,11 +781,12 @@
       for (const [genre,count] of tmp.entries()){
         const totalWords = genreTotals.get(genre) || 0;
         const denom = Math.max(0, totalWords - (n-1));
-        rows.push({ genre, total_words: totalWords, count, pct: denom? count/denom : 0 });
+        const ngramCount = Math.max(0, totalWords - (n - 1));
+        rows.push({ genre, total_words: totalWords, ngram_count:ngramCount, count, pct: denom? count/denom : 0 });
       }
       setHeaders([
         {key:'genre', label:'Genre', defaultDir:'asc'},
-        {key:'total_words', label: n===1 ? 'Word count' : n===2 ? 'Bigram count' : 'Trigram count'},
+        {key:'ngram_count', label: n===1 ? 'Word count' : n===2 ? 'Bigram count' : 'Trigram count'},
         {key:'count', label:'Hits'},
         {key:'pct', label:`% of ${n===1?'genre words':n===2?'genre bigrams':'genre trigrams'}`},
       ]);
@@ -793,12 +798,14 @@
         const c = charactersById.get(char_id);
         if (!c || !playsSel.has(c.play_id)) continue;
         const denom = denomFor(n,'character',c);
-        rows.push({ play_title:c.play_title, name:c.name, total_words_spoken:c.total_words_spoken||0, count, pct: denom? count/denom : 0 });
+        const totalWords = c.total_words_spoken || 0;
+        const ngramCount = Math.max(0, totalWords - (n - 1));
+        rows.push({ play_title:c.play_title, name:c.name, total_words_spoken:totalWords, ngram_count:ngramCount, count, pct: denom? count/denom : 0 });
       }
       setHeaders([
         {key:'play_title', label:'Play', defaultDir:'asc'},
         {key:'name', label:'Character', defaultDir:'asc'},
-        {key:'total_words_spoken', label: n===1 ? 'Word count' : n===2 ? 'Bigram count' : 'Trigram count'},
+        {key:'ngram_count', label: n===1 ? 'Word count' : n===2 ? 'Bigram count' : 'Trigram count'},
         {key:'count', label:'Hits'},
         {key:'pct', label:`% of character ${n===1?'words':n===2?'bigrams':'trigrams'}`},
       ]);
