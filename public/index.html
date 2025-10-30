@@ -1071,6 +1071,9 @@
       tbody.appendChild(tr);
     }
     
+    // Update sort indicators
+    updateSortIndicators();
+    
     // Update pagination controls
     const paginationDiv = document.getElementById('segmentsPagination');
     paginationDiv.style.display = segmentsAllRows.length > 25 ? 'flex' : 'none';
