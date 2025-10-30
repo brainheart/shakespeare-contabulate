@@ -594,8 +594,8 @@
       allAvailableSegments.push({
         type: 'character',
         id: c.character_id,
-        label: c.name,
-        meta: `${c.play_title}, ${c.total_words_spoken || 0} words`,
+        label: `${c.name} (${c.play_title})`,
+        meta: `${c.total_words_spoken || 0} words`,
         searchText: `${c.name} ${c.play_title} character`.toLowerCase()
       });
     });
