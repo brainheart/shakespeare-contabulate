@@ -279,6 +279,15 @@
       0%, 100% { opacity: 1; }
       50% { opacity: 0.8; }
     }
+    .line-text {
+      font-style: italic;
+      max-width: 600px;
+      line-height: 1.5;
+    }
+    .line-text .hit {
+      font-style: normal;
+      font-weight: 600;
+    }
   </style>
 </head>
 <body>
@@ -288,6 +297,7 @@
   <div class="tabs">
     <button class="tab-btn active" data-tab="segments">Rows are Corpus Segments</button>
     <button class="tab-btn" data-tab="ngrams">Rows are Ngrams</button>
+    <button class="tab-btn" data-tab="lines">Rows are Lines</button>
   </div>
 
   <div class="tab-content" id="segmentsTab">
@@ -433,6 +443,54 @@
     </div>
   </div>
 
+  <div class="tab-content" id="linesTab" style="display: none;">
+    <div class="controls">
+      <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; font-size: 1.05rem;">
+        <span style="font-weight: 600;">Show lines with</span>
+        <select id="linesNgramMode" style="font-size: 1rem;">
+          <option value="1" selected>single word</option>
+          <option value="2">bigram</option>
+          <option value="3">trigram</option>
+        </select>
+        <span style="font-weight: 600;">matching the</span>
+        <select id="linesMatchMode" style="font-size: 1rem;">
+          <option value="exact">exact term</option>
+          <option value="regex">regex pattern</option>
+        </select>
+        <input type="text" id="linesQuery" placeholder="e.g., death, ^love|death$, to be" value="death" style="flex: 1; min-width: 20rem; font-size: 1rem; padding: 0.5rem;">
+        <button id="linesRefresh" style="font-size: 1rem; padding: 0.6rem 1.2rem;">Refresh</button>
+      </div>
+    </div>
+
+    <details>
+      <summary class="sr"><strong>Filters & Display</strong></summary>
+      <div id="linesPlaysFilter"></div>
+    </details>
+
+    <table id="linesResults">
+      <thead><tr id="linesHeadRow"></tr></thead>
+      <tbody id="linesTableBody"></tbody>
+    </table>
+    
+    <div class="pagination" id="linesPagination" style="display: none;">
+      <button id="linesFirstPage">First</button>
+      <button id="linesPrevPage">Prev</button>
+      <span class="page-info" id="linesPageInfo">Page 1 of 1</span>
+      <button id="linesNextPage">Next</button>
+      <button id="linesLastPage">Last</button>
+      <label>
+        Rows per page:
+        <select id="linesPageSize">
+          <option value="25">25</option>
+          <option value="50" selected>50</option>
+          <option value="100">100</option>
+          <option value="250">250</option>
+        </select>
+      </label>
+      <span class="page-info" id="linesTotalInfo"></span>
+    </div>
+  </div>
+
 <script>
 (async function() {
   const q = document.getElementById('q');
@@ -471,6 +529,7 @@
   const tabBtns = document.querySelectorAll('.tab-btn');
   const segmentsTab = document.getElementById('segmentsTab');
   const ngramsTab = document.getElementById('ngramsTab');
+  const linesTab = document.getElementById('linesTab');
   
   tabBtns.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -478,12 +537,16 @@
       tabBtns.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       
+      segmentsTab.style.display = 'none';
+      ngramsTab.style.display = 'none';
+      linesTab.style.display = 'none';
+      
       if (targetTab === 'segments') {
         segmentsTab.style.display = 'block';
-        ngramsTab.style.display = 'none';
-      } else {
-        segmentsTab.style.display = 'none';
+      } else if (targetTab === 'ngrams') {
         ngramsTab.style.display = 'block';
+      } else if (targetTab === 'lines') {
+        linesTab.style.display = 'block';
       }
     });
   });
@@ -494,7 +557,7 @@
     return res.json();
   }
 
-  let chunks=[], tokens={}, tokens2={}, tokens3={}, plays=[], characters=[], tokensChar={}, tokensChar2={}, tokensChar3={};
+  let chunks=[], tokens={}, tokens2={}, tokens3={}, plays=[], characters=[], tokensChar={}, tokensChar2={}, tokensChar3={}, allLines=[];
   try {
     [chunks, tokens, tokens2, tokens3, plays, characters, tokensChar, tokensChar2, tokensChar3] = await Promise.all([
       loadJSON('data/chunks.json'),
@@ -510,6 +573,13 @@
   } catch(e) {
     console.error('Failed to load data:', e);
     return;
+  }
+
+  // Load line data
+  try {
+    allLines = await loadJSON('lines/all_lines.json');
+  } catch(e) {
+    console.warn('Lines data not available:', e);
   }
 
   const chunkById = new Map(chunks.map(r => [r.scene_id, r]));
@@ -1720,6 +1790,308 @@
   ngramMode.addEventListener('change', checkSegmentsPendingChanges);
   gran.addEventListener('change', checkSegmentsPendingChanges);
   matchMode.addEventListener('change', checkSegmentsPendingChanges);
+
+  // Lines tab state
+  let linesCurrentPage = 1;
+  let linesPageSize = 50;
+  let linesAllRows = [];
+  let linesSortKey = 'line_num';
+  let linesSortDir = 'asc';
+  let linesPendingChanges = false;
+  let lastLinesState = {
+    query: '',
+    ngramMode: '',
+    matchMode: ''
+  };
+
+  // Render play filter for lines tab
+  function renderLinesPlayFilter() {
+    const container = document.getElementById('linesPlaysFilter');
+    container.innerHTML = '';
+    for (const p of plays) {
+      const id = `lines_play_${p.play_id}`;
+      const div = document.createElement('div');
+      div.innerHTML = `<label><input type="checkbox" id="${id}" data-play="${p.play_id}" checked> ${p.title} <span class="muted">(${p.genre || ''}${p.first_performance_year ? ', ' + p.first_performance_year : ''})</span></label>`;
+      container.appendChild(div);
+    }
+  }
+  renderLinesPlayFilter();
+
+  function selectedLinesPlayIds() {
+    const ids = [];
+    document.getElementById('linesPlaysFilter').querySelectorAll('input[type="checkbox"]').forEach(cb => { 
+      if (cb.checked) ids.push(Number(cb.dataset.play)); 
+    });
+    return new Set(ids);
+  }
+
+  function buildLinesRows(query) {
+    const isRegex = (document.getElementById('linesMatchMode').value === 'regex');
+    const n = parseInt(document.getElementById('linesNgramMode').value);
+    const playsSel = selectedLinesPlayIds();
+
+    if (!allLines || allLines.length === 0) {
+      return null;
+    }
+
+    const rows = [];
+    
+    // Build search pattern
+    let searchPattern;
+    if (isRegex) {
+      try {
+        searchPattern = new RegExp(query, 'i');
+      } catch (e) {
+        return null;
+      }
+    } else {
+      // For exact term matching, create tokens from the line and check for n-gram match
+      const queryTokens = query.trim().toLowerCase().split(/\s+/).filter(Boolean).slice(0, n);
+      const queryNgram = queryTokens.join(' ');
+      searchPattern = { type: 'exact', ngram: queryNgram, n };
+    }
+
+    // Search through lines
+    for (const line of allLines) {
+      if (!playsSel.has(line.play_id)) continue;
+
+      let matches = false;
+      let highlightedText = line.text;
+
+      if (isRegex) {
+        matches = searchPattern.test(line.text);
+        if (matches) {
+          highlightedText = line.text.replace(searchPattern, match => `<span class="hit">${match}</span>`);
+        }
+      } else {
+        // Tokenize the line
+        const lineTokens = line.text.toLowerCase()
+          .replace(/[.,;:!?()[\]{}"']/g, ' ')
+          .split(/\s+/)
+          .filter(Boolean);
+        
+        // Check for n-gram match
+        for (let i = 0; i <= lineTokens.length - n; i++) {
+          const ngram = lineTokens.slice(i, i + n).join(' ');
+          if (ngram === searchPattern.ngram) {
+            matches = true;
+            // Highlight the match in the original text
+            const matchWords = lineTokens.slice(i, i + n);
+            let tempText = line.text;
+            const regex = new RegExp(matchWords.map(w => '\\b' + w + '\\b').join('\\s+'), 'gi');
+            highlightedText = tempText.replace(regex, match => `<span class="hit">${match}</span>`);
+            break;
+          }
+        }
+      }
+
+      if (matches) {
+        const play = playsById.get(line.play_id);
+        rows.push({
+          play_title: play ? play.title : 'Unknown',
+          play_id: line.play_id,
+          act: line.act,
+          scene: line.scene,
+          line_num: line.line_num,
+          speaker: line.speaker || '',
+          text: highlightedText
+        });
+      }
+    }
+
+    return rows;
+  }
+
+  function setLinesHeaders() {
+    const theadRow = document.getElementById('linesHeadRow');
+    const cols = [
+      { key: 'play_title', label: 'Play', defaultDir: 'asc' },
+      { key: 'act', label: 'Act' },
+      { key: 'scene', label: 'Scene' },
+      { key: 'line_num', label: 'Line #' },
+      { key: 'speaker', label: 'Speaker', defaultDir: 'asc' },
+      { key: 'text', label: 'Text', defaultDir: 'asc' }
+    ];
+
+    theadRow.innerHTML = '';
+    cols.forEach(c => {
+      const th = document.createElement('th');
+      th.textContent = c.label;
+      th.dataset.key = c.key;
+      if (c.key !== 'text') {
+        th.title = 'Click to sort';
+        th.style.cursor = 'pointer';
+        th.addEventListener('click', () => {
+          if (linesSortKey === c.key) {
+            linesSortDir = (linesSortDir === 'asc' ? 'desc' : 'asc');
+          } else {
+            linesSortKey = c.key;
+            linesSortDir = c.defaultDir || 'desc';
+          }
+          linesAllRows = sortLinesRows(linesAllRows);
+          linesCurrentPage = 1;
+          renderLinesPage();
+        });
+      }
+      theadRow.appendChild(th);
+    });
+    updateLinesSortIndicators();
+  }
+
+  function sortLinesRows(rows) {
+    if (!linesSortKey || !rows) return rows;
+    rows.sort((a, b) => {
+      const av = a[linesSortKey];
+      const bv = b[linesSortKey];
+      if (typeof av === 'string' || typeof bv === 'string') {
+        return linesSortDir === 'asc' ? String(av).localeCompare(String(bv)) : String(bv).localeCompare(String(av));
+      }
+      return linesSortDir === 'asc' ? (av - bv) : (bv - av);
+    });
+    return rows;
+  }
+
+  function updateLinesSortIndicators() {
+    const theadRow = document.getElementById('linesHeadRow');
+    theadRow.querySelectorAll('th').forEach(th => {
+      th.classList.remove('sorted-asc', 'sorted-desc');
+      if (th.dataset.key === linesSortKey) {
+        th.classList.add(linesSortDir === 'asc' ? 'sorted-asc' : 'sorted-desc');
+      }
+    });
+  }
+
+  function renderLinesPage() {
+    const tbody = document.getElementById('linesTableBody');
+    const totalPages = getTotalPages(linesAllRows.length, linesPageSize);
+    const paginatedRows = paginateArray(linesAllRows, linesCurrentPage, linesPageSize);
+
+    tbody.innerHTML = '';
+    for (const row of paginatedRows) {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${row.play_title}</td>
+        <td>${row.act}</td>
+        <td>${row.scene}</td>
+        <td>${row.line_num}</td>
+        <td>${row.speaker}</td>
+        <td class="line-text">${row.text}</td>
+      `;
+      tbody.appendChild(tr);
+    }
+
+    updateLinesSortIndicators();
+
+    const paginationDiv = document.getElementById('linesPagination');
+    paginationDiv.style.display = linesAllRows.length > 25 ? 'flex' : 'none';
+
+    document.getElementById('linesPageInfo').textContent = `Page ${linesCurrentPage} of ${totalPages}`;
+    document.getElementById('linesTotalInfo').textContent = `(${linesAllRows.length} total lines)`;
+
+    document.getElementById('linesFirstPage').disabled = linesCurrentPage === 1;
+    document.getElementById('linesPrevPage').disabled = linesCurrentPage === 1;
+    document.getElementById('linesNextPage').disabled = linesCurrentPage === totalPages;
+    document.getElementById('linesLastPage').disabled = linesCurrentPage === totalPages;
+  }
+
+  function doLinesSearch() {
+    const query = document.getElementById('linesQuery').value.trim();
+    if (!query) {
+      document.getElementById('linesTableBody').innerHTML = '';
+      document.getElementById('linesPagination').style.display = 'none';
+      return;
+    }
+
+    const rows = buildLinesRows(query);
+    if (!rows) {
+      document.getElementById('linesTableBody').innerHTML = '<tr><td colspan="6" class="warning">Invalid search or no data available.</td></tr>';
+      document.getElementById('linesPagination').style.display = 'none';
+      return;
+    }
+
+    if (rows.length === 0) {
+      document.getElementById('linesTableBody').innerHTML = '<tr><td colspan="6" class="muted">No lines matched.</td></tr>';
+      document.getElementById('linesPagination').style.display = 'none';
+      return;
+    }
+
+    linesAllRows = sortLinesRows(rows);
+    linesCurrentPage = 1;
+    setLinesHeaders();
+    renderLinesPage();
+    saveLinesState();
+  }
+
+  function checkLinesPendingChanges() {
+    const currentState = {
+      query: document.getElementById('linesQuery').value.trim(),
+      ngramMode: document.getElementById('linesNgramMode').value,
+      matchMode: document.getElementById('linesMatchMode').value
+    };
+
+    linesPendingChanges = 
+      currentState.query !== lastLinesState.query ||
+      currentState.ngramMode !== lastLinesState.ngramMode ||
+      currentState.matchMode !== lastLinesState.matchMode;
+
+    updateLinesRefreshButton();
+  }
+
+  function updateLinesRefreshButton() {
+    const btn = document.getElementById('linesRefresh');
+    if (linesPendingChanges) {
+      btn.classList.add('refresh-btn-pending');
+      btn.textContent = 'Refresh ⟳';
+    } else {
+      btn.classList.remove('refresh-btn-pending');
+      btn.textContent = 'Refresh';
+    }
+  }
+
+  function saveLinesState() {
+    lastLinesState = {
+      query: document.getElementById('linesQuery').value.trim(),
+      ngramMode: document.getElementById('linesNgramMode').value,
+      matchMode: document.getElementById('linesMatchMode').value
+    };
+    linesPendingChanges = false;
+    updateLinesRefreshButton();
+  }
+
+  // Lines tab event listeners
+  document.getElementById('linesRefresh').addEventListener('click', doLinesSearch);
+  document.getElementById('linesQuery').addEventListener('keydown', e => { if (e.key === 'Enter') doLinesSearch(); });
+  document.getElementById('linesQuery').addEventListener('input', checkLinesPendingChanges);
+  document.getElementById('linesNgramMode').addEventListener('change', checkLinesPendingChanges);
+  document.getElementById('linesMatchMode').addEventListener('change', checkLinesPendingChanges);
+
+  // Lines pagination controls
+  document.getElementById('linesFirstPage').addEventListener('click', () => {
+    linesCurrentPage = 1;
+    renderLinesPage();
+  });
+  document.getElementById('linesPrevPage').addEventListener('click', () => {
+    if (linesCurrentPage > 1) {
+      linesCurrentPage--;
+      renderLinesPage();
+    }
+  });
+  document.getElementById('linesNextPage').addEventListener('click', () => {
+    const totalPages = getTotalPages(linesAllRows.length, linesPageSize);
+    if (linesCurrentPage < totalPages) {
+      linesCurrentPage++;
+      renderLinesPage();
+    }
+  });
+  document.getElementById('linesLastPage').addEventListener('click', () => {
+    linesCurrentPage = getTotalPages(linesAllRows.length, linesPageSize);
+    renderLinesPage();
+  });
+  document.getElementById('linesPageSize').addEventListener('change', (e) => {
+    linesPageSize = parseInt(e.target.value);
+    linesCurrentPage = 1;
+    renderLinesPage();
+  });
 
   // initial state
   gran.value = 'play';

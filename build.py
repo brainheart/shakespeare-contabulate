@@ -172,13 +172,35 @@ def build(tei_dir: Path, out_dir: Path):
                 play_metadata_map[item["filename"]] = item
     
     plays=[]; scenes_all=[]; token_idx_all={}; token2_idx_all={}; token3_idx_all={}; characters_rows=[]; tokens_char_idx={}; tokens_char2_idx={}; tokens_char3_idx={}
+    all_lines = []  # Collect all lines from all plays with global metadata
     play_id=1
     for path in sorted(tei_dir.glob("*.xml")):
         metadata = play_metadata_map.get(path.name)
         scenes, lines_map, token_idx, token2_idx, token3_idx, characters, tokens_char_tmp, tokens_char2_tmp, tokens_char3_tmp, play_row = parse_play(path, play_id, metadata)
         scenes_all.extend(scenes)
-        for sid, arr in lines_map.items():
-            (lines_dir / f"{sid}.json").write_text(json.dumps(arr, ensure_ascii=False), encoding="utf-8")
+        
+        # Save per-scene line files and collect all lines for global file
+        global_line_num = 0
+        for scene in scenes:
+            sid = scene["scene_id"]
+            act = scene["act"]
+            scene_num = scene["scene"]
+            scene_lines = lines_map.get(sid, [])
+            
+            # Save per-scene file
+            (lines_dir / f"{sid}.json").write_text(json.dumps(scene_lines, ensure_ascii=False), encoding="utf-8")
+            
+            # Add to global lines with full metadata
+            for line_data in scene_lines:
+                global_line_num += 1
+                all_lines.append({
+                    "play_id": play_id,
+                    "act": act,
+                    "scene": scene_num,
+                    "line_num": global_line_num,
+                    "speaker": line_data["speaker"],
+                    "text": line_data["text"]
+                })
         for dsrc, ddst in ((token_idx, token_idx_all),(token2_idx, token2_idx_all),(token3_idx, token3_idx_all)):
             for tok, lst in dsrc.items(): ddst.setdefault(tok, []).extend(lst)
         # finalize characters: assign ids and convert sets to lists
@@ -216,7 +238,11 @@ def build(tei_dir: Path, out_dir: Path):
     (data_dir / "tokens_char.json").write_text(json.dumps(tokens_char_idx, ensure_ascii=False), encoding="utf-8")
     (data_dir / "tokens_char2.json").write_text(json.dumps(tokens_char2_idx, ensure_ascii=False), encoding="utf-8")
     (data_dir / "tokens_char3.json").write_text(json.dumps(tokens_char3_idx, ensure_ascii=False), encoding="utf-8")
-    return {"play_count": len(plays), "scene_count": len(scenes_all)}
+    
+    # Write consolidated all_lines.json file
+    (lines_dir / "all_lines.json").write_text(json.dumps(all_lines, ensure_ascii=False), encoding="utf-8")
+    
+    return {"play_count": len(plays), "scene_count": len(scenes_all), "line_count": len(all_lines)}
 
 
 if __name__ == '__main__':
@@ -226,4 +252,4 @@ if __name__ == '__main__':
     out_dir = base / 'public'
     print(f"Building from {tei_dir} -> {out_dir}")
     res = build(tei_dir, out_dir)
-    print(f"Done: {res['play_count']} plays, {res['scene_count']} scenes written to {out_dir}/data")
+    print(f"Done: {res['play_count']} plays, {res['scene_count']} scenes, {res['line_count']} lines written to {out_dir}/data and {out_dir}/lines")
