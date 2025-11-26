@@ -815,7 +815,7 @@
     playsFilter.querySelectorAll('input[type="checkbox"]').forEach(cb => { if (cb.checked) ids.push(Number(cb.dataset.play)); });
     return new Set(ids);
   }
-  function fmtPct(num) { return (num*100).toFixed(2) + '%'; }
+  function fmtPct(num) { return (num*100).toFixed(3) + '%'; }
 
 
   // Pagination state
@@ -1633,7 +1633,7 @@
       for (let i = 0; i < segmentMaps.length; i++) {
         const count = segmentMaps[i].get(token) || 0;
         const totalWords = segmentTotalWords[i];
-        const pct = totalWords > 0 ? ((count / totalWords) * 100).toFixed(4) : '0.0000';
+        const pct = totalWords > 0 ? ((count / totalWords) * 100).toFixed(5) : '0.00000';
         row[`seg${i}_count`] = count;
         row[`seg${i}_pct`] = parseFloat(pct);
       }
@@ -1741,10 +1741,10 @@
         if (displayMode === 'hits') {
           html += `<td>${row[`seg${i}_count`]}</td>`;
         } else if (displayMode === 'pct') {
-          html += `<td>${row[`seg${i}_pct`].toFixed(4)}%</td>`;
+          html += `<td>${row[`seg${i}_pct`].toFixed(5)}%</td>`;
         } else { // both
           html += `<td>${row[`seg${i}_count`]}</td>`;
-          html += `<td>${row[`seg${i}_pct`].toFixed(4)}%</td>`;
+          html += `<td>${row[`seg${i}_pct`].toFixed(5)}%</td>`;
         }
       }
       
