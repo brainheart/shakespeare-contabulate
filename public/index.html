@@ -295,7 +295,7 @@
   <p class="muted">Search for single words, bigrams, or trigrams across plays, acts, scence, characters, genres. Use regular expression patterns (e.g., <code>^love|death$</code>) or literal text.</p>
 
   <div class="tabs">
-    <button class="tab-btn active" data-tab="segments">Rows are Corpus Segments</button>
+    <button class="tab-btn active" data-tab="segments">Rows are Contexts</button>
     <button class="tab-btn" data-tab="ngrams">Rows are Ngrams</button>
     <button class="tab-btn" data-tab="lines">Rows are Lines</button>
   </div>
@@ -385,11 +385,11 @@
     </div>
 
     <details>
-      <summary class="sr"><strong>Select Segments to Compare</strong></summary>
+      <summary class="sr"><strong>Select Contexts to Compare</strong></summary>
       <div style="margin-bottom: 0.75rem;">
         <p class="muted" style="margin: 0.5rem 0;">Search for and select plays, acts, scenes, genres, or characters to compare their n-gram frequencies.</p>
         <div style="display: flex; gap: 1rem; margin-top: 0.75rem;">
-          <!-- Left column: Search and add segments -->
+          <!-- Left column: Search and add contexts -->
           <div style="flex: 1; min-width: 300px;">
             <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem; align-items: center;">
               <input type="text" id="segmentSearchInput" placeholder="Search segments..." style="flex: 1; padding: 0.5rem;">
@@ -407,14 +407,14 @@
             </div>
           </div>
           
-          <!-- Right column: Selected segments -->
+          <!-- Right column: Selected contexts -->
           <div style="flex: 1; min-width: 300px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-              <strong>Selected Segments (<span id="selectedSegmentsCount">0</span>)</strong>
+              <strong>Selected Contexts (<span id="selectedSegmentsCount">0</span>)</strong>
               <button id="clearAllSegments" style="padding: 0.3rem 0.6rem; font-size: 0.9rem;">Clear All</button>
             </div>
             <div id="selectedSegmentsList" style="max-height: 400px; overflow-y: auto; border: 1px solid var(--border); padding: 0.5rem; border-radius: 4px; background: white;">
-              <p class="muted" style="text-align: center; padding: 2rem;">No segments selected</p>
+              <p class="muted" style="text-align: center; padding: 2rem;">No contexts selected</p>
             </div>
           </div>
         </div>
@@ -1468,7 +1468,7 @@
   // Build ngrams comparison table
   function buildNgramsComparison() {
     if (ngramsSelectedSegments.size === 0) {
-      ngramTableContainer.innerHTML = '<p class="muted">Select at least one segment to compare.</p>';
+      ngramTableContainer.innerHTML = '<p class="muted">Select at least one context to compare.</p>';
       document.getElementById('ngramsPagination').style.display = 'none';
       return;
     }
