@@ -1136,14 +1136,6 @@
         } else {
           td.textContent = r[k] ?? '';
         }
-        // Make first column clickable for drill-down
-        if (idx === 0 && r[k]) {
-          td.style.cursor = 'pointer';
-          td.style.color = 'var(--burgundy)';
-          td.style.textDecoration = 'underline';
-          td.style.fontWeight = '500';
-          td.addEventListener('click', () => showDrillDown(r, firstColKey));
-        }
         tr.appendChild(td);
       });
       tbody.appendChild(tr);
