@@ -322,7 +322,7 @@
           <option value="exact">exact term</option>
           <option value="regex">regex pattern</option>
         </select>
-        <input id="q" type="text" placeholder="" value="death" style="flex: 1; min-width: 20rem; font-size: 1rem;">
+        <input id="q" type="text" placeholder="" value="love" style="flex: 1; min-width: 20rem; font-size: 1rem;">
         <button id="go" style="font-size: 1rem; padding: 0.6rem 1.2rem;">Refresh</button>
       </div>
     </div>
@@ -457,7 +457,7 @@
           <option value="exact">exact term</option>
           <option value="regex">regex pattern</option>
         </select>
-        <input type="text" id="linesQuery" placeholder="e.g., death, ^love|death$, to be" value="death" style="flex: 1; min-width: 20rem; font-size: 1rem; padding: 0.5rem;">
+        <input type="text" id="linesQuery" placeholder="e.g., death, ^love|death$, to be" value="love" style="flex: 1; min-width: 20rem; font-size: 1rem; padding: 0.5rem;">
         <button id="linesRefresh" style="font-size: 1rem; padding: 0.6rem 1.2rem;">Refresh</button>
       </div>
     </div>
@@ -2085,10 +2085,44 @@
     renderLinesPage();
   });
 
-  // initial state
+  // initial state for contexts tab
   gran.value = 'play';
-  q.value = 'death';
+  q.value = 'love';
   doSearch();
+
+  // initial state for ngrams tab - set up some interesting character comparisons for "love"
+  document.getElementById('ngramsQuery').value = 'love';
+  
+  // Add some interesting characters from different plays
+  // We'll add Romeo, Juliet, Hamlet, and Ophelia as they're well-known lovers/tragic figures
+  const defaultCharacters = [
+    { play: 'Romeo and Juliet', character: 'ROMEO' },
+    { play: 'Romeo and Juliet', character: 'JULIET' },
+    { play: 'Hamlet', character: 'HAMLET' },
+    { play: 'Hamlet', character: 'OPHELIA' }
+  ];
+  
+  defaultCharacters.forEach(({ play, character }) => {
+    // Find the character in the characters data
+    const charData = characters.find(c => 
+      c.play_id && 
+      plays.find(p => p.id === c.play_id && p.title === play) && 
+      c.character === character
+    );
+    
+    if (charData) {
+      const playInfo = plays.find(p => p.id === charData.play_id);
+      ngramsSelectedSegments.add({
+        type: 'character',
+        id: charData.character,
+        play_id: charData.play_id,
+        label: `${charData.character} (${playInfo.title})`
+      });
+    }
+  });
+  
+  renderSelectedSegments();
+  buildNgramsComparison();
 })();
 </script>
 </body>
