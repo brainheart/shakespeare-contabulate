@@ -817,6 +817,28 @@
     return new Set(ids);
   }
   function fmtPct(num) { return (num*100).toFixed(3) + '%'; }
+  function escapeHTML(s) {
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]));
+  }
+  function highlightHTML(text, re) {
+    if (!re) return escapeHTML(text);
+    let out = '';
+    let last = 0;
+    const s = String(text);
+    re.lastIndex = 0;
+    let m;
+    while ((m = re.exec(s))) {
+      const start = m.index;
+      const end = start + (m[0]?.length || 0);
+      out += escapeHTML(s.slice(last, start));
+      out += '<span class="hit">' + escapeHTML(m[0]) + '</span>';
+      last = end;
+      if (!re.global) break;
+      if (end === start) re.lastIndex++; // avoid zero-width infinite loop
+    }
+    out += escapeHTML(s.slice(last));
+    return out;
+  }
 
 
   // Pagination state
@@ -992,25 +1014,17 @@
         return null;
       }
       const playsSel = selectedPlayIds();
-      let matcher;
+      let hlRe = null;
       try {
         if (isRegex) {
-          const re = new RegExp(query.trim(), 'gi');
-          matcher = (txt) => {
-            const m = txt.match(re);
-            return m ? m.length : 0;
-          };
+          const pat = query.trim();
+          hlRe = pat ? new RegExp(pat, 'gi') : null;
         } else {
           const terms = query.trim().toLowerCase().split(/\s+/).filter(Boolean);
           const n = parseInt(ngramModeVal);
           const keyTerms = terms.slice(0, n);
           const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-          const pattern = keyTerms.length > 0 ? new RegExp('\\b' + keyTerms.map(esc).join('\\s+') + '\\b', 'gi') : null;
-          matcher = (txt) => {
-            if (!pattern) return 0;
-            const m = txt.match(pattern);
-            return m ? m.length : 0;
-          };
+          hlRe = keyTerms.length > 0 ? new RegExp('\\b' + keyTerms.map(esc).join('\\s+') + '\\b', 'gi') : null;
         }
       } catch (e) {
         theadRow.innerHTML = '';
@@ -1021,11 +1035,11 @@
       for (const ln of allLines) {
         if (!playsSel.has(ln.play_id)) continue;
         const t = (ln.text || '').toString();
-        const count = matcher(t);
+        const clean = t.replace(/\s+/g, ' ').trim();
+        const count = hlRe ? (clean.match(hlRe)?.length || 0) : 0;
         if (count > 0) {
           const play = playsById.get(ln.play_id);
-          // Sanitize text for display
-          const clean = t.replace(/\s+/g, ' ').trim();
+          const line_html = highlightHTML(clean, hlRe);
           rows.push({
             id: ln.canonical_id,
             play_title: play ? play.title : '',
@@ -1034,17 +1048,14 @@
             line_num: ln.line_num,
             speaker: ln.speaker || '',
             line: clean,
+            line_html,
             count
           });
         }
       }
 
       setHeaders([
-        {key:'id', label:'ID', defaultDir:'asc'},
-        {key:'play_title', label:'Play', defaultDir:'asc'},
-        {key:'act', label:'Act'},
-        {key:'scene', label:'Scene'},
-        {key:'line_num', label:'Line #'},
+        {key:'id', label:'Location', defaultDir:'asc'},
         {key:'speaker', label:'Speaker', defaultDir:'asc'},
         {key:'line', label:'Line'}
       ]);
@@ -1060,7 +1071,7 @@
         rows.push({ id: m.canonical_id, play_title: m.play_title, genre:m.genre, play_id:m.play_id, act:m.act, scene:m.scene, total_words:totalWords, ngram_count:ngramCount, count, pct: d? count/d : 0, scene_id });
       }
       setHeaders([
-        {key:'id', label:'ID', defaultDir:'asc'},
+        {key:'id', label:'Location', defaultDir:'asc'},
         {key:'play_title', label:'Play', defaultDir:'asc'},
         {key:'act', label:'Act'},
         {key:'scene', label:'Scene'},
@@ -1089,7 +1100,7 @@
         rows.push({ id: `${play.abbr}.${actNum}`, play_title: play.title, genre:play.genre, play_id:pid, act:actNum, total_words, ngram_count:ngramCount, count, pct: denom? count/denom : 0 });
       }
       setHeaders([
-        {key:'id', label:'ID', defaultDir:'asc'},
+        {key:'id', label:'Location', defaultDir:'asc'},
         {key:'play_title', label:'Play', defaultDir:'asc'},
         {key:'act', label:'Act'},
         {key:'ngram_count', label: n===1 ? 'Word count' : n===2 ? 'Bigram count' : 'Trigram count'},
@@ -1114,7 +1125,7 @@
         rows.push({ id:p.abbr, play_id:pid, title:p.title, genre:p.genre, first_year:p.first_performance_year||'', num_lines, total_words, ngram_count:ngramCount, count, pct: denom? count/denom : 0 });
       }
       setHeaders([
-        {key:'id', label:'ID', defaultDir:'asc'},
+        {key:'id', label:'Location', defaultDir:'asc'},
         {key:'title', label:'Play', defaultDir:'asc'},
         {key:'genre', label:'Genre', defaultDir:'asc'},
         {key:'first_year', label:'Year'},
@@ -1222,6 +1233,8 @@
         const td = document.createElement('td');
         if (k === 'pct') {
           td.textContent = fmtPct(r[k]||0);
+        } else if (k === 'line' && r.line_html) {
+          td.innerHTML = r.line_html;
         } else {
           td.textContent = r[k] ?? '';
         }
