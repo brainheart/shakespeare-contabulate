@@ -316,6 +316,7 @@
           <option value="act">Act</option>
           <option value="scene" selected>Scene</option>
           <option value="character">Character</option>
+          <option value="line">Line</option>
         </select>
         <span style="font-weight: 600;">matching the</span>
         <select id="matchMode" style="font-size: 1rem;">
@@ -884,7 +885,8 @@
       const abbr = parts[0] || '';
       const act = parts.length > 1 ? parseInt(parts[1], 10) || 0 : 0;
       const scene = parts.length > 2 ? parseInt(parts[2], 10) || 0 : 0;
-      return { abbr, act, scene };
+      const line = parts.length > 3 ? parseInt(parts[3], 10) || 0 : 0;
+      return { abbr, act, scene, line };
     };
     rows.sort((a,b) => {
       const av = a[sortKey], bv = b[sortKey];
@@ -894,6 +896,7 @@
         let cmp = aa.abbr.localeCompare(bb.abbr);
         if (cmp === 0) cmp = aa.act - bb.act;
         if (cmp === 0) cmp = aa.scene - bb.scene;
+        if (cmp === 0) cmp = aa.line - bb.line;
         return sortDir === 'asc' ? cmp : -cmp;
       }
       if (typeof av === 'string' || typeof bv === 'string') {
@@ -980,6 +983,73 @@
     }
 
     const rows = [];
+
+    if (granVal === 'line') {
+      // Build line-level rows with full line text
+      if (!Array.isArray(allLines) || allLines.length === 0) {
+        theadRow.innerHTML = '';
+        tbody.innerHTML = '<tr><td class="muted">Lines data not available.</td></tr>';
+        return null;
+      }
+      const playsSel = selectedPlayIds();
+      let matcher;
+      try {
+        if (isRegex) {
+          const re = new RegExp(query.trim(), 'gi');
+          matcher = (txt) => {
+            const m = txt.match(re);
+            return m ? m.length : 0;
+          };
+        } else {
+          const terms = query.trim().toLowerCase().split(/\s+/).filter(Boolean);
+          const n = parseInt(ngramModeVal);
+          const keyTerms = terms.slice(0, n);
+          const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          const pattern = keyTerms.length > 0 ? new RegExp('\\b' + keyTerms.map(esc).join('\\s+') + '\\b', 'gi') : null;
+          matcher = (txt) => {
+            if (!pattern) return 0;
+            const m = txt.match(pattern);
+            return m ? m.length : 0;
+          };
+        }
+      } catch (e) {
+        theadRow.innerHTML = '';
+        tbody.innerHTML = `<tr><td class="warning">Invalid pattern for lines: ${e.message}</td></tr>`;
+        return null;
+      }
+
+      for (const ln of allLines) {
+        if (!playsSel.has(ln.play_id)) continue;
+        const t = (ln.text || '').toString();
+        const count = matcher(t);
+        if (count > 0) {
+          const play = playsById.get(ln.play_id);
+          // Sanitize text for display
+          const clean = t.replace(/\s+/g, ' ').trim();
+          rows.push({
+            id: ln.canonical_id,
+            play_title: play ? play.title : '',
+            act: ln.act,
+            scene: ln.scene,
+            line_num: ln.line_num,
+            speaker: ln.speaker || '',
+            line: clean,
+            count
+          });
+        }
+      }
+
+      setHeaders([
+        {key:'id', label:'ID', defaultDir:'asc'},
+        {key:'play_title', label:'Play', defaultDir:'asc'},
+        {key:'act', label:'Act'},
+        {key:'scene', label:'Scene'},
+        {key:'line_num', label:'Line #'},
+        {key:'speaker', label:'Speaker', defaultDir:'asc'},
+        {key:'line', label:'Line'}
+      ]);
+      return rows;
+    }
 
     if (granVal==='scene'){
       for (const [scene_id, count] of allPostings){
