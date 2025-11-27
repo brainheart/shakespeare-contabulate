@@ -332,6 +332,11 @@
       <summary class="sr"><strong>Filters & Display</strong></summary>
       <div style="margin-bottom: 0.75rem;">
         <label style="font-weight: 500;">Minimum hits: <input type="number" id="minHits" value="0" min="0" style="width: 5rem; padding: 0.4rem;"></label>
+        <label style="font-weight: 500; margin-left: 1rem;">Minimum word count: <input type="number" id="minWords" value="0" min="0" style="width: 6rem; padding: 0.4rem;"></label>
+      </div>
+      <div style="display:flex; gap:.5rem; align-items:center; margin-bottom: .5rem;">
+        <button id="selectAllPlays" style="padding: 0.3rem 0.6rem; font-size: 0.9rem;">Select All Plays</button>
+        <button id="deselectAllPlays" style="padding: 0.3rem 0.6rem; font-size: 0.9rem;">Deselect All</button>
       </div>
       <div id="playsFilter"></div>
     </details>
@@ -501,6 +506,7 @@
   const ngramMode = document.getElementById('ngramMode');
   const playsFilter = document.getElementById('playsFilter');
   const minHits = document.getElementById('minHits');
+  const minWords = document.getElementById('minWords');
   const theadRow = document.getElementById('headRow');
   const tbody = document.querySelector('#results tbody');
   const ngramTableContainer = document.getElementById('ngramTableContainer');
@@ -1209,8 +1215,23 @@
     if (minHitsVal > 0) {
       rows = rows.filter(r => (r.count || 0) >= minHitsVal);
     }
+    // Filter by minimum word count
+    const minWordsVal = parseInt(minWords.value) || 0;
+    if (minWordsVal > 0) {
+      const granVal = gran.value;
+      rows = rows.filter(r => {
+        if (granVal === 'character') return (r.total_words_spoken || 0) >= minWordsVal;
+        if (granVal === 'genre' || granVal === 'play' || granVal === 'act' || granVal === 'scene') return (r.total_words || 0) >= minWordsVal;
+        if (granVal === 'line') {
+          const text = (r.line || '').trim();
+          const wc = text ? text.split(/\s+/).length : 0;
+          return wc >= minWordsVal;
+        }
+        return true;
+      });
+    }
     if (rows.length === 0) { 
-      tbody.innerHTML = '<tr><td colspan="8" class="muted">No results match the minimum hits filter.</td></tr>'; 
+      tbody.innerHTML = '<tr><td colspan="8" class="muted">No results match the filters.</td></tr>'; 
       document.getElementById('segmentsPagination').style.display = 'none';
       return; 
     }
@@ -1584,6 +1605,22 @@
   go.addEventListener('click', doSearch);
   q.addEventListener('keydown', e => { if (e.key==='Enter') doSearch(); });
   minHits.addEventListener('input', () => {
+    const query = q.value.trim();
+    if (query) renderRows(buildRows(query));
+  });
+  minWords.addEventListener('input', () => {
+    const query = q.value.trim();
+    if (query) renderRows(buildRows(query));
+  });
+
+  // Select/Deselect all plays
+  document.getElementById('selectAllPlays').addEventListener('click', () => {
+    playsFilter.querySelectorAll('input[type="checkbox"]').forEach(cb => { cb.checked = true; });
+    const query = q.value.trim();
+    if (query) renderRows(buildRows(query));
+  });
+  document.getElementById('deselectAllPlays').addEventListener('click', () => {
+    playsFilter.querySelectorAll('input[type="checkbox"]').forEach(cb => { cb.checked = false; });
     const query = q.value.trim();
     if (query) renderRows(buildRows(query));
   });
