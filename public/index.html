@@ -875,10 +875,7 @@
     playTotals.set(r.play_id, (playTotals.get(r.play_id)||0) + (r.total_words||0));
   }
 
-  const sceneIdByKey = new Map();
-  for (const r of chunks) {
-    sceneIdByKey.set(`${r.play_id}:${r.act}:${r.scene}`, r.scene_id);
-  }
+  
 
   let sortKey = null, sortDir = 'desc';
   let ngramsSortKey = 'totalCount', ngramsSortDir = 'desc';
@@ -1260,11 +1257,6 @@
         const td = document.createElement('td');
         if (k === 'pct') {
           td.textContent = fmtPct(r[k]||0);
-        } else if (k === 'id' && gran.value === 'line') {
-          const loc = r.id;
-          const dataAttrs = `data-loc="${loc}" data-play="${r.play_id}" data-act="${r.act}" data-scene="${r.scene}" data-line="${r.line_num}"`;
-          td.innerHTML = `<a href="#" class="jump-loc" ${dataAttrs} title="Open context">${loc}</a> ` +
-                         `<button class="copy-loc" ${dataAttrs} title="Copy location" style="margin-left:.25rem">⧉</button>`;
         } else if (k === 'line' && r.line_html) {
           td.innerHTML = r.line_html;
         } else {
@@ -1291,99 +1283,12 @@
     document.getElementById('segmentsLastPage').disabled = segmentsCurrentPage === totalPages;
   }
 
-  // Event delegation for copy and jump actions on lines
-  document.getElementById('results').addEventListener('click', async (e) => {
-    const copyBtn = e.target.closest('.copy-loc');
-    const jumpLink = e.target.closest('.jump-loc');
-    if (copyBtn) {
-      e.preventDefault();
-      const loc = copyBtn.dataset.loc || '';
-      try {
-        await navigator.clipboard.writeText(loc);
-        copyBtn.textContent = '✓';
-        setTimeout(() => { copyBtn.textContent = '⧉'; }, 900);
-      } catch (_) {}
-      return;
-    }
-    if (jumpLink) {
-      e.preventDefault();
-      const playId = parseInt(jumpLink.dataset.play, 10);
-      const act = parseInt(jumpLink.dataset.act, 10);
-      const scene = parseInt(jumpLink.dataset.scene, 10);
-      const lineNum = parseInt(jumpLink.dataset.line, 10);
-      const loc = jumpLink.dataset.loc;
-      showLineContext(playId, act, scene, lineNum, loc);
-      return;
-    }
-  });
+  // removed copy/jump actions
+  document.getElementById('results').addEventListener('click', (e) => {});
 
-  function buildHighlightRegexFromState() {
-    const isRegex = (matchMode.value === 'regex');
-    const n = parseInt(ngramMode.value);
-    try {
-      if (isRegex) {
-        const pat = q.value.trim();
-        return pat ? new RegExp(pat, 'gi') : null;
-      } else {
-        const terms = q.value.trim().toLowerCase().split(/\s+/).filter(Boolean);
-        const keyTerms = terms.slice(0, n);
-        const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        return keyTerms.length > 0 ? new RegExp('\\b' + keyTerms.map(esc).join('\\s+') + '\\b', 'gi') : null;
-      }
-    } catch (_) { return null; }
-  }
+  function buildHighlightRegexFromState() { return null; }
 
-  async function showLineContext(playId, act, scene, lineNum, loc) {
-    const key = `${playId}:${act}:${scene}`;
-    const sceneId = sceneIdByKey.get(key);
-    if (!sceneId) return;
-    let sceneLines = [];
-    try {
-      sceneLines = await loadJSON(`lines/${sceneId}.json`);
-    } catch (e) { return; }
-    const chunk = chunks.find(c => c.scene_id === sceneId);
-    const play = playsById.get(playId);
-    const hlRe = buildHighlightRegexFromState();
-
-    // Build viewer container
-    let viewer = document.getElementById('lineContextViewer');
-    if (!viewer) {
-      viewer = document.createElement('div');
-      viewer.id = 'lineContextViewer';
-      viewer.style.marginTop = '1rem';
-      viewer.style.padding = '1rem';
-      viewer.style.background = 'white';
-      viewer.style.border = '1px solid var(--border)';
-      viewer.style.borderRadius = '6px';
-      viewer.style.boxShadow = '0 1px 3px var(--shadow)';
-      segmentsTab.appendChild(viewer);
-    }
-    viewer.innerHTML = '';
-    const header = document.createElement('div');
-    header.innerHTML = `<strong>${play ? play.title : ''}</strong> — Act ${act}, Scene ${scene} <span class="chip" style="margin-left:.5rem;">${loc}</span>`;
-    viewer.appendChild(header);
-    const list = document.createElement('div');
-    list.style.maxHeight = '300px';
-    list.style.overflowY = 'auto';
-    list.style.marginTop = '.5rem';
-    viewer.appendChild(list);
-
-    let targetEl = null;
-    sceneLines.forEach(line => {
-      const clean = String(line.text || '').replace(/\s+/g, ' ').trim();
-      const row = document.createElement('div');
-      row.style.padding = '.2rem 0';
-      const lineHtml = highlightHTML(clean, hlRe);
-      const isTarget = (line.line_id === lineNum) || (line.canonical_id === loc);
-      if (isTarget) { row.style.background = 'rgba(212,175,55,0.15)'; row.id = 'line-context-target'; }
-      row.innerHTML = `<span class="muted" style="width:7.5rem;display:inline-block">${line.canonical_id}</span> `+
-                      `<strong>${escapeHTML(line.speaker || '')}</strong> `+
-                      `<span class="line-text">${lineHtml}</span>`;
-      list.appendChild(row);
-      if (isTarget) targetEl = row;
-    });
-    if (targetEl) { targetEl.scrollIntoView({behavior:'smooth', block:'center'}); }
-  }
+  async function showLineContext() {}
 
   function showDrillDown(rowData, firstColKey) {
     const granVal = gran.value;
