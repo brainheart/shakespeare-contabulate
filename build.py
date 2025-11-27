@@ -28,6 +28,7 @@ def parse_play(path: Path, play_id: int, metadata: dict = None):
         title = metadata.get("title", path.stem)
         genre = metadata.get("genre", "unknown")
         first_year = metadata.get("first_performance_year")
+        play_abbr = metadata.get("abbr", path.stem[:3].upper())
     else:
         # Fallback to TEI parsing
         title = None
@@ -36,6 +37,7 @@ def parse_play(path: Path, play_id: int, metadata: dict = None):
                 title = (t.text or "").strip()
                 if title: break
         if not title: title = path.stem
+        play_abbr = path.stem[:3].upper()
         # Genre
         genre = None
         for g in root.iter():
@@ -67,6 +69,7 @@ def parse_play(path: Path, play_id: int, metadata: dict = None):
         for scene_idx, scene in enumerate(scs, start=1):
             scene_seq += 1
             scene_id = play_id * 1000 + scene_seq
+            scene_canonical_id = f"{play_abbr}.{act_idx}.{scene_idx}"
             play_num_scenes += 1
             heading = None
             for h in scene:
@@ -102,7 +105,8 @@ def parse_play(path: Path, play_id: int, metadata: dict = None):
                     t = (text_of(ln) or "").strip()
                     if not t: continue
                     line_idx += 1
-                    scene_lines.append({"line_id": line_idx, "speaker": (speakers[0] if speakers else "UNKNOWN") or "UNKNOWN", "text": t})
+                    line_canonical_id = f"{play_abbr}.{act_idx}.{scene_idx}.{line_idx}"
+                    scene_lines.append({"line_id": line_idx, "canonical_id": line_canonical_id, "speaker": (speakers[0] if speakers else "UNKNOWN") or "UNKNOWN", "text": t})
                     num_lines += 1
                     toks = tokenize(t)
                     for tok in toks:
@@ -140,7 +144,7 @@ def parse_play(path: Path, play_id: int, metadata: dict = None):
             unique_words = len(scene_unigrams)
             play_total_words += total_words
             play_total_lines += num_lines
-            scenes.append({"scene_id": scene_id, "play_id": play_id, "play_title": title, "genre": genre,
+            scenes.append({"scene_id": scene_id, "canonical_id": scene_canonical_id, "play_id": play_id, "play_title": title, "genre": genre,
                            "act": act_idx, "scene": scene_idx, "heading": heading, "total_words": total_words,
                            "unique_words": unique_words, "num_speeches": num_speeches, "num_lines": num_lines,
                            "characters_present_count": len(char_set)})
@@ -151,7 +155,7 @@ def parse_play(path: Path, play_id: int, metadata: dict = None):
                 token2_idx.setdefault(key, []).append((scene_id, cnt))
             for key, cnt in scene_trigrams.items():
                 token3_idx.setdefault(key, []).append((scene_id, cnt))
-    play_row = {"play_id": play_id, "title": title, "genre": genre, "first_performance_year": first_year,
+    play_row = {"play_id": play_id, "title": title, "abbr": play_abbr, "genre": genre, "first_performance_year": first_year,
                 "num_acts": len(acts) if acts else 0, "num_scenes": play_num_scenes, "num_speeches": play_num_speeches,
                 "total_words": play_total_words, "total_lines": play_total_lines}
     return scenes, lines_map, token_idx, token2_idx, token3_idx, characters, tokens_char_tmp, tokens_char2_tmp, tokens_char3_tmp, play_row
@@ -195,6 +199,7 @@ def build(tei_dir: Path, out_dir: Path):
                 global_line_num += 1
                 all_lines.append({
                     "play_id": play_id,
+                    "canonical_id": line_data["canonical_id"],
                     "act": act,
                     "scene": scene_num,
                     "line_num": global_line_num,
