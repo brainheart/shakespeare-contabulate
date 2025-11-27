@@ -878,8 +878,24 @@
   }
   function sortRows(rows){
     if (!sortKey) return rows;
+    const parseIdParts = (id) => {
+      const s = String(id || '');
+      const parts = s.split('.');
+      const abbr = parts[0] || '';
+      const act = parts.length > 1 ? parseInt(parts[1], 10) || 0 : 0;
+      const scene = parts.length > 2 ? parseInt(parts[2], 10) || 0 : 0;
+      return { abbr, act, scene };
+    };
     rows.sort((a,b) => {
       const av = a[sortKey], bv = b[sortKey];
+      if (sortKey === 'id') {
+        const aa = parseIdParts(av);
+        const bb = parseIdParts(bv);
+        let cmp = aa.abbr.localeCompare(bb.abbr);
+        if (cmp === 0) cmp = aa.act - bb.act;
+        if (cmp === 0) cmp = aa.scene - bb.scene;
+        return sortDir === 'asc' ? cmp : -cmp;
+      }
       if (typeof av === 'string' || typeof bv === 'string') {
         return sortDir === 'asc' ? String(av).localeCompare(String(bv)) : String(bv).localeCompare(String(av));
       }
@@ -971,9 +987,10 @@
         const d = denomFor(n,'scene',m);
         const totalWords = m.total_words || 0;
         const ngramCount = Math.max(0, totalWords - (n - 1));
-        rows.push({ play_title: m.play_title, genre:m.genre, play_id:m.play_id, act:m.act, scene:m.scene, total_words:totalWords, ngram_count:ngramCount, count, pct: d? count/d : 0, scene_id });
+        rows.push({ id: m.canonical_id, play_title: m.play_title, genre:m.genre, play_id:m.play_id, act:m.act, scene:m.scene, total_words:totalWords, ngram_count:ngramCount, count, pct: d? count/d : 0, scene_id });
       }
       setHeaders([
+        {key:'id', label:'ID', defaultDir:'asc'},
         {key:'play_title', label:'Play', defaultDir:'asc'},
         {key:'act', label:'Act'},
         {key:'scene', label:'Scene'},
@@ -999,9 +1016,10 @@
         const denom = denomFor(n,'act',{play_id:pid,act:actNum});
         const total_words = actWordCounts.get(k) || 0;
         const ngramCount = Math.max(0, total_words - (n - 1));
-        rows.push({ play_title: play.title, genre:play.genre, play_id:pid, act:actNum, total_words, ngram_count:ngramCount, count, pct: denom? count/denom : 0 });
+        rows.push({ id: `${play.abbr}.${actNum}`, play_title: play.title, genre:play.genre, play_id:pid, act:actNum, total_words, ngram_count:ngramCount, count, pct: denom? count/denom : 0 });
       }
       setHeaders([
+        {key:'id', label:'ID', defaultDir:'asc'},
         {key:'play_title', label:'Play', defaultDir:'asc'},
         {key:'act', label:'Act'},
         {key:'ngram_count', label: n===1 ? 'Word count' : n===2 ? 'Bigram count' : 'Trigram count'},
@@ -1023,9 +1041,10 @@
         const num_lines = p.total_lines ?? 0;
         const total_words = p.total_words ?? 0;
         const ngramCount = Math.max(0, total_words - (n - 1));
-        rows.push({ play_id:pid, title:p.title, genre:p.genre, first_year:p.first_performance_year||'', num_lines, total_words, ngram_count:ngramCount, count, pct: denom? count/denom : 0 });
+        rows.push({ id:p.abbr, play_id:pid, title:p.title, genre:p.genre, first_year:p.first_performance_year||'', num_lines, total_words, ngram_count:ngramCount, count, pct: denom? count/denom : 0 });
       }
       setHeaders([
+        {key:'id', label:'ID', defaultDir:'asc'},
         {key:'title', label:'Play', defaultDir:'asc'},
         {key:'genre', label:'Genre', defaultDir:'asc'},
         {key:'first_year', label:'Year'},
