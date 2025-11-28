@@ -330,6 +330,9 @@
 
     <details>
       <summary class="sr"><strong>Filters & Display</strong></summary>
+      <div style="margin-bottom: 0.5rem; display: flex; gap: 1rem; align-items: center;">
+        <label><input type="checkbox" class="color-scale-toggle" checked> Color scale numeric columns</label>
+      </div>
       <div style="margin-bottom: 0.75rem;">
         <label style="font-weight: 500;">Minimum hits: <input type="number" id="minHits" value="0" min="0" style="width: 5rem; padding: 0.4rem;"></label>
         <label style="font-weight: 500; margin-left: 1rem;">Minimum word count: <input type="number" id="minWords" value="0" min="0" style="width: 6rem; padding: 0.4rem;"></label>
@@ -470,6 +473,9 @@
 
     <details>
       <summary class="sr"><strong>Filters & Display</strong></summary>
+      <div style="margin-bottom: 0.5rem; display: flex; gap: 1rem; align-items: center;">
+        <label><input type="checkbox" class="color-scale-toggle" checked> Color scale numeric columns</label>
+      </div>
       <div id="linesPlaysFilter"></div>
     </details>
 
@@ -510,6 +516,85 @@
   const theadRow = document.getElementById('headRow');
   const tbody = document.querySelector('#results tbody');
   const ngramTableContainer = document.getElementById('ngramTableContainer');
+  
+  // Color scale toggle state (global across tabs)
+  let colorScaleEnabled = true;
+  function syncColorScaleToggles() {
+    document.querySelectorAll('.color-scale-toggle').forEach(cb => {
+      if (cb) cb.checked = colorScaleEnabled;
+    });
+  }
+  function setColorScaleEnabled(v) {
+    colorScaleEnabled = !!v;
+    syncColorScaleToggles();
+    // Re-apply on currently rendered tables
+    applyColorScalesForVisibleTables();
+  }
+  function parseNumeric(text) {
+    if (text == null) return NaN;
+    const raw = String(text).trim();
+    if (!raw) return NaN;
+    const s = raw.replace(/,/g, '');
+    // Strict numeric: optional sign, digits with optional decimal OR leading decimal, optional trailing %.
+    // Entire cell must match; avoids treating values like "3H6" as numeric.
+    const re = /^-?(?:\d+(?:\.\d+)?|\.\d+)%?$/;
+    if (!re.test(s)) return NaN;
+    const num = parseFloat(s.replace('%',''));
+    return Number.isFinite(num) ? num : NaN;
+  }
+  function clearColorScale(table) {
+    if (!table) return;
+    table.querySelectorAll('tbody td').forEach(td => {
+      td.style.background = '';
+      td.style.backgroundColor = '';
+    });
+  }
+  function applyColorScale(table) {
+    if (!table) return;
+    const rows = Array.from(table.querySelectorAll('tbody tr'));
+    if (rows.length === 0) return;
+    const colCount = (rows[0]?.children?.length) || 0;
+    // For each column, compute min/max of numeric cells
+    for (let c = 0; c < colCount; c++) {
+      const colTds = rows.map(r => r.children[c]).filter(Boolean);
+      const values = [];
+      const cells = [];
+      for (const td of colTds) {
+        // Prefer data-value if present
+        const dv = td.getAttribute('data-value');
+        const v = dv != null ? parseFloat(dv) : parseNumeric(td.textContent);
+        if (Number.isFinite(v)) {
+          values.push(v);
+          cells.push([td, v]);
+        }
+      }
+      if (values.length < 2) continue; // not a numeric column
+      const min = Math.min(...values);
+      const max = Math.max(...values);
+      if (!(max > min)) continue; // no spread
+      // Apply a burgundy-gold tinted scale with subtle alpha
+      // low -> very light tint; high -> deeper tint
+      for (const [td, v] of cells) {
+        const t = (v - min) / (max - min);
+        // Blend two theme hues: gold (~45deg) to burgundy (~340deg)
+        const hueLow = 45, hueHigh = 340;
+        const hue = hueLow + (hueHigh - hueLow) * t;
+        const sat = 70; // fairly saturated
+        const alpha = 0.06 + 0.22 * t; // subtle at low, stronger at high
+        td.style.backgroundColor = `hsla(${hue}, ${sat}%, 60%, ${alpha})`;
+      }
+    }
+  }
+  function applyOrClear(tableSel) {
+    const table = document.querySelector(tableSel);
+    if (!table) return;
+    if (colorScaleEnabled) applyColorScale(table); else clearColorScale(table);
+  }
+  function applyColorScalesForVisibleTables() {
+    applyOrClear('#results');
+    applyOrClear('#ngramsTable');
+    applyOrClear('#linesResults');
+  }
 
   // Pending changes tracking
   let segmentsPendingChanges = false;
@@ -1281,6 +1366,8 @@
     document.getElementById('segmentsPrevPage').disabled = segmentsCurrentPage === 1;
     document.getElementById('segmentsNextPage').disabled = segmentsCurrentPage === totalPages;
     document.getElementById('segmentsLastPage').disabled = segmentsCurrentPage === totalPages;
+    // Apply color scales if enabled
+    applyOrClear('#results');
   }
 
   // removed copy/jump actions
@@ -1402,6 +1489,8 @@
     document.getElementById('ngramsPrevPage').disabled = ngramsCurrentPage === 1;
     document.getElementById('ngramsNextPage').disabled = ngramsCurrentPage === totalPages;
     document.getElementById('ngramsLastPage').disabled = ngramsCurrentPage === totalPages;
+    // Apply color scales if enabled
+    applyOrClear('#ngramsTable');
   }
 
   // Check if segments settings have changed
@@ -1907,6 +1996,8 @@
     document.getElementById('ngramsPrevPage').disabled = ngramsCurrentPage === 1;
     document.getElementById('ngramsNextPage').disabled = ngramsCurrentPage === totalPages;
     document.getElementById('ngramsLastPage').disabled = ngramsCurrentPage === totalPages;
+    // Apply color scales if enabled
+    applyOrClear('#ngramsTable');
   }
   
   // Ngrams tab controls
@@ -1931,6 +2022,13 @@
   ngramMode.addEventListener('change', checkSegmentsPendingChanges);
   gran.addEventListener('change', checkSegmentsPendingChanges);
   matchMode.addEventListener('change', checkSegmentsPendingChanges);
+
+  // Color scale toggles
+  document.querySelectorAll('.color-scale-toggle').forEach(cb => {
+    cb.addEventListener('change', (e) => setColorScaleEnabled(e.target.checked));
+  });
+  // Ensure initial sync
+  syncColorScaleToggles();
 
   // Lines tab state
   let linesCurrentPage = 1;
@@ -2133,6 +2231,8 @@
     document.getElementById('linesPrevPage').disabled = linesCurrentPage === 1;
     document.getElementById('linesNextPage').disabled = linesCurrentPage === totalPages;
     document.getElementById('linesLastPage').disabled = linesCurrentPage === totalPages;
+    // Apply color scales if enabled
+    applyOrClear('#linesResults');
   }
 
   function doLinesSearch() {
