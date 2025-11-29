@@ -288,6 +288,8 @@
       font-style: normal;
       font-weight: 600;
     }
+    /* Hide advanced color scale controls for now */
+    .color-scale-options { display: none; }
     /* Color legend */
     .legend-wrap { display: inline-flex; gap: 4px; align-items: center; margin-top: 4px; }
     .legend-swatch { width: 26px; height: 14px; border: 1px solid var(--border); border-radius: 2px; display: inline-block; }
@@ -556,7 +558,7 @@
   // Color scale toggle state (global across tabs)
   let colorScaleEnabled = true;
   let colorScalePalette = 'blue-diverging';
-  let colorScaleSteps = 5;
+  let colorScaleSteps = 7;
   function syncColorScaleToggles() {
     document.querySelectorAll('.color-scale-toggle').forEach(cb => {
       if (cb) cb.checked = colorScaleEnabled;
