@@ -6,7 +6,8 @@
       "abbr": "MND",
       "genre": "comedy",
       "first_performance_year": 1595,
-      "notes": "One of Shakespeare's most popular comedies"
+      "notes": "One of Shakespeare's most popular comedies",
+      "play_id": 1
     },
     {
       "filename": "alls-well-that-ends-well_TEIsimple_FolgerShakespeare.xml",
@@ -14,7 +15,8 @@
       "genre": "comedy",
       "first_performance_year": 1604,
       "notes": "Problem play or dark comedy",
-      "abbr": "AWW"
+      "abbr": "AWW",
+      "play_id": 2
     },
     {
       "filename": "antony-and-cleopatra_TEIsimple_FolgerShakespeare.xml",
@@ -22,7 +24,8 @@
       "genre": "tragedy",
       "first_performance_year": 1606,
       "notes": "Roman tragedy",
-      "abbr": "ANT"
+      "abbr": "ANT",
+      "play_id": 3
     },
     {
       "filename": "as-you-like-it_TEIsimple_FolgerShakespeare.xml",
@@ -30,7 +33,8 @@
       "genre": "comedy",
       "first_performance_year": 1599,
       "notes": "Pastoral comedy",
-      "abbr": "AYL"
+      "abbr": "AYL",
+      "play_id": 4
     },
     {
       "filename": "coriolanus_TEIsimple_FolgerShakespeare.xml",
@@ -38,7 +42,8 @@
       "genre": "tragedy",
       "first_performance_year": 1608,
       "notes": "Roman tragedy",
-      "abbr": "COR"
+      "abbr": "COR",
+      "play_id": 5
     },
     {
       "filename": "cymbeline_TEIsimple_FolgerShakespeare.xml",
@@ -46,7 +51,8 @@
       "genre": "romance",
       "first_performance_year": 1610,
       "notes": "Late romance",
-      "abbr": "CYM"
+      "abbr": "CYM",
+      "play_id": 6
     },
     {
       "filename": "hamlet_TEIsimple_FolgerShakespeare.xml",
@@ -54,7 +60,8 @@
       "genre": "tragedy",
       "first_performance_year": 1600,
       "notes": "Perhaps the most famous tragedy",
-      "abbr": "HAM"
+      "abbr": "HAM",
+      "play_id": 7
     },
     {
       "filename": "henry-iv-part-1_TEIsimple_FolgerShakespeare.xml",
@@ -62,7 +69,8 @@
       "genre": "history",
       "first_performance_year": 1597,
       "notes": "First part of the Henriad",
-      "abbr": "1H4"
+      "abbr": "1H4",
+      "play_id": 8
     },
     {
       "filename": "henry-iv-part-2_TEIsimple_FolgerShakespeare.xml",
@@ -70,7 +78,8 @@
       "genre": "history",
       "first_performance_year": 1598,
       "notes": "Second part of the Henriad",
-      "abbr": "2H4"
+      "abbr": "2H4",
+      "play_id": 9
     },
     {
       "filename": "henry-v_TEIsimple_FolgerShakespeare.xml",
@@ -78,7 +87,8 @@
       "genre": "history",
       "first_performance_year": 1599,
       "notes": "Conclusion of the Henriad",
-      "abbr": "H5"
+      "abbr": "H5",
+      "play_id": 10
     },
     {
       "filename": "henry-vi-part-1_TEIsimple_FolgerShakespeare.xml",
@@ -86,7 +96,8 @@
       "genre": "history",
       "first_performance_year": 1591,
       "notes": "First of the early history plays",
-      "abbr": "1H6"
+      "abbr": "1H6",
+      "play_id": 11
     },
     {
       "filename": "henry-vi-part-2_TEIsimple_FolgerShakespeare.xml",
@@ -94,7 +105,8 @@
       "genre": "history",
       "first_performance_year": 1591,
       "notes": "Second part of the early trilogy",
-      "abbr": "2H6"
+      "abbr": "2H6",
+      "play_id": 12
     },
     {
       "filename": "henry-vi-part-3_TEIsimple_FolgerShakespeare.xml",
@@ -102,7 +114,8 @@
       "genre": "history",
       "first_performance_year": 1591,
       "notes": "Final part of the early trilogy",
-      "abbr": "3H6"
+      "abbr": "3H6",
+      "play_id": 13
     },
     {
       "filename": "henry-viii_TEIsimple_FolgerShakespeare.xml",
@@ -110,7 +123,8 @@
       "genre": "history",
       "first_performance_year": 1613,
       "notes": "Late history, possibly co-written with Fletcher",
-      "abbr": "H8"
+      "abbr": "H8",
+      "play_id": 14
     },
     {
       "filename": "julius-caesar_TEIsimple_FolgerShakespeare.xml",
@@ -118,7 +132,8 @@
       "genre": "tragedy",
       "first_performance_year": 1599,
       "notes": "Roman tragedy",
-      "abbr": "JC"
+      "abbr": "JC",
+      "play_id": 15
     },
     {
       "filename": "king-john_TEIsimple_FolgerShakespeare.xml",
@@ -126,7 +141,8 @@
       "genre": "history",
       "first_performance_year": 1596,
       "notes": "Standalone history play",
-      "abbr": "JN"
+      "abbr": "JN",
+      "play_id": 16
     },
     {
       "filename": "king-lear_TEIsimple_FolgerShakespeare.xml",
@@ -134,7 +150,8 @@
       "genre": "tragedy",
       "first_performance_year": 1605,
       "notes": "One of the great tragedies",
-      "abbr": "LR"
+      "abbr": "LR",
+      "play_id": 17
     },
     {
       "filename": "loves-labors-lost_TEIsimple_FolgerShakespeare.xml",
@@ -142,7 +159,8 @@
       "genre": "comedy",
       "first_performance_year": 1594,
       "notes": "Early comedy",
-      "abbr": "LLL"
+      "abbr": "LLL",
+      "play_id": 18
     },
     {
       "filename": "macbeth_TEIsimple_FolgerShakespeare.xml",
@@ -150,7 +168,8 @@
       "genre": "tragedy",
       "first_performance_year": 1606,
       "notes": "Scottish tragedy",
-      "abbr": "MAC"
+      "abbr": "MAC",
+      "play_id": 19
     },
     {
       "filename": "measure-for-measure_TEIsimple_FolgerShakespeare.xml",
@@ -158,7 +177,8 @@
       "genre": "comedy",
       "first_performance_year": 1604,
       "notes": "Problem play or dark comedy",
-      "abbr": "MM"
+      "abbr": "MM",
+      "play_id": 20
     },
     {
       "filename": "much-ado-about-nothing_TEIsimple_FolgerShakespeare.xml",
@@ -166,7 +186,8 @@
       "genre": "comedy",
       "first_performance_year": 1598,
       "notes": "Romantic comedy",
-      "abbr": "ADO"
+      "abbr": "ADO",
+      "play_id": 21
     },
     {
       "filename": "othello_TEIsimple_FolgerShakespeare.xml",
@@ -174,7 +195,8 @@
       "genre": "tragedy",
       "first_performance_year": 1604,
       "notes": "Domestic tragedy",
-      "abbr": "OTH"
+      "abbr": "OTH",
+      "play_id": 22
     },
     {
       "filename": "pericles_TEIsimple_FolgerShakespeare.xml",
@@ -182,7 +204,8 @@
       "genre": "romance",
       "first_performance_year": 1607,
       "notes": "Romance, possibly co-written with George Wilkins",
-      "abbr": "PER"
+      "abbr": "PER",
+      "play_id": 23
     },
     {
       "filename": "richard-ii_TEIsimple_FolgerShakespeare.xml",
@@ -190,7 +213,8 @@
       "genre": "history",
       "first_performance_year": 1595,
       "notes": "Beginning of the second tetralogy",
-      "abbr": "R2"
+      "abbr": "R2",
+      "play_id": 24
     },
     {
       "filename": "richard-iii_TEIsimple_FolgerShakespeare.xml",
@@ -198,7 +222,8 @@
       "genre": "history",
       "first_performance_year": 1592,
       "notes": "Conclusion of the first tetralogy",
-      "abbr": "R3"
+      "abbr": "R3",
+      "play_id": 25
     },
     {
       "filename": "romeo-and-juliet_TEIsimple_FolgerShakespeare.xml",
@@ -206,7 +231,8 @@
       "genre": "tragedy",
       "first_performance_year": 1595,
       "notes": "Early tragedy, the famous star-crossed lovers",
-      "abbr": "ROM"
+      "abbr": "ROM",
+      "play_id": 26
     },
     {
       "filename": "the-comedy-of-errors_TEIsimple_FolgerShakespeare.xml",
@@ -214,7 +240,8 @@
       "genre": "comedy",
       "first_performance_year": 1592,
       "notes": "Shortest play, farce based on Plautus",
-      "abbr": "ERR"
+      "abbr": "ERR",
+      "play_id": 27
     },
     {
       "filename": "the-merchant-of-venice_TEIsimple_FolgerShakespeare.xml",
@@ -222,7 +249,8 @@
       "genre": "comedy",
       "first_performance_year": 1596,
       "notes": "Comedy with dark themes",
-      "abbr": "MV"
+      "abbr": "MV",
+      "play_id": 28
     },
     {
       "filename": "the-merry-wives-of-windsor_TEIsimple_FolgerShakespeare.xml",
@@ -230,7 +258,8 @@
       "genre": "comedy",
       "first_performance_year": 1597,
       "notes": "Comedy featuring Falstaff",
-      "abbr": "WIV"
+      "abbr": "WIV",
+      "play_id": 29
     },
     {
       "filename": "the-taming-of-the-shrew_TEIsimple_FolgerShakespeare.xml",
@@ -238,7 +267,8 @@
       "genre": "comedy",
       "first_performance_year": 1593,
       "notes": "Early comedy",
-      "abbr": "SHR"
+      "abbr": "SHR",
+      "play_id": 30
     },
     {
       "filename": "the-tempest_TEIsimple_FolgerShakespeare.xml",
@@ -246,7 +276,8 @@
       "genre": "romance",
       "first_performance_year": 1611,
       "notes": "Late romance, possibly Shakespeare's last solo play",
-      "abbr": "TMP"
+      "abbr": "TMP",
+      "play_id": 31
     },
     {
       "filename": "the-two-gentlemen-of-verona_TEIsimple_FolgerShakespeare.xml",
@@ -254,7 +285,8 @@
       "genre": "comedy",
       "first_performance_year": 1590,
       "notes": "Early comedy, possibly his first",
-      "abbr": "TGV"
+      "abbr": "TGV",
+      "play_id": 32
     },
     {
       "filename": "the-winters-tale_TEIsimple_FolgerShakespeare.xml",
@@ -262,7 +294,8 @@
       "genre": "romance",
       "first_performance_year": 1610,
       "notes": "Late romance",
-      "abbr": "WT"
+      "abbr": "WT",
+      "play_id": 33
     },
     {
       "filename": "timon-of-athens_TEIsimple_FolgerShakespeare.xml",
@@ -270,7 +303,8 @@
       "genre": "tragedy",
       "first_performance_year": 1607,
       "notes": "Possibly unfinished or co-written with Middleton",
-      "abbr": "TIM"
+      "abbr": "TIM",
+      "play_id": 34
     },
     {
       "filename": "titus-andronicus_TEIsimple_FolgerShakespeare.xml",
@@ -278,7 +312,8 @@
       "genre": "tragedy",
       "first_performance_year": 1593,
       "notes": "Early revenge tragedy",
-      "abbr": "TIT"
+      "abbr": "TIT",
+      "play_id": 35
     },
     {
       "filename": "troilus-and-cressida_TEIsimple_FolgerShakespeare.xml",
@@ -286,7 +321,8 @@
       "genre": "comedy",
       "first_performance_year": 1602,
       "notes": "Problem play set during Trojan War",
-      "abbr": "TRO"
+      "abbr": "TRO",
+      "play_id": 36
     },
     {
       "filename": "twelfth-night_TEIsimple_FolgerShakespeare.xml",
@@ -294,7 +330,8 @@
       "genre": "comedy",
       "first_performance_year": 1601,
       "notes": "Romantic comedy",
-      "abbr": "TN"
+      "abbr": "TN",
+      "play_id": 37
     }
   ]
 }
