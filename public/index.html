@@ -294,6 +294,26 @@
     .legend-wrap { display: inline-flex; gap: 4px; align-items: center; margin-top: 4px; }
     .legend-swatch { width: 26px; height: 14px; border: 1px solid var(--border); border-radius: 2px; display: inline-block; }
     .legend-labels { display: flex; justify-content: space-between; gap: 2rem; font-size: 0.85rem; color: #665544; margin-top: 2px; max-width: 220px; }
+    /* Column filter UI */
+    th { position: sticky; }
+    .filter-icon { font-size: 0.9rem; margin-left: 0.4rem; color: #8a8a8a; cursor: pointer; }
+    .filter-icon:hover { color: var(--burgundy); }
+    .filter-popover {
+      position: absolute;
+      z-index: 1000;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      box-shadow: 0 4px 10px var(--shadow);
+      padding: 0.6rem;
+      min-width: 220px;
+    }
+    .filter-popover h4 { margin: 0 0 0.4rem 0; font-size: 0.95rem; color: var(--ink); }
+    .filter-popover .row { display: flex; gap: 0.5rem; align-items: center; margin: 0.3rem 0; }
+    .filter-popover input[type="text"], .filter-popover input[type="number"] { width: 100%; padding: 0.3rem 0.4rem; font-size: 0.95rem; }
+    .filter-popover .hint { font-size: 0.8rem; color: #7a6b5b; }
+    .filter-popover .actions { display: flex; justify-content: space-between; margin-top: 0.4rem; }
+    .filter-popover .link-btn { background: transparent; color: var(--burgundy); border: none; cursor: pointer; padding: 0.2rem 0.3rem; font-size: 0.9rem; }
   </style>
 </head>
 <body>
@@ -334,7 +354,7 @@
     </div>
 
     <details>
-      <summary class="sr"><strong>Filters & Display</strong></summary>
+      <summary class="sr"><strong>Display Options</strong></summary>
       <div style="margin-bottom: 0.5rem; display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
         <label><input type="checkbox" class="color-scale-toggle" checked> Color scale numeric columns</label>
         <div class="color-scale-options">
@@ -354,10 +374,6 @@
         </div>
       </div>
       <div class="color-scale-legend"></div>
-      <div style="margin-bottom: 0.75rem;">
-        <label style="font-weight: 500;">Minimum hits: <input type="number" id="minHits" value="0" min="0" style="width: 5rem; padding: 0.4rem;"></label>
-        <label style="font-weight: 500; margin-left: 1rem;">Minimum word count: <input type="number" id="minWords" value="0" min="0" style="width: 6rem; padding: 0.4rem;"></label>
-      </div>
       <div style="display:flex; gap:.5rem; align-items:center; margin-bottom: .5rem;">
         <button id="selectAllPlays" style="padding: 0.3rem 0.6rem; font-size: 0.9rem;">Select All Plays</button>
         <button id="deselectAllPlays" style="padding: 0.3rem 0.6rem; font-size: 0.9rem;">Deselect All</button>
@@ -491,7 +507,7 @@
     </div>
 
     <details>
-      <summary class="sr"><strong>Filters & Display</strong></summary>
+      <summary class="sr"><strong>Display Options</strong></summary>
       <div style="margin-bottom: 0.5rem; display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
         <label><input type="checkbox" class="color-scale-toggle" checked> Color scale numeric columns</label>
         <div class="color-scale-options">
@@ -546,8 +562,6 @@
   const matchMode = document.getElementById('matchMode');
   const ngramMode = document.getElementById('ngramMode');
   const playsFilter = document.getElementById('playsFilter');
-  const minHits = document.getElementById('minHits');
-  const minWords = document.getElementById('minWords');
   const theadRow = document.getElementById('headRow');
   const tbody = document.querySelector('#results tbody');
   const ngramTableContainer = document.getElementById('ngramTableContainer');
@@ -1101,6 +1115,10 @@
 
   let sortKey = null, sortDir = 'desc';
   let ngramsSortKey = 'totalCount', ngramsSortDir = 'desc';
+  // Column filters state
+  const segmentsColumnFilters = new Map(); // key -> {type: 'number'|'text', min?, max?, pattern?}
+  const linesColumnFilters = new Map();
+  let lastSegmentsBaseRows = [];
   
   function setHeaders(cols){
     theadRow.innerHTML='';
@@ -1108,6 +1126,7 @@
       const th = document.createElement('th');
       th.textContent = c.label;
       th.dataset.key = c.key;
+      th.dataset.type = c.type || 'text';
       th.title = 'Click to sort';
       th.addEventListener('click', () => {
         if (sortKey === c.key) sortDir = (sortDir === 'asc' ? 'desc' : 'asc');
@@ -1116,6 +1135,16 @@
         segmentsCurrentPage = 1;
         renderSegmentsPage();
       });
+      // Add filter icon
+      const icon = document.createElement('span');
+      icon.className = 'filter-icon';
+      icon.textContent = '⚙';
+      icon.title = 'Filter this column';
+      icon.addEventListener('click', (e) => {
+        e.stopPropagation();
+        showFilterPopover(th, c.key, (c.type||'text'), 'segments');
+      });
+      th.appendChild(icon);
       theadRow.appendChild(th);
     });
     updateSortIndicators();
@@ -1286,9 +1315,9 @@
       }
 
       setHeaders([
-        {key:'id', label:'Location', defaultDir:'asc'},
-        {key:'speaker', label:'Speaker', defaultDir:'asc'},
-        {key:'line', label:'Line'}
+        {key:'id', label:'Location', defaultDir:'asc', type:'text'},
+        {key:'speaker', label:'Speaker', defaultDir:'asc', type:'text'},
+        {key:'line', label:'Line', type:'text'}
       ]);
       return rows;
     }
@@ -1302,13 +1331,13 @@
         rows.push({ id: m.canonical_id, play_title: m.play_title, genre:m.genre, play_id:m.play_id, act:m.act, scene:m.scene, total_words:totalWords, ngram_count:ngramCount, count, pct: d? count/d : 0, scene_id });
       }
       setHeaders([
-        {key:'id', label:'Location', defaultDir:'asc'},
-        {key:'play_title', label:'Play', defaultDir:'asc'},
-        {key:'act', label:'Act'},
-        {key:'scene', label:'Scene'},
-        {key:'ngram_count', label: n===1 ? 'Word count' : n===2 ? 'Bigram count' : 'Trigram count'},
-        {key:'count', label:'Hits'},
-        {key:'pct', label:`% of ${n===1?'scene words':n===2?'scene bigrams':'scene trigrams'}`},
+        {key:'id', label:'Location', defaultDir:'asc', type:'text'},
+        {key:'play_title', label:'Play', defaultDir:'asc', type:'text'},
+        {key:'act', label:'Act', type:'number'},
+        {key:'scene', label:'Scene', type:'number'},
+        {key:'ngram_count', label: n===1 ? 'Word count' : n===2 ? 'Bigram count' : 'Trigram count', type:'number'},
+        {key:'count', label:'Hits', type:'number'},
+        {key:'pct', label:`% of ${n===1?'scene words':n===2?'scene bigrams':'scene trigrams'}`, type:'number'},
       ]);
       return rows;
     }
@@ -1331,12 +1360,12 @@
         rows.push({ id: `${play.abbr}.${actNum}`, play_title: play.title, genre:play.genre, play_id:pid, act:actNum, total_words, ngram_count:ngramCount, count, pct: denom? count/denom : 0 });
       }
       setHeaders([
-        {key:'id', label:'Location', defaultDir:'asc'},
-        {key:'play_title', label:'Play', defaultDir:'asc'},
-        {key:'act', label:'Act'},
-        {key:'ngram_count', label: n===1 ? 'Word count' : n===2 ? 'Bigram count' : 'Trigram count'},
-        {key:'count', label:'Hits'},
-        {key:'pct', label:`% of ${n===1?'act words':n===2?'act bigrams':'act trigrams'}`},
+        {key:'id', label:'Location', defaultDir:'asc', type:'text'},
+        {key:'play_title', label:'Play', defaultDir:'asc', type:'text'},
+        {key:'act', label:'Act', type:'number'},
+        {key:'ngram_count', label: n===1 ? 'Word count' : n===2 ? 'Bigram count' : 'Trigram count', type:'number'},
+        {key:'count', label:'Hits', type:'number'},
+        {key:'pct', label:`% of ${n===1?'act words':n===2?'act bigrams':'act trigrams'}`, type:'number'},
       ]);
       return rows;
     }
@@ -1356,14 +1385,14 @@
         rows.push({ id:p.abbr, play_id:pid, title:p.title, genre:p.genre, first_year:p.first_performance_year||'', num_lines, total_words, ngram_count:ngramCount, count, pct: denom? count/denom : 0 });
       }
       setHeaders([
-        {key:'id', label:'Location', defaultDir:'asc'},
-        {key:'title', label:'Play', defaultDir:'asc'},
-        {key:'genre', label:'Genre', defaultDir:'asc'},
-        {key:'first_year', label:'Year'},
-        {key:'num_lines', label:'# lines'},
-        {key:'ngram_count', label: n===1 ? 'Word count' : n===2 ? 'Bigram count' : 'Trigram count'},
-        {key:'count', label:'Hits'},
-        {key:'pct', label:`% of ${n===1?'play words':n===2?'play bigrams':'play trigrams'}`},
+        {key:'id', label:'Location', defaultDir:'asc', type:'text'},
+        {key:'title', label:'Play', defaultDir:'asc', type:'text'},
+        {key:'genre', label:'Genre', defaultDir:'asc', type:'text'},
+        {key:'first_year', label:'Year', type:'number'},
+        {key:'num_lines', label:'# lines', type:'number'},
+        {key:'ngram_count', label: n===1 ? 'Word count' : n===2 ? 'Bigram count' : 'Trigram count', type:'number'},
+        {key:'count', label:'Hits', type:'number'},
+        {key:'pct', label:`% of ${n===1?'play words':n===2?'play bigrams':'play trigrams'}`, type:'number'},
       ]);
       return rows;
     }
@@ -1393,10 +1422,10 @@
         rows.push({ genre, total_words: totalWords, ngram_count:ngramCount, count, pct: denom? count/denom : 0 });
       }
       setHeaders([
-        {key:'genre', label:'Genre', defaultDir:'asc'},
-        {key:'ngram_count', label: n===1 ? 'Word count' : n===2 ? 'Bigram count' : 'Trigram count'},
-        {key:'count', label:'Hits'},
-        {key:'pct', label:`% of ${n===1?'genre words':n===2?'genre bigrams':'genre trigrams'}`},
+        {key:'genre', label:'Genre', defaultDir:'asc', type:'text'},
+        {key:'ngram_count', label: n===1 ? 'Word count' : n===2 ? 'Bigram count' : 'Trigram count', type:'number'},
+        {key:'count', label:'Hits', type:'number'},
+        {key:'pct', label:`% of ${n===1?'genre words':n===2?'genre bigrams':'genre trigrams'}`, type:'number'},
       ]);
       return rows;
     }
@@ -1411,16 +1440,45 @@
         rows.push({ play_title:c.play_title, name:c.name, total_words_spoken:totalWords, ngram_count:ngramCount, count, pct: denom? count/denom : 0 });
       }
       setHeaders([
-        {key:'play_title', label:'Play', defaultDir:'asc'},
-        {key:'name', label:'Character', defaultDir:'asc'},
-        {key:'ngram_count', label: n===1 ? 'Word count' : n===2 ? 'Bigram count' : 'Trigram count'},
-        {key:'count', label:'Hits'},
-        {key:'pct', label:`% of character ${n===1?'words':n===2?'bigrams':'trigrams'}`},
+        {key:'play_title', label:'Play', defaultDir:'asc', type:'text'},
+        {key:'name', label:'Character', defaultDir:'asc', type:'text'},
+        {key:'ngram_count', label: n===1 ? 'Word count' : n===2 ? 'Bigram count' : 'Trigram count', type:'number'},
+        {key:'count', label:'Hits', type:'number'},
+        {key:'pct', label:`% of character ${n===1?'words':n===2?'bigrams':'trigrams'}`, type:'number'},
       ]);
       return rows;
     }
   }
 
+  function applySegmentsFilters(rows) {
+    let out = rows;
+    for (const [key, f] of segmentsColumnFilters.entries()) {
+      if (!f) continue;
+      const type = f.type || 'text';
+      if (type === 'number') {
+        const hasMin = f.min != null && f.min !== '';
+        const hasMax = f.max != null && f.max !== '';
+        if (!hasMin && !hasMax) continue;
+        const isPct = key === 'pct';
+        const minVal = hasMin ? parseFloat(f.min) : -Infinity;
+        const maxVal = hasMax ? parseFloat(f.max) : Infinity;
+        const m = isPct && minVal > 1 ? minVal/100 : minVal;
+        const M = isPct && maxVal > 1 ? maxVal/100 : maxVal;
+        out = out.filter(r => {
+          const v = r[key];
+          if (!Number.isFinite(v)) return false;
+          return v >= m && v <= M;
+        });
+      } else {
+        if (!f.pattern) continue;
+        let re = null;
+        try { re = new RegExp(f.pattern, 'i'); } catch(e) { re = null; }
+        if (!re) continue;
+        out = out.filter(r => re.test(String(r[key] ?? '')));
+      }
+    }
+    return out;
+  }
   function renderRows(rows){
     tbody.innerHTML='';
     if (!rows || rows.length===0){ 
@@ -1428,27 +1486,10 @@
       document.getElementById('segmentsPagination').style.display = 'none';
       return; 
     }
-    
-    // Filter by minimum hits
-    const minHitsVal = parseInt(minHits.value) || 0;
-    if (minHitsVal > 0) {
-      rows = rows.filter(r => (r.count || 0) >= minHitsVal);
-    }
-    // Filter by minimum word count
-    const minWordsVal = parseInt(minWords.value) || 0;
-    if (minWordsVal > 0) {
-      const granVal = gran.value;
-      rows = rows.filter(r => {
-        if (granVal === 'character') return (r.total_words_spoken || 0) >= minWordsVal;
-        if (granVal === 'genre' || granVal === 'play' || granVal === 'act' || granVal === 'scene') return (r.total_words || 0) >= minWordsVal;
-        if (granVal === 'line') {
-          const text = (r.line || '').trim();
-          const wc = text ? text.split(/\s+/).length : 0;
-          return wc >= minWordsVal;
-        }
-        return true;
-      });
-    }
+    // Keep base rows for later re-filtering
+    lastSegmentsBaseRows = rows.slice();
+    // Apply per-column filters
+    rows = applySegmentsFilters(rows);
     if (rows.length === 0) { 
       tbody.innerHTML = '<tr><td colspan="8" class="muted">No results match the filters.</td></tr>'; 
       document.getElementById('segmentsPagination').style.display = 'none';
@@ -1463,6 +1504,93 @@
     segmentsCurrentPage = 1;
     
     renderSegmentsPage();
+  }
+  function refreshSegmentsFromFilters() {
+    if (!lastSegmentsBaseRows || lastSegmentsBaseRows.length === 0) return;
+    let rows = applySegmentsFilters(lastSegmentsBaseRows);
+    if (rows.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="8" class="muted">No results match the filters.</td></tr>';
+      document.getElementById('segmentsPagination').style.display = 'none';
+      return;
+    }
+    rows = sortRows(rows);
+    segmentsAllRows = rows;
+    segmentsCurrentPage = 1;
+    renderSegmentsPage();
+  }
+
+  // Column filter popover
+  let currentFilterPopover = null;
+  function closeFilterPopover() {
+    if (currentFilterPopover && currentFilterPopover.parentNode) {
+      currentFilterPopover.parentNode.removeChild(currentFilterPopover);
+    }
+    currentFilterPopover = null;
+  }
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeFilterPopover(); });
+  document.addEventListener('click', (e) => {
+    if (currentFilterPopover && !currentFilterPopover.contains(e.target) && !(e.target.classList && e.target.classList.contains('filter-icon'))) {
+      closeFilterPopover();
+    }
+  });
+  function showFilterPopover(th, key, type, table) {
+    closeFilterPopover();
+    const rect = th.getBoundingClientRect();
+    const pop = document.createElement('div');
+    pop.className = 'filter-popover';
+    let stateMap = (table === 'lines') ? linesColumnFilters : segmentsColumnFilters;
+    const existing = stateMap.get(key) || { type };
+    if (type === 'number') {
+      pop.innerHTML = `
+        <h4>Filter: ${th.textContent.replace('⚙','').trim()}</h4>
+        <div class="row"><label style="width:3rem;">Min</label><input type="number" step="any" class="f-min" value="${existing.min ?? ''}" placeholder="min"></div>
+        <div class="row"><label style="width:3rem;">Max</label><input type="number" step="any" class="f-max" value="${existing.max ?? ''}" placeholder="max"></div>
+        <div class="actions"><button class="link-btn f-clear">Clear</button><button class="link-btn f-close">Close</button></div>
+        <div class="hint">Tip: for % columns you may enter 5 or 0.05</div>
+      `;
+    } else {
+      pop.innerHTML = `
+        <h4>Filter: ${th.textContent.replace('⚙','').trim()}</h4>
+        <div class="row"><input type="text" class="f-pattern" value="${existing.pattern ?? ''}" placeholder="Regex pattern (case-insensitive)"></div>
+        <div class="actions"><button class="link-btn f-clear">Clear</button><button class="link-btn f-close">Close</button></div>
+        <div class="hint">Examples: ^Act, Juliet$ , love|death</div>
+      `;
+    }
+    document.body.appendChild(pop);
+    currentFilterPopover = pop;
+    const top = rect.bottom + window.scrollY + 6;
+    let left = rect.left + window.scrollX;
+    if (left + pop.offsetWidth > window.scrollX + window.innerWidth) {
+      left = window.scrollX + window.innerWidth - pop.offsetWidth - 12;
+    }
+    pop.style.top = top + 'px';
+    pop.style.left = left + 'px';
+
+    const applyNumber = debounce(() => {
+      const minV = pop.querySelector('.f-min').value;
+      const maxV = pop.querySelector('.f-max').value;
+      if (minV === '' && maxV === '') stateMap.delete(key);
+      else stateMap.set(key, { type: 'number', min: minV, max: maxV });
+      if (table === 'lines') renderLinesPage(); else refreshSegmentsFromFilters();
+    }, 200);
+    const applyText = debounce(() => {
+      const pat = pop.querySelector('.f-pattern').value.trim();
+      if (!pat) stateMap.delete(key);
+      else stateMap.set(key, { type: 'text', pattern: pat });
+      if (table === 'lines') renderLinesPage(); else refreshSegmentsFromFilters();
+    }, 200);
+    if (type === 'number') {
+      pop.querySelector('.f-min').addEventListener('input', applyNumber);
+      pop.querySelector('.f-max').addEventListener('input', applyNumber);
+    } else {
+      pop.querySelector('.f-pattern').addEventListener('input', applyText);
+    }
+    pop.querySelector('.f-clear').addEventListener('click', (e) => {
+      e.preventDefault();
+      stateMap.delete(key);
+      if (table === 'lines') renderLinesPage(); else refreshSegmentsFromFilters();
+    });
+    pop.querySelector('.f-close').addEventListener('click', (e) => { e.preventDefault(); closeFilterPopover(); });
   }
   
   function renderSegmentsPage() {
@@ -1737,14 +1865,7 @@
 
   if (go) go.addEventListener('click', doSearch);
   q.addEventListener('keydown', e => { if (e.key==='Enter') doSearch(); });
-  minHits.addEventListener('input', () => {
-    const query = q.value.trim();
-    if (query) renderRows(buildRows(query));
-  });
-  minWords.addEventListener('input', () => {
-    const query = q.value.trim();
-    if (query) renderRows(buildRows(query));
-  });
+  // per-column filters are handled via header filter icons; removed global min filters
 
   // Select/Deselect all plays
   document.getElementById('selectAllPlays').addEventListener('click', () => {
@@ -2299,12 +2420,12 @@
   function setLinesHeaders() {
     const theadRow = document.getElementById('linesHeadRow');
     const cols = [
-      { key: 'play_title', label: 'Play', defaultDir: 'asc' },
-      { key: 'act', label: 'Act' },
-      { key: 'scene', label: 'Scene' },
-      { key: 'line_num', label: 'Line #' },
-      { key: 'speaker', label: 'Speaker', defaultDir: 'asc' },
-      { key: 'text', label: 'Text', defaultDir: 'asc' }
+      { key: 'play_title', label: 'Play', defaultDir: 'asc', type: 'text' },
+      { key: 'act', label: 'Act', type: 'number' },
+      { key: 'scene', label: 'Scene', type: 'number' },
+      { key: 'line_num', label: 'Line #', type: 'number' },
+      { key: 'speaker', label: 'Speaker', defaultDir: 'asc', type: 'text' },
+      { key: 'text', label: 'Text', defaultDir: 'asc', type: 'text' }
     ];
 
     theadRow.innerHTML = '';
@@ -2312,6 +2433,7 @@
       const th = document.createElement('th');
       th.textContent = c.label;
       th.dataset.key = c.key;
+      th.dataset.type = c.type || 'text';
       if (c.key !== 'text') {
         th.title = 'Click to sort';
         th.style.cursor = 'pointer';
@@ -2327,6 +2449,15 @@
           renderLinesPage();
         });
       }
+      const icon = document.createElement('span');
+      icon.className = 'filter-icon';
+      icon.textContent = '⚙';
+      icon.title = 'Filter this column';
+      icon.addEventListener('click', (e) => {
+        e.stopPropagation();
+        showFilterPopover(th, c.key, (c.type||'text'), 'lines');
+      });
+      th.appendChild(icon);
       theadRow.appendChild(th);
     });
     updateLinesSortIndicators();
@@ -2355,10 +2486,39 @@
     });
   }
 
+  function applyLinesFilters(rows) {
+    if (!rows) return [];
+    let out = rows;
+    for (const [key, f] of linesColumnFilters.entries()) {
+      if (!f) continue;
+      const type = f.type || 'text';
+      if (type === 'number') {
+        const hasMin = f.min != null && f.min !== '';
+        const hasMax = f.max != null && f.max !== '';
+        if (!hasMin && !hasMax) continue;
+        const minVal = hasMin ? parseFloat(f.min) : -Infinity;
+        const maxVal = hasMax ? parseFloat(f.max) : Infinity;
+        out = out.filter(r => {
+          const v = Number(r[key]);
+          if (!Number.isFinite(v)) return false;
+          return v >= minVal && v <= maxVal;
+        });
+      } else {
+        if (!f.pattern) continue;
+        let re = null;
+        try { re = new RegExp(f.pattern, 'i'); } catch(e) { re = null; }
+        if (!re) continue;
+        out = out.filter(r => re.test(String(r[key] ?? '')));
+      }
+    }
+    return out;
+  }
+
   function renderLinesPage() {
     const tbody = document.getElementById('linesTableBody');
-    const totalPages = getTotalPages(linesAllRows.length, linesPageSize);
-    const paginatedRows = paginateArray(linesAllRows, linesCurrentPage, linesPageSize);
+    const filtered = applyLinesFilters(linesAllRows);
+    const totalPages = getTotalPages(filtered.length, linesPageSize);
+    const paginatedRows = paginateArray(filtered, linesCurrentPage, linesPageSize);
 
     tbody.innerHTML = '';
     for (const row of paginatedRows) {
@@ -2377,10 +2537,10 @@
     updateLinesSortIndicators();
 
     const paginationDiv = document.getElementById('linesPagination');
-    paginationDiv.style.display = linesAllRows.length > 25 ? 'flex' : 'none';
+    paginationDiv.style.display = filtered.length > 25 ? 'flex' : 'none';
 
     document.getElementById('linesPageInfo').textContent = `Page ${linesCurrentPage} of ${totalPages}`;
-    document.getElementById('linesTotalInfo').textContent = `(${linesAllRows.length} total lines)`;
+    document.getElementById('linesTotalInfo').textContent = `(${filtered.length} total lines)`;
 
     document.getElementById('linesFirstPage').disabled = linesCurrentPage === 1;
     document.getElementById('linesPrevPage').disabled = linesCurrentPage === 1;
