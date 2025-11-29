@@ -255,21 +255,46 @@ def build(tei_dir: Path, out_dir: Path):
     # Attach sex to characters using metadata and heuristics
     def _heuristic_sex_from_name(name: str) -> str:
         n = _norm_name(name)
-        # clear common punctuation
         n2 = re.sub(r"[^A-Z\s]", " ", n)
-        # explicit role titles
-        female_words = ["QUEEN","LADY","PRINCESS","MISTRESS","GENTLEWOMAN","NURSE","MAID","MOTHER","WITCH"]
-        male_words = ["KING","LORD","DUKE","PRINCE","SIR","GENTLEMAN","FATHER","CAPTAIN","SERVANT","MESSENGER","BOY"]
+        # Strong female role/title cues
+        female_words = [
+            "QUEEN","LADY","PRINCESS","MISTRESS","GENTLEWOMAN","NURSE","MAID",
+            "MOTHER","WITCH","COUNTESS","DUCHESS","WIFE","DAUGHTER","PRIESTESS"
+        ]
+        # Strong male role/title cues
+        male_words = [
+            "KING","LORD","EARL","DUKE","PRINCE","SIR","GENTLEMAN","FATHER",
+            "CAPTAIN","SERVANT","MESSENGER","BOY","CONSTABLE"
+        ]
         if any(re.search(fr"\b{w}\b", n2) for w in female_words):
             return 'F'
         if any(re.search(fr"\b{w}\b", n2) for w in male_words):
             return 'M'
-        # some common given names (not exhaustive)
-        female_names = {"JULIET","DESDEMONA","OPHELIA","PORTIA","ROSALIND","HERMIA","HELENA","HIPPOLYTA","OLIVIA","VIOLA","BIANCA","EMILIA","KATHERINA","KATE","CLEOPATRA","CORDELIA","MIRANDA","TAMORA","IMOGEN","JESSICA","ANNE","AEMILIA","MISTRESS QUICKLY"}
-        male_names = {"ROMEO","HAMLET","OTHELLO","IAGO","MACBETH","BANQUO","LEAR","PROSPERO","ANTONY","PROTEUS","VALENTINE","BEROWNE","FALSTAFF","SHYLOCK","BASSANIO","BENEDICK","CLAUDIO","PETRUCHIO","HENRY","RICHARD","JOHN","ANTIPHOLUS","DROMIO","ORSINO"}
-        if _norm_name(name) in female_names: return 'F'
-        if _norm_name(name) in male_names: return 'M'
-        return 'U'
+        # Common female given names and heroines (not exhaustive)
+        female_names = {
+            "JULIET","DESDEMONA","OPHELIA","PORTIA","NERISSA","ROSALIND","CELIA","HERMIA","HELENA",
+            "HIPPOLYTA","OLIVIA","VIOLA","MARIA","BIANCA","EMILIA","KATHERINA","KATE","CLEOPATRA",
+            "OCTAVIA","CORDELIA","REGAN","GONERIL","GERTRUDE","MIRANDA","TAMORA","LAVINIA","IMOGEN",
+            "JESSICA","ANNE","PAULINA","PERDITA","CONSTANCE","MARGARET","KATHERINE","KATHARINE",
+            "JULIA","SYLVIA","VIOLA","LUCIANA","ADRIANA","VIOLA","OPHELIA","BEATRICE","HERO",
+            "VIOLA","OLIVIA","VIOLA","VIOLA"
+        }
+        male_names = {
+            "ROMEO","HAMLET","OTHELLO","IAGO","MACBETH","BANQUO","LEAR","PROSPERO","ANTONY",
+            "PROTEUS","VALENTINE","BEROWNE","FALSTAFF","SHYLOCK","BASSANIO","BENEDICK","CLAUDIO",
+            "PETRUCHIO","HENRY","RICHARD","JOHN","ANTIPHOLUS","DROMIO","ORSINO","PARIS","TYBALT",
+            "MERCUTIO","HORATIO","POLONIUS","LAERTES","CASSIO","RODERIGO","BRUTUS","CASSIUS","CAESAR"
+        }
+        if n in female_names:
+            return 'F'
+        if n in male_names:
+            return 'M'
+        # Rare genuinely unclear cases
+        unknown_names = {"ARIEL"}
+        if n in unknown_names:
+            return 'U'
+        # Default majority case: male
+        return 'M'
     for ch in characters_rows:
         pid = ch.get("play_id"); nm = ch.get("name")
         sex = character_meta_map.get((pid, _norm_name(nm)))
