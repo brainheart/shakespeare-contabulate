@@ -339,9 +339,9 @@
         <div class="color-scale-options">
           <label>Palette:
             <select class="color-scale-palette">
-              <option value="blue-diverging" selected>Blue (white center)</option>
-              <option value="blue-linear">Blue (light→dark)</option>
-              <option value="burgundy-gold">Burgundy→Gold</option>
+              <option value="blue-diverging" selected>Gray ↔ Blue (default)</option>
+              <option value="blue-linear">Gray ↔ Blue (alt)</option>
+              <option value="burgundy-gold">Gold ↔ Burgundy</option>
             </select>
           </label>
           <label>Steps:
@@ -498,9 +498,9 @@
         <div class="color-scale-options">
           <label>Palette:
             <select class="color-scale-palette">
-              <option value="blue-diverging" selected>Blue (white center)</option>
-              <option value="blue-linear">Blue (light→dark)</option>
-              <option value="burgundy-gold">Burgundy→Gold</option>
+              <option value="blue-diverging" selected>Gray ↔ Blue (default)</option>
+              <option value="blue-linear">Gray ↔ Blue (alt)</option>
+              <option value="burgundy-gold">Gold ↔ Burgundy</option>
             </select>
           </label>
           <label>Steps:
@@ -560,6 +560,14 @@
   function syncColorScaleToggles() {
     document.querySelectorAll('.color-scale-toggle').forEach(cb => {
       if (cb) cb.checked = colorScaleEnabled;
+    });
+  }
+  function syncColorScaleOptions() {
+    document.querySelectorAll('.color-scale-palette').forEach(sel => {
+      if (sel) sel.value = colorScalePalette;
+    });
+    document.querySelectorAll('.color-scale-steps').forEach(sel => {
+      if (sel) sel.value = String(colorScaleSteps);
     });
   }
   function setColorScaleEnabled(v) {
@@ -2145,13 +2153,14 @@
   });
   // Palette and steps options
   document.querySelectorAll('.color-scale-palette').forEach(sel => {
-    sel.addEventListener('change', e => { colorScalePalette = e.target.value; applyColorScalesForVisibleTables(); });
+    sel.addEventListener('change', e => { colorScalePalette = e.target.value; syncColorScaleOptions(); applyColorScalesForVisibleTables(); });
   });
   document.querySelectorAll('.color-scale-steps').forEach(sel => {
-    sel.addEventListener('change', e => { colorScaleSteps = parseInt(e.target.value)||5; applyColorScalesForVisibleTables(); });
+    sel.addEventListener('change', e => { colorScaleSteps = parseInt(e.target.value)||5; syncColorScaleOptions(); applyColorScalesForVisibleTables(); });
   });
   // Ensure initial sync
   syncColorScaleToggles();
+  syncColorScaleOptions();
   renderAllLegends();
 
   // Lines tab state
