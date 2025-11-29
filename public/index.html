@@ -1440,8 +1440,8 @@
         rows.push({ play_title:c.play_title, name:c.name, total_words_spoken:totalWords, ngram_count:ngramCount, count, pct: denom? count/denom : 0 });
       }
       setHeaders([
-        {key:'play_title', label:'Play', defaultDir:'asc', type:'text'},
         {key:'name', label:'Character', defaultDir:'asc', type:'text'},
+        {key:'play_title', label:'Play', defaultDir:'asc', type:'text'},
         {key:'ngram_count', label: n===1 ? 'Word count' : n===2 ? 'Bigram count' : 'Trigram count', type:'number'},
         {key:'count', label:'Hits', type:'number'},
         {key:'pct', label:`% of character ${n===1?'words':n===2?'bigrams':'trigrams'}`, type:'number'},
