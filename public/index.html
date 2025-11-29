@@ -376,10 +376,7 @@
       </div>
       <div class="color-scale-legend"></div>
       <div class="deep-link-wrap" style="margin-top: .25rem; font-size: 0.95rem;">
-        <strong>Deep Link:</strong>
-        <a class="deep-link" href="#" target="_blank" rel="noopener" style="margin-left: .25rem;">link</a>
-        <input class="deep-link-input" type="text" readonly style="width: 40ch; margin-left: .5rem;" />
-        <button class="deep-link-copy" type="button" style="padding: 0.2rem 0.5rem; font-size: 0.9rem;">Copy</button>
+        <a class="deep-link" href="#" target="_blank" rel="noopener" style="word-break: break-all;"></a>
       </div>
     </details>
 
@@ -531,10 +528,7 @@
       </div>
       <div class="color-scale-legend"></div>
       <div class="deep-link-wrap" style="margin-top: .25rem; font-size: 0.95rem;">
-        <strong>Deep Link:</strong>
-        <a class="deep-link" href="#" target="_blank" rel="noopener" style="margin-left: .25rem;">link</a>
-        <input class="deep-link-input" type="text" readonly style="width: 40ch; margin-left: .5rem;" />
-        <button class="deep-link-copy" type="button" style="padding: 0.2rem 0.5rem; font-size: 0.9rem;">Copy</button>
+        <a class="deep-link" href="#" target="_blank" rel="noopener" style="word-break: break-all;"></a>
       </div>
     </details>
 
@@ -775,13 +769,7 @@
   function updateDeepLink() {
     const p = buildQueryParamsFromState();
     const url = location.origin + location.pathname + '?' + p.toString();
-    document.querySelectorAll('.deep-link').forEach(a => { a.href = url; a.textContent = 'link'; });
-    document.querySelectorAll('.deep-link-input').forEach(inp => { inp.value = url; });
-    document.querySelectorAll('.deep-link-copy').forEach(btn => {
-      btn.onclick = async () => {
-        try { await navigator.clipboard.writeText(url); btn.textContent = 'Copied'; setTimeout(()=>btn.textContent='Copy',1000); } catch(e) {}
-      };
-    });
+    document.querySelectorAll('.deep-link').forEach(a => { a.href = url; a.textContent = url; });
   }
   function getPalette(name, steps) {
     steps = parseInt(steps) || 5;
