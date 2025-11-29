@@ -709,10 +709,17 @@
   const linesColumnFilters = new Map();
   // Deep link: encode/decode state
   function encodeState(obj) {
-    try { return btoa(unescape(encodeURIComponent(JSON.stringify(obj)))); } catch(e) { return ''; }
+    try {
+      const b64 = btoa(unescape(encodeURIComponent(JSON.stringify(obj))));
+      return encodeURIComponent(b64); // URL-safe
+    } catch(e) { return ''; }
   }
   function decodeState(s) {
-    try { return JSON.parse(decodeURIComponent(escape(atob(s)))); } catch(e) { return null; }
+    try {
+      // URLSearchParams already decodes %; ensure '+' restored if browser converted it to space
+      const b64 = (s || '').replace(/ /g, '+');
+      return JSON.parse(decodeURIComponent(escape(atob(b64))));
+    } catch(e) { return null; }
   }
   function getActiveTab() {
     const btn = document.querySelector('.tab-btn.active');
