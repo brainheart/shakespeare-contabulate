@@ -786,7 +786,7 @@
     return res.json();
   }
 
-  let chunks=[], tokens={}, tokens2={}, tokens3={}, plays=[], characters=[], tokensChar={}, tokensChar2={}, tokensChar3={}, allLines=[], characterSexMeta=[];
+  let chunks=[], tokens={}, tokens2={}, tokens3={}, plays=[], characters=[], tokensChar={}, tokensChar2={}, tokensChar3={}, allLines=[];
   try {
     [chunks, tokens, tokens2, tokens3, plays, characters, tokensChar, tokensChar2, tokensChar3] = await Promise.all([
       loadJSON('data/chunks.json'),
@@ -804,12 +804,6 @@
     return;
   }
 
-  // Optional character sex metadata
-  try {
-    characterSexMeta = await loadJSON('data/character_sex.json');
-  } catch(e) {
-    characterSexMeta = [];
-  }
 
   // Load line data
   try {
@@ -822,16 +816,8 @@
   const playsById = new Map(plays.map(p => [p.play_id, p]));
   const charactersById = new Map(characters.map(c => [c.character_id, c]));
 
-  // Build lookup for character sex by (play_id, name)
+  // Fallback heuristic if sex is not included in characters.json
   function normName(s){ return String(s||'').toUpperCase().replace(/\s+/g,' ').trim(); }
-  const characterSexByPlayAndName = new Map();
-  if (Array.isArray(characterSexMeta)) {
-    for (const rec of characterSexMeta) {
-      if (rec && (rec.play_id!=null) && rec.name && rec.sex) {
-        characterSexByPlayAndName.set(`${rec.play_id}::${normName(rec.name)}`, String(rec.sex).toUpperCase());
-      }
-    }
-  }
   function heuristicSexFromName(name){
     const n = normName(name);
     if (/\bQUEEN\b|\bLADY\b|\bPRINCESS\b|\bMISTRESS\b|\bMIST\.?\b|\bWOMAN\b|\bGENTLEWOMAN\b|\bNURSE\b|\bMAID\b/.test(n)) return 'F';
@@ -840,11 +826,7 @@
     if (/\bFATHER\b|\bFATHER\b/.test(n)) return 'M';
     return 'U';
   }
-  function lookupSex(play_id, name){
-    const k = `${play_id}::${normName(name)}`;
-    if (characterSexByPlayAndName.has(k)) return characterSexByPlayAndName.get(k);
-    return heuristicSexFromName(name);
-  }
+  function lookupSexFromRecord(rec){ return (rec && rec.sex) ? String(rec.sex).toUpperCase() : null; }
 
   // Ngrams tab state
   let ngramsSelectedSegments = new Set();
@@ -1468,7 +1450,7 @@
         const denom = denomFor(n,'character',c);
         const totalWords = c.total_words_spoken || 0;
         const ngramCount = Math.max(0, totalWords - (n - 1));
-        const sex = lookupSex(c.play_id, c.name);
+        const sex = lookupSexFromRecord(c) || heuristicSexFromName(c.name);
         rows.push({ play_title:c.play_title, name:c.name, sex, total_words_spoken:totalWords, ngram_count:ngramCount, count, pct: denom? count/denom : 0 });
       }
       setHeaders([

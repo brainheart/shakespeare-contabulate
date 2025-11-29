@@ -1,0 +1,18 @@
+{
+  "characters": [
+    { "play_id": 26, "name": "ROMEO", "sex": "M" },
+    { "play_id": 26, "name": "JULIET", "sex": "F" },
+    { "play_id": 7,  "name": "HAMLET", "sex": "M" },
+    { "play_id": 7,  "name": "OPHELIA", "sex": "F" },
+    { "play_id": 22, "name": "OTHELLO", "sex": "M" },
+    { "play_id": 22, "name": "IAGO", "sex": "M" },
+    { "play_id": 22, "name": "DESDEMONA", "sex": "F" },
+    { "play_id": 19, "name": "MACBETH", "sex": "M" },
+    { "play_id": 19, "name": "LADY MACBETH", "sex": "F" },
+    { "play_id": 17, "name": "KING LEAR", "sex": "M" },
+    { "play_id": 17, "name": "CORDELIA", "sex": "F" },
+    { "play_id": 31, "name": "PROSPERO", "sex": "M" },
+    { "play_id": 31, "name": "MIRANDA", "sex": "F" }
+  ]
+}
+

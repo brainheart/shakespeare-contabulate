@@ -174,6 +174,24 @@ def build(tei_dir: Path, out_dir: Path):
             metadata_json = json.load(f)
             for item in metadata_json.get("plays", []):
                 play_metadata_map[item["filename"]] = item
+
+    # Load optional character metadata (e.g., sex) keyed by (play_id, name)
+    char_meta_path = Path(__file__).parent / "character_metadata.json"
+    def _norm_name(s: str) -> str:
+        return (s or "").upper().strip().replace("\n", " ").replace("\r", " ")
+    character_meta_map = {}
+    if char_meta_path.exists():
+        try:
+            with open(char_meta_path, 'r', encoding='utf-8') as f:
+                meta_json = json.load(f)
+                for rec in meta_json.get("characters", []):
+                    pid = rec.get("play_id")
+                    nm = rec.get("name")
+                    sex = rec.get("sex")
+                    if pid is None or not nm or not sex: continue
+                    character_meta_map[(int(pid), _norm_name(nm))] = sex.upper()
+        except Exception:
+            character_meta_map = {}
     
     plays=[]; scenes_all=[]; token_idx_all={}; token2_idx_all={}; token3_idx_all={}; characters_rows=[]; tokens_char_idx={}; tokens_char2_idx={}; tokens_char3_idx={}
     all_lines = []  # Collect all lines from all plays with global metadata
@@ -234,6 +252,31 @@ def build(tei_dir: Path, out_dir: Path):
             for tok, cnt in tokdict.items():
                 tokens_char3_idx.setdefault(tok, []).append((cid, cnt))
         plays.append(play_row); play_id += 1
+    # Attach sex to characters using metadata and heuristics
+    def _heuristic_sex_from_name(name: str) -> str:
+        n = _norm_name(name)
+        # clear common punctuation
+        n2 = re.sub(r"[^A-Z\s]", " ", n)
+        # explicit role titles
+        female_words = ["QUEEN","LADY","PRINCESS","MISTRESS","GENTLEWOMAN","NURSE","MAID","MOTHER","WITCH"]
+        male_words = ["KING","LORD","DUKE","PRINCE","SIR","GENTLEMAN","FATHER","CAPTAIN","SERVANT","MESSENGER","BOY"]
+        if any(re.search(fr"\b{w}\b", n2) for w in female_words):
+            return 'F'
+        if any(re.search(fr"\b{w}\b", n2) for w in male_words):
+            return 'M'
+        # some common given names (not exhaustive)
+        female_names = {"JULIET","DESDEMONA","OPHELIA","PORTIA","ROSALIND","HERMIA","HELENA","HIPPOLYTA","OLIVIA","VIOLA","BIANCA","EMILIA","KATHERINA","KATE","CLEOPATRA","CORDELIA","MIRANDA","TAMORA","IMOGEN","JESSICA","ANNE","AEMILIA","MISTRESS QUICKLY"}
+        male_names = {"ROMEO","HAMLET","OTHELLO","IAGO","MACBETH","BANQUO","LEAR","PROSPERO","ANTONY","PROTEUS","VALENTINE","BEROWNE","FALSTAFF","SHYLOCK","BASSANIO","BENEDICK","CLAUDIO","PETRUCHIO","HENRY","RICHARD","JOHN","ANTIPHOLUS","DROMIO","ORSINO"}
+        if _norm_name(name) in female_names: return 'F'
+        if _norm_name(name) in male_names: return 'M'
+        return 'U'
+    for ch in characters_rows:
+        pid = ch.get("play_id"); nm = ch.get("name")
+        sex = character_meta_map.get((pid, _norm_name(nm)))
+        if not sex:
+            sex = _heuristic_sex_from_name(nm)
+        ch["sex"] = sex
+
     (data_dir / "plays.json").write_text(json.dumps(plays, ensure_ascii=False), encoding="utf-8")
     (data_dir / "chunks.json").write_text(json.dumps(scenes_all, ensure_ascii=False), encoding="utf-8")
     (data_dir / "characters.json").write_text(json.dumps(characters_rows, ensure_ascii=False), encoding="utf-8")
