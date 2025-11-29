@@ -677,12 +677,14 @@
       const base7 = ['rgb(180,180,180)','rgb(200,200,200)','rgb(220,220,220)','rgb(250,250,250)','rgb(150,175,185)','rgb(110,140,160)','rgb(0,63,92)'];
       return clampSteps(steps === 7 ? base7 : base5);
     } else if (name === 'blue-linear') {
-      const base5 = ['rgb(230,240,245)','rgb(190,210,222)','rgb(150,180,200)','rgb(90,120,150)','rgb(0,63,92)'];
-      const base7 = ['rgb(240,245,248)','rgb(210,225,235)','rgb(180,205,220)','rgb(150,180,200)','rgb(120,155,180)','rgb(80,110,140)','rgb(0,63,92)'];
+      // Convert to diverging with white center and dark extremes
+      const base5 = ['rgb(120,120,120)','rgb(176,176,176)','rgb(250,250,250)','rgb(134,164,177)','rgb(0,63,92)'];
+      const base7 = ['rgb(110,110,110)','rgb(150,150,150)','rgb(190,190,190)','rgb(250,250,250)','rgb(160,180,190)','rgb(110,140,160)','rgb(0,63,92)'];
       return clampSteps(steps === 7 ? base7 : base5);
     } else if (name === 'burgundy-gold') {
-      const base5 = ['rgb(240,237,229)','rgb(230,220,200)','rgb(212,175,55)','rgb(170,110,120)','rgb(139,21,56)'];
-      const base7 = ['rgb(245,242,235)','rgb(235,228,210)','rgb(225,210,180)','rgb(212,175,55)','rgb(185,130,135)','rgb(160,90,110)','rgb(139,21,56)'];
+      // Diverging: dark earthy gold -> white -> dark burgundy
+      const base5 = ['rgb(120,100,40)','rgb(190,170,90)','rgb(250,250,250)','rgb(170,110,120)','rgb(139,21,56)'];
+      const base7 = ['rgb(110,90,35)','rgb(150,130,60)','rgb(200,180,100)','rgb(250,250,250)','rgb(185,130,135)','rgb(160,90,110)','rgb(139,21,56)'];
       return clampSteps(steps === 7 ? base7 : base5);
     }
     return getPalette('blue-diverging', steps);
