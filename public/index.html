@@ -1147,6 +1147,7 @@
     const sp = new URLSearchParams(location.search);
     // New readable params first
     if (sp.has('tab') || sp.has('q') || sp.has('l_q')) {
+      appliedDeepLinkState = true;
       try {
         // Display
         if (sp.has('cs')) colorScaleEnabled = sp.get('cs') === '1';
@@ -1173,13 +1174,12 @@
             segmentsColumnFilters.set(key, { type:'text', pattern: v || '' });
           }
         }
-        // Trigger render for segments
-        const qv = q.value.trim(); if (qv) doSearch();
-        applyColorScalesForVisibleTables();
-        appliedDeepLinkState = true;
-        updateDeepLink();
-        return;
-      } catch(e) { /* fall through to legacy */ }
+      } catch(e) { /* continue to finally */ }
+      // Trigger render for segments regardless
+      const qv = q.value.trim(); if (qv) doSearch();
+      applyColorScalesForVisibleTables();
+      updateDeepLink();
+      return;
     }
     // Legacy base64 fallback
     const enc = sp.get('state');
