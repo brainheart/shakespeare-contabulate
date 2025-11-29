@@ -704,6 +704,9 @@
   // Sort state defaults (declare before deep-link logic uses them)
   let sortKey = null, sortDir = 'desc';
   let linesSortKey = 'line_num', linesSortDir = 'asc';
+  // Column filters maps (declare early for deep-link)
+  const segmentsColumnFilters = new Map();
+  const linesColumnFilters = new Map();
   // Deep link: encode/decode state
   function encodeState(obj) {
     try { return btoa(unescape(encodeURIComponent(JSON.stringify(obj)))); } catch(e) { return ''; }
@@ -1254,9 +1257,7 @@
 
   
   let ngramsSortKey = 'totalCount', ngramsSortDir = 'desc';
-  // Column filters state
-  const segmentsColumnFilters = new Map(); // key -> {type: 'number'|'text', min?, max?, pattern?}
-  const linesColumnFilters = new Map();
+  // Column filters state (moved earlier)
   let lastSegmentsBaseRows = [];
   
   function setHeaders(cols){
