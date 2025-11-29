@@ -672,9 +672,9 @@
       return out;
     };
     if (name === 'blue-diverging') {
-      // Ensure white at the center for odd steps
-      const base5 = ['rgb(209, 209, 209)','rgb(176, 176, 176)','rgb(250, 250, 250)','rgb(134, 164, 177)','rgb(0, 63, 92)'];
-      const base7 = ['rgb(220,220,220)','rgb(200,200,200)','rgb(180,180,180)','rgb(250,250,250)','rgb(150,175,185)','rgb(110,140,160)','rgb(0,63,92)'];
+      // Ensure white at center and darkest gray at the low end
+      const base5 = ['rgb(176, 176, 176)','rgb(209, 209, 209)','rgb(250, 250, 250)','rgb(134, 164, 177)','rgb(0, 63, 92)'];
+      const base7 = ['rgb(180,180,180)','rgb(200,200,200)','rgb(220,220,220)','rgb(250,250,250)','rgb(150,175,185)','rgb(110,140,160)','rgb(0,63,92)'];
       return clampSteps(steps === 7 ? base7 : base5);
     } else if (name === 'blue-linear') {
       const base5 = ['rgb(230,240,245)','rgb(190,210,222)','rgb(150,180,200)','rgb(90,120,150)','rgb(0,63,92)'];
