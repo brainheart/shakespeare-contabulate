@@ -375,6 +375,12 @@
         </div>
       </div>
       <div class="color-scale-legend"></div>
+      <div class="deep-link-wrap" style="margin-top: .25rem; font-size: 0.95rem;">
+        <strong>Deep Link:</strong>
+        <a class="deep-link" href="#" target="_blank" rel="noopener" style="margin-left: .25rem;">link</a>
+        <input class="deep-link-input" type="text" readonly style="width: 40ch; margin-left: .5rem;" />
+        <button class="deep-link-copy" type="button" style="padding: 0.2rem 0.5rem; font-size: 0.9rem;">Copy</button>
+      </div>
     </details>
 
     <table id="results">
@@ -524,6 +530,12 @@
         </div>
       </div>
       <div class="color-scale-legend"></div>
+      <div class="deep-link-wrap" style="margin-top: .25rem; font-size: 0.95rem;">
+        <strong>Deep Link:</strong>
+        <a class="deep-link" href="#" target="_blank" rel="noopener" style="margin-left: .25rem;">link</a>
+        <input class="deep-link-input" type="text" readonly style="width: 40ch; margin-left: .5rem;" />
+        <button class="deep-link-copy" type="button" style="padding: 0.2rem 0.5rem; font-size: 0.9rem;">Copy</button>
+      </div>
     </details>
 
     <table id="linesResults">
@@ -688,6 +700,70 @@
     applyOrClear('#ngramsTable');
     applyOrClear('#linesResults');
     renderAllLegends();
+  }
+  // Deep link: encode/decode state
+  function encodeState(obj) {
+    try { return btoa(unescape(encodeURIComponent(JSON.stringify(obj)))); } catch(e) { return ''; }
+  }
+  function decodeState(s) {
+    try { return JSON.parse(decodeURIComponent(escape(atob(s)))); } catch(e) { return null; }
+  }
+  function getActiveTab() {
+    const btn = document.querySelector('.tab-btn.active');
+    return btn ? btn.dataset.tab : 'segments';
+  }
+  function mapToArray(m) {
+    const out = [];
+    if (!m) return out;
+    for (const [key, v] of m.entries()) {
+      const o = { key, type: v.type };
+      if (v.type === 'number') { o.min = v.min ?? ''; o.max = v.max ?? ''; }
+      if (v.type === 'text') { o.pattern = v.pattern ?? ''; }
+      out.push(o);
+    }
+    return out;
+  }
+  function arrayToMap(arr) {
+    const m = new Map();
+    if (!Array.isArray(arr)) return m;
+    for (const it of arr) {
+      if (!it || !it.key) continue;
+      if (it.type === 'number') m.set(it.key, { type:'number', min: it.min ?? '', max: it.max ?? '' });
+      else if (it.type === 'text') m.set(it.key, { type:'text', pattern: it.pattern ?? '' });
+    }
+    return m;
+  }
+  function buildStateObject() {
+    return {
+      tab: getActiveTab(),
+      display: {
+        colorScaleEnabled, colorScalePalette, colorScaleSteps, highlightEnabled
+      },
+      segments: {
+        q: q.value.trim(), ngramMode: ngramMode.value, gran: gran.value, matchMode: matchMode.value,
+        sortKey, sortDir,
+        filters: mapToArray(segmentsColumnFilters)
+      },
+      lines: {
+        q: (document.getElementById('linesQuery').value || '').trim(),
+        ngramMode: document.getElementById('linesNgramMode').value,
+        matchMode: document.getElementById('linesMatchMode').value,
+        sortKey: linesSortKey, sortDir: linesSortDir,
+        filters: mapToArray(linesColumnFilters)
+      }
+    };
+  }
+  function updateDeepLink() {
+    const state = buildStateObject();
+    const enc = encodeState(state);
+    const url = location.origin + location.pathname + (enc ? ('?state=' + enc) : '');
+    document.querySelectorAll('.deep-link').forEach(a => { a.href = url; a.textContent = 'link'; });
+    document.querySelectorAll('.deep-link-input').forEach(inp => { inp.value = url; });
+    document.querySelectorAll('.deep-link-copy').forEach(btn => {
+      btn.onclick = async () => {
+        try { await navigator.clipboard.writeText(url); btn.textContent = 'Copied'; setTimeout(()=>btn.textContent='Copy',1000); } catch(e) {}
+      };
+    });
   }
   function getPalette(name, steps) {
     steps = parseInt(steps) || 5;
@@ -1051,6 +1127,64 @@
   }
   
   initSegmentSelectors();
+  // Apply state from deep link if present
+  (function applyStateFromURL(){
+    const sp = new URLSearchParams(location.search);
+    const enc = sp.get('state');
+    if (!enc) { updateDeepLink(); return; }
+    const st = decodeState(enc);
+    if (!st) { updateDeepLink(); return; }
+    try {
+      // Display
+      if (st.display) {
+        if (typeof st.display.colorScaleEnabled === 'boolean') colorScaleEnabled = st.display.colorScaleEnabled;
+        if (st.display.colorScalePalette) colorScalePalette = st.display.colorScalePalette;
+        if (st.display.colorScaleSteps) colorScaleSteps = st.display.colorScaleSteps;
+        if (typeof st.display.highlightEnabled === 'boolean') highlightEnabled = st.display.highlightEnabled;
+        syncColorScaleToggles(); syncColorScaleOptions(); syncHighlightToggles();
+      }
+      // Tab
+      if (st.tab) {
+        const btn = document.querySelector(`.tab-btn[data-tab="${st.tab}"]`);
+        if (btn) btn.click();
+      }
+      // Segments
+      if (st.segments) {
+        if (st.segments.q != null) q.value = st.segments.q;
+        if (st.segments.ngramMode) ngramMode.value = st.segments.ngramMode;
+        if (st.segments.gran) gran.value = st.segments.gran;
+        if (st.segments.matchMode) matchMode.value = st.segments.matchMode;
+        if (st.segments.sortKey) sortKey = st.segments.sortKey;
+        if (st.segments.sortDir) sortDir = st.segments.sortDir;
+        segmentsColumnFilters.clear();
+        if (st.segments.filters) {
+          const m = arrayToMap(st.segments.filters);
+          for (const [k,v] of m.entries()) segmentsColumnFilters.set(k,v);
+        }
+      }
+      // Lines
+      if (st.lines) {
+        const lq = document.getElementById('linesQuery');
+        if (st.lines.q != null) lq.value = st.lines.q;
+        const ln = document.getElementById('linesNgramMode');
+        if (st.lines.ngramMode) ln.value = st.lines.ngramMode;
+        const lm = document.getElementById('linesMatchMode');
+        if (st.lines.matchMode) lm.value = st.lines.matchMode;
+        if (st.lines.sortKey) linesSortKey = st.lines.sortKey;
+        if (st.lines.sortDir) linesSortDir = st.lines.sortDir;
+        linesColumnFilters.clear();
+        if (st.lines.filters) {
+          const m2 = arrayToMap(st.lines.filters);
+          for (const [k,v] of m2.entries()) linesColumnFilters.set(k,v);
+        }
+      }
+      // Trigger renders
+      const qv = q.value.trim(); if (qv) doSearch();
+      const lqv = document.getElementById('linesQuery').value.trim(); if (lqv) doLinesSearch();
+      applyColorScalesForVisibleTables();
+    } catch(e) { /* ignore */ }
+    updateDeepLink();
+  })();
   
   // No selectedPlayIds — include all plays; use header filters to refine
   function fmtPct(num) { return (num*100).toFixed(3) + '%'; }
@@ -1636,6 +1770,7 @@
     document.getElementById('segmentsLastPage').disabled = segmentsCurrentPage === totalPages;
     // Apply color scales if enabled
     applyOrClear('#results');
+    updateDeepLink();
   }
 
   // removed copy/jump actions
@@ -1790,6 +1925,8 @@
       go.textContent = 'Refresh';
     }
   }
+  // Update deep link initially
+  updateDeepLink();
   
   function saveSegmentsState() {
     lastSegmentsState = {
@@ -1800,6 +1937,7 @@
     };
     segmentsPendingChanges = false;
     updateSegmentsRefreshButton();
+    updateDeepLink();
   }
   
   // Check if ngrams settings have changed
@@ -2285,10 +2423,10 @@
   });
   // Palette and steps options
   document.querySelectorAll('.color-scale-palette').forEach(sel => {
-    sel.addEventListener('change', e => { colorScalePalette = e.target.value; syncColorScaleOptions(); applyColorScalesForVisibleTables(); });
+    sel.addEventListener('change', e => { colorScalePalette = e.target.value; syncColorScaleOptions(); applyColorScalesForVisibleTables(); updateDeepLink(); });
   });
   document.querySelectorAll('.color-scale-steps').forEach(sel => {
-    sel.addEventListener('change', e => { colorScaleSteps = parseInt(e.target.value)||5; syncColorScaleOptions(); applyColorScalesForVisibleTables(); });
+    sel.addEventListener('change', e => { colorScaleSteps = parseInt(e.target.value)||5; syncColorScaleOptions(); applyColorScalesForVisibleTables(); updateDeepLink(); });
   });
   // Ensure initial sync
   syncColorScaleToggles();
@@ -2296,7 +2434,7 @@
   renderAllLegends();
   // Highlight toggle handlers
   document.querySelectorAll('.highlight-toggle').forEach(cb => {
-    cb.addEventListener('change', (e) => setHighlightEnabled(e.target.checked));
+    cb.addEventListener('change', (e) => { setHighlightEnabled(e.target.checked); updateDeepLink(); });
   });
   syncHighlightToggles();
 
@@ -2521,6 +2659,7 @@
     document.getElementById('linesLastPage').disabled = linesCurrentPage === totalPages;
     // Apply color scales if enabled
     applyOrClear('#linesResults');
+    updateDeepLink();
   }
 
   function doLinesSearch() {
