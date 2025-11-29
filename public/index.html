@@ -770,6 +770,13 @@
     }
     return out;
   }
+  // Legacy base64 state decoder for backward compatibility
+  function decodeState(s) {
+    try {
+      const b64 = (s || '').replace(/ /g, '+');
+      return JSON.parse(decodeURIComponent(escape(atob(b64))));
+    } catch(e) { return null; }
+  }
   function arrayToMap(arr) {
     const m = new Map();
     if (!Array.isArray(arr)) return m;
