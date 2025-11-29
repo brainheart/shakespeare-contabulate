@@ -707,19 +707,52 @@
   // Column filters maps (declare early for deep-link)
   const segmentsColumnFilters = new Map();
   const linesColumnFilters = new Map();
-  // Deep link: encode/decode state
-  function encodeState(obj) {
-    try {
-      const b64 = btoa(unescape(encodeURIComponent(JSON.stringify(obj))));
-      return encodeURIComponent(b64); // URL-safe
-    } catch(e) { return ''; }
-  }
-  function decodeState(s) {
-    try {
-      // URLSearchParams already decodes %; ensure '+' restored if browser converted it to space
-      const b64 = (s || '').replace(/ /g, '+');
-      return JSON.parse(decodeURIComponent(escape(atob(b64))));
-    } catch(e) { return null; }
+  // Deep link: human-readable query params (fallback to legacy base64 `state`)
+  function buildQueryParamsFromState() {
+    const p = new URLSearchParams();
+    // Tab
+    p.set('tab', getActiveTab());
+    // Display
+    p.set('cs', colorScaleEnabled ? '1' : '0');
+    p.set('cp', colorScalePalette);
+    p.set('csteps', String(colorScaleSteps));
+    p.set('hl', highlightEnabled ? '1' : '0');
+    // Segments
+    p.set('q', q.value.trim());
+    p.set('nm', ngramMode.value);
+    p.set('gran', gran.value);
+    p.set('mm', matchMode.value);
+    if (sortKey) p.set('sk', sortKey);
+    if (sortDir) p.set('sd', sortDir);
+    // Segment column filters
+    for (const [key, v] of segmentsColumnFilters.entries()) {
+      if (v.type === 'number') {
+        const min = (v.min ?? '');
+        const max = (v.max ?? '');
+        p.set('s_fn_' + key, `${min}~${max}`);
+      } else if (v.type === 'text') {
+        p.set('s_ft_' + key, v.pattern ?? '');
+      }
+    }
+    // Lines
+    const lq = (document.getElementById('linesQuery').value || '').trim();
+    const lnm = document.getElementById('linesNgramMode').value;
+    const lmm = document.getElementById('linesMatchMode').value;
+    p.set('l_q', lq);
+    p.set('l_nm', lnm);
+    p.set('l_mm', lmm);
+    if (linesSortKey) p.set('l_sk', linesSortKey);
+    if (linesSortDir) p.set('l_sd', linesSortDir);
+    for (const [key, v] of linesColumnFilters.entries()) {
+      if (v.type === 'number') {
+        const min = (v.min ?? '');
+        const max = (v.max ?? '');
+        p.set('l_fn_' + key, `${min}~${max}`);
+      } else if (v.type === 'text') {
+        p.set('l_ft_' + key, v.pattern ?? '');
+      }
+    }
+    return p;
   }
   function getActiveTab() {
     const btn = document.querySelector('.tab-btn.active');
@@ -747,30 +780,9 @@
     }
     return m;
   }
-  function buildStateObject() {
-    return {
-      tab: getActiveTab(),
-      display: {
-        colorScaleEnabled, colorScalePalette, colorScaleSteps, highlightEnabled
-      },
-      segments: {
-        q: q.value.trim(), ngramMode: ngramMode.value, gran: gran.value, matchMode: matchMode.value,
-        sortKey, sortDir,
-        filters: mapToArray(segmentsColumnFilters)
-      },
-      lines: {
-        q: (document.getElementById('linesQuery').value || '').trim(),
-        ngramMode: document.getElementById('linesNgramMode').value,
-        matchMode: document.getElementById('linesMatchMode').value,
-        sortKey: linesSortKey, sortDir: linesSortDir,
-        filters: mapToArray(linesColumnFilters)
-      }
-    };
-  }
   function updateDeepLink() {
-    const state = buildStateObject();
-    const enc = encodeState(state);
-    const url = location.origin + location.pathname + (enc ? ('?state=' + enc) : '');
+    const p = buildQueryParamsFromState();
+    const url = location.origin + location.pathname + '?' + p.toString();
     document.querySelectorAll('.deep-link').forEach(a => { a.href = url; a.textContent = 'link'; });
     document.querySelectorAll('.deep-link-input').forEach(inp => { inp.value = url; });
     document.querySelectorAll('.deep-link-copy').forEach(btn => {
@@ -1145,6 +1157,69 @@
   // Apply state from deep link if present
   (function applyStateFromURL(){
     const sp = new URLSearchParams(location.search);
+    // New readable params first
+    if (sp.has('tab') || sp.has('q') || sp.has('l_q')) {
+      try {
+        // Display
+        if (sp.has('cs')) colorScaleEnabled = sp.get('cs') === '1';
+        if (sp.has('cp')) colorScalePalette = sp.get('cp');
+        if (sp.has('csteps')) colorScaleSteps = parseInt(sp.get('csteps')) || colorScaleSteps;
+        if (sp.has('hl')) highlightEnabled = sp.get('hl') === '1';
+        syncColorScaleToggles(); syncColorScaleOptions(); syncHighlightToggles();
+        // Tab
+        const tab = sp.get('tab');
+        if (tab) {
+          const btn = document.querySelector(`.tab-btn[data-tab="${tab}"]`);
+          if (btn) btn.click();
+        }
+        // Segments
+        if (sp.has('q')) q.value = sp.get('q');
+        if (sp.has('nm')) ngramMode.value = sp.get('nm');
+        if (sp.has('gran')) gran.value = sp.get('gran');
+        if (sp.has('mm')) matchMode.value = sp.get('mm');
+        if (sp.has('sk')) sortKey = sp.get('sk');
+        if (sp.has('sd')) sortDir = sp.get('sd');
+        segmentsColumnFilters.clear();
+        for (const [k, v] of sp.entries()) {
+          if (k.startsWith('s_fn_')) {
+            const key = k.slice(5);
+            const [min, max] = (v || '').split('~');
+            segmentsColumnFilters.set(key, { type:'number', min, max });
+          } else if (k.startsWith('s_ft_')) {
+            const key = k.slice(5);
+            segmentsColumnFilters.set(key, { type:'text', pattern: v || '' });
+          }
+        }
+        // Lines
+        const lq = document.getElementById('linesQuery');
+        if (sp.has('l_q')) lq.value = sp.get('l_q');
+        const lnm = document.getElementById('linesNgramMode');
+        if (sp.has('l_nm')) lnm.value = sp.get('l_nm');
+        const lmm = document.getElementById('linesMatchMode');
+        if (sp.has('l_mm')) lmm.value = sp.get('l_mm');
+        if (sp.has('l_sk')) linesSortKey = sp.get('l_sk');
+        if (sp.has('l_sd')) linesSortDir = sp.get('l_sd');
+        linesColumnFilters.clear();
+        for (const [k, v] of sp.entries()) {
+          if (k.startsWith('l_fn_')) {
+            const key = k.slice(5);
+            const [min, max] = (v || '').split('~');
+            linesColumnFilters.set(key, { type:'number', min, max });
+          } else if (k.startsWith('l_ft_')) {
+            const key = k.slice(5);
+            linesColumnFilters.set(key, { type:'text', pattern: v || '' });
+          }
+        }
+        // Trigger renders
+        const qv = q.value.trim(); if (qv) doSearch();
+        const lqv2 = lq.value.trim(); if (lqv2) doLinesSearch();
+        applyColorScalesForVisibleTables();
+        appliedDeepLinkState = true;
+        updateDeepLink();
+        return;
+      } catch(e) { /* fall through to legacy */ }
+    }
+    // Legacy base64 fallback
     const enc = sp.get('state');
     if (!enc) { updateDeepLink(); return; }
     const st = decodeState(enc);
