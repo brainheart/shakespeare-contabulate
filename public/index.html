@@ -786,7 +786,7 @@
     return res.json();
   }
 
-  let chunks=[], tokens={}, tokens2={}, tokens3={}, plays=[], characters=[], tokensChar={}, tokensChar2={}, tokensChar3={}, allLines=[];
+  let chunks=[], tokens={}, tokens2={}, tokens3={}, plays=[], characters=[], tokensChar={}, tokensChar2={}, tokensChar3={}, allLines=[], characterSexMeta=[];
   try {
     [chunks, tokens, tokens2, tokens3, plays, characters, tokensChar, tokensChar2, tokensChar3] = await Promise.all([
       loadJSON('data/chunks.json'),
@@ -804,6 +804,13 @@
     return;
   }
 
+  // Optional character sex metadata
+  try {
+    characterSexMeta = await loadJSON('data/character_sex.json');
+  } catch(e) {
+    characterSexMeta = [];
+  }
+
   // Load line data
   try {
     allLines = await loadJSON('lines/all_lines.json');
@@ -814,6 +821,30 @@
   const chunkById = new Map(chunks.map(r => [r.scene_id, r]));
   const playsById = new Map(plays.map(p => [p.play_id, p]));
   const charactersById = new Map(characters.map(c => [c.character_id, c]));
+
+  // Build lookup for character sex by (play_id, name)
+  function normName(s){ return String(s||'').toUpperCase().replace(/\s+/g,' ').trim(); }
+  const characterSexByPlayAndName = new Map();
+  if (Array.isArray(characterSexMeta)) {
+    for (const rec of characterSexMeta) {
+      if (rec && (rec.play_id!=null) && rec.name && rec.sex) {
+        characterSexByPlayAndName.set(`${rec.play_id}::${normName(rec.name)}`, String(rec.sex).toUpperCase());
+      }
+    }
+  }
+  function heuristicSexFromName(name){
+    const n = normName(name);
+    if (/\bQUEEN\b|\bLADY\b|\bPRINCESS\b|\bMISTRESS\b|\bMIST\.?\b|\bWOMAN\b|\bGENTLEWOMAN\b|\bNURSE\b|\bMAID\b/.test(n)) return 'F';
+    if (/\bKING\b|\bLORD\b|\bDUKE\b|\bPRINCE\b|\bSIR\b|\bMAN\b|\bGENTLEMAN\b/.test(n)) return 'M';
+    if (/\bMOTHER\b/.test(n)) return 'F';
+    if (/\bFATHER\b|\bFATHER\b/.test(n)) return 'M';
+    return 'U';
+  }
+  function lookupSex(play_id, name){
+    const k = `${play_id}::${normName(name)}`;
+    if (characterSexByPlayAndName.has(k)) return characterSexByPlayAndName.get(k);
+    return heuristicSexFromName(name);
+  }
 
   // Ngrams tab state
   let ngramsSelectedSegments = new Set();
@@ -1437,10 +1468,12 @@
         const denom = denomFor(n,'character',c);
         const totalWords = c.total_words_spoken || 0;
         const ngramCount = Math.max(0, totalWords - (n - 1));
-        rows.push({ play_title:c.play_title, name:c.name, total_words_spoken:totalWords, ngram_count:ngramCount, count, pct: denom? count/denom : 0 });
+        const sex = lookupSex(c.play_id, c.name);
+        rows.push({ play_title:c.play_title, name:c.name, sex, total_words_spoken:totalWords, ngram_count:ngramCount, count, pct: denom? count/denom : 0 });
       }
       setHeaders([
         {key:'name', label:'Character', defaultDir:'asc', type:'text'},
+        {key:'sex', label:'Sex', defaultDir:'asc', type:'text'},
         {key:'play_title', label:'Play', defaultDir:'asc', type:'text'},
         {key:'ngram_count', label: n===1 ? 'Word count' : n===2 ? 'Bigram count' : 'Trigram count', type:'number'},
         {key:'count', label:'Hits', type:'number'},

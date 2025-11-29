@@ -13,8 +13,9 @@ env/
 *~
 
 # Generated data
-public/data/
+public/data/*
 public/lines/
+!public/data/character_sex.json
 
 # Logs
 *.log
