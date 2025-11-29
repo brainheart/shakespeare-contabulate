@@ -1573,7 +1573,6 @@
       // Calculate total words for each genre from ALL plays (not just those with hits)
       const genreTotals = new Map();
       for (const play of plays) {
-        if (!playsSel.has(play.play_id)) continue;
         const genre = play.genre || 'unknown';
         genreTotals.set(genre, (genreTotals.get(genre) || 0) + (play.total_words || 0));
       }
