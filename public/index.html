@@ -374,11 +374,6 @@
         </div>
       </div>
       <div class="color-scale-legend"></div>
-      <div style="display:flex; gap:.5rem; align-items:center; margin-bottom: .5rem;">
-        <button id="selectAllPlays" style="padding: 0.3rem 0.6rem; font-size: 0.9rem;">Select All Plays</button>
-        <button id="deselectAllPlays" style="padding: 0.3rem 0.6rem; font-size: 0.9rem;">Deselect All</button>
-      </div>
-      <div id="playsFilter"></div>
     </details>
 
     <table id="results">
@@ -527,7 +522,6 @@
         </div>
       </div>
       <div class="color-scale-legend"></div>
-      <div id="linesPlaysFilter"></div>
     </details>
 
     <table id="linesResults">
@@ -561,7 +555,6 @@
   const go = document.getElementById('go');
   const matchMode = document.getElementById('matchMode');
   const ngramMode = document.getElementById('ngramMode');
-  const playsFilter = document.getElementById('playsFilter');
   const theadRow = document.getElementById('headRow');
   const tbody = document.querySelector('#results tbody');
   const ngramTableContainer = document.getElementById('ngramTableContainer');
@@ -831,16 +824,7 @@
   // Ngrams tab state
   let ngramsSelectedSegments = new Set();
   
-  function renderPlayFilter() {
-    playsFilter.innerHTML = '';
-    for (const p of plays) {
-      const id = `play_${p.play_id}`;
-      const div = document.createElement('div');
-      div.innerHTML = `<label><input type="checkbox" id="${id}" data-play="${p.play_id}" checked> ${p.title} <span class="muted">(${p.genre || ''}${p.first_performance_year ? ', ' + p.first_performance_year : ''})</span></label>`;
-      playsFilter.appendChild(div);
-    }
-  }
-  renderPlayFilter();
+  // Removed play checkbox filter (use column regex filters instead)
   // Auto-apply when segments plays filter checkboxes change
   playsFilter.addEventListener('change', () => {
     const query = q.value.trim();
@@ -1057,11 +1041,7 @@
   
   initSegmentSelectors();
   
-  function selectedPlayIds() {
-    const ids = [];
-    playsFilter.querySelectorAll('input[type="checkbox"]').forEach(cb => { if (cb.checked) ids.push(Number(cb.dataset.play)); });
-    return new Set(ids);
-  }
+  // No selectedPlayIds — include all plays; use header filters to refine
   function fmtPct(num) { return (num*100).toFixed(3) + '%'; }
   function escapeHTML(s) {
     return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]));
@@ -1285,7 +1265,6 @@
         tbody.innerHTML = '<tr><td class="muted">Lines data not available.</td></tr>';
         return null;
       }
-      const playsSel = selectedPlayIds();
       let hlRe = null;
       try {
         if (isRegex) {
@@ -1305,7 +1284,6 @@
       }
 
       for (const ln of allLines) {
-        if (!playsSel.has(ln.play_id)) continue;
         const t = (ln.text || '').toString();
         const clean = t.replace(/\s+/g, ' ').trim();
         const count = hlRe ? (clean.match(hlRe)?.length || 0) : 0;
@@ -1337,7 +1315,7 @@
 
     if (granVal==='scene'){
       for (const [scene_id, count] of allPostings){
-        const m = chunkById.get(scene_id); if (!m || !playsSel.has(m.play_id)) continue;
+        const m = chunkById.get(scene_id); if (!m) continue;
         const d = denomFor(n,'scene',m);
         const totalWords = m.total_words || 0;
         const ngramCount = Math.max(0, totalWords - (n - 1));
@@ -1359,7 +1337,7 @@
       const tmp = new Map();
       const actWordCounts = new Map();
       for (const [scene_id,c] of allPostings){
-        const m = chunkById.get(scene_id); if (!m || !playsSel.has(m.play_id)) continue;
+        const m = chunkById.get(scene_id); if (!m) continue;
         const k = `${m.play_id}:${m.act}`;
         tmp.set(k, (tmp.get(k)||0) + c);
         actWordCounts.set(k, (actWordCounts.get(k)||0) + (m.total_words||0));
@@ -1386,7 +1364,7 @@
     if (granVal==='play'){
       const tmp = new Map();
       for (const [scene_id,c] of allPostings){
-        const m = chunkById.get(scene_id); if (!m || !playsSel.has(m.play_id)) continue;
+        const m = chunkById.get(scene_id); if (!m) continue;
         tmp.set(m.play_id, (tmp.get(m.play_id)||0) + c);
       }
       for (const [pid,count] of tmp.entries()){
@@ -1423,7 +1401,7 @@
       
       // Aggregate hit counts by genre
       for (const [scene_id,c] of allPostings){
-        const m = chunkById.get(scene_id); if (!m || !playsSel.has(m.play_id)) continue;
+        const m = chunkById.get(scene_id); if (!m) continue;
         const genre = m.genre || 'unknown';
         tmp.set(genre, (tmp.get(genre)||0) + c);
       }
@@ -1446,7 +1424,7 @@
     if (granVal==='character'){
       for (const [char_id, count] of allPostings){
         const c = charactersById.get(char_id);
-        if (!c || !playsSel.has(c.play_id)) continue;
+        if (!c) continue;
         const denom = denomFor(n,'character',c);
         const totalWords = c.total_words_spoken || 0;
         const ngramCount = Math.max(0, totalWords - (n - 1));
@@ -1882,17 +1860,7 @@
   q.addEventListener('keydown', e => { if (e.key==='Enter') doSearch(); });
   // per-column filters are handled via header filter icons; removed global min filters
 
-  // Select/Deselect all plays
-  document.getElementById('selectAllPlays').addEventListener('click', () => {
-    playsFilter.querySelectorAll('input[type="checkbox"]').forEach(cb => { cb.checked = true; });
-    const query = q.value.trim();
-    if (query) renderRows(buildRows(query));
-  });
-  document.getElementById('deselectAllPlays').addEventListener('click', () => {
-    playsFilter.querySelectorAll('input[type="checkbox"]').forEach(cb => { cb.checked = false; });
-    const query = q.value.trim();
-    if (query) renderRows(buildRows(query));
-  });
+  // Removed play selection buttons (use column filters)
   
   // Segments pagination controls
   document.getElementById('segmentsFirstPage').addEventListener('click', () => {
@@ -2330,35 +2298,11 @@
     matchMode: ''
   };
 
-  // Render play filter for lines tab
-  function renderLinesPlayFilter() {
-    const container = document.getElementById('linesPlaysFilter');
-    container.innerHTML = '';
-    for (const p of plays) {
-      const id = `lines_play_${p.play_id}`;
-      const div = document.createElement('div');
-      div.innerHTML = `<label><input type="checkbox" id="${id}" data-play="${p.play_id}" checked> ${p.title} <span class="muted">(${p.genre || ''}${p.first_performance_year ? ', ' + p.first_performance_year : ''})</span></label>`;
-      container.appendChild(div);
-    }
-  }
-  renderLinesPlayFilter();
-  // Auto-apply when lines plays filter checkboxes change
-  document.getElementById('linesPlaysFilter').addEventListener('change', () => {
-    doLinesSearch();
-  });
-
-  function selectedLinesPlayIds() {
-    const ids = [];
-    document.getElementById('linesPlaysFilter').querySelectorAll('input[type="checkbox"]').forEach(cb => { 
-      if (cb.checked) ids.push(Number(cb.dataset.play)); 
-    });
-    return new Set(ids);
-  }
+  // Removed lines play filter (use header regex filters instead)
 
   function buildLinesRows(query) {
     const isRegex = (document.getElementById('linesMatchMode').value === 'regex');
     const n = parseInt(document.getElementById('linesNgramMode').value);
-    const playsSel = selectedLinesPlayIds();
 
     if (!allLines || allLines.length === 0) {
       return null;
@@ -2383,8 +2327,7 @@
 
     // Search through lines
     for (const line of allLines) {
-      if (!playsSel.has(line.play_id)) continue;
-
+      
       let matches = false;
       let highlightedText = line.text;
 
