@@ -330,7 +330,6 @@
           <option value="regex">regex pattern</option>
         </select>
         <input id="q" type="text" placeholder="" value="love" style="flex: 1; min-width: 20rem; font-size: 1rem;">
-        <button id="go" style="font-size: 1rem; padding: 0.6rem 1.2rem;">Refresh</button>
       </div>
     </div>
 
@@ -411,7 +410,6 @@
           <option value="regex">regex pattern</option>
         </select>
         <input type="text" id="ngramsQuery" placeholder="(optional: leave blank to show all)" style="flex: 1; min-width: 200px; font-size: 1rem; padding: 0.5rem;">
-        <button id="ngramsRefresh" style="font-size: 1rem; padding: 0.6rem 1.2rem;">Refresh</button>
       </div>
     </div>
 
@@ -489,7 +487,6 @@
           <option value="regex">regex pattern</option>
         </select>
         <input type="text" id="linesQuery" placeholder="e.g., death, ^love|death$, to be" value="love" style="flex: 1; min-width: 20rem; font-size: 1rem; padding: 0.5rem;">
-        <button id="linesRefresh" style="font-size: 1rem; padding: 0.6rem 1.2rem;">Refresh</button>
       </div>
     </div>
 
@@ -817,6 +814,11 @@
     }
   }
   renderPlayFilter();
+  // Auto-apply when segments plays filter checkboxes change
+  playsFilter.addEventListener('change', () => {
+    const query = q.value.trim();
+    if (query) renderRows(buildRows(query));
+  });
   
   // Build all available segments list
   let allAvailableSegments = [];
@@ -1055,6 +1057,15 @@
     }
     out += escapeHTML(s.slice(last));
     return out;
+  }
+
+  // Simple debounce helper for responsive UI without spamming renders
+  function debounce(fn, wait = 250) {
+    let t;
+    return (...args) => {
+      clearTimeout(t);
+      t = setTimeout(() => fn(...args), wait);
+    };
   }
 
 
@@ -1639,6 +1650,7 @@
   }
   
   function updateSegmentsRefreshButton() {
+    if (!go) return;
     if (segmentsPendingChanges) {
       go.classList.add('refresh-btn-pending');
       go.textContent = 'Refresh ⟳';
@@ -1689,6 +1701,7 @@
   
   function updateNgramsRefreshButton() {
     const refreshBtn = document.getElementById('ngramsRefresh');
+    if (!refreshBtn) return;
     if (ngramsPendingChanges) {
       refreshBtn.classList.add('refresh-btn-pending');
       refreshBtn.textContent = 'Refresh ⟳';
@@ -1722,7 +1735,7 @@
     }
   }
 
-  go.addEventListener('click', doSearch);
+  if (go) go.addEventListener('click', doSearch);
   q.addEventListener('keydown', e => { if (e.key==='Enter') doSearch(); });
   minHits.addEventListener('input', () => {
     const query = q.value.trim();
@@ -2127,16 +2140,18 @@
   }
   
   // Ngrams tab controls
-  document.getElementById('ngramsRefresh').addEventListener('click', buildNgramsComparison);
-  document.getElementById('ngramsQuery').addEventListener('keydown', e => { 
+  const debouncedBuildNgrams = debounce(() => { if (ngramsSelectedSegments.size > 0) buildNgramsComparison(); }, 250);
+  const ngramsQueryInput = document.getElementById('ngramsQuery');
+  ngramsQueryInput.addEventListener('keydown', e => { 
     if (e.key === 'Enter' && ngramsSelectedSegments.size > 0) buildNgramsComparison(); 
   });
-  document.getElementById('ngramsQuery').addEventListener('input', checkNgramsPendingChanges);
-  document.getElementById('ngramsNgramMode').addEventListener('change', checkNgramsPendingChanges);
-  document.getElementById('ngramsDisplayMode').addEventListener('change', checkNgramsPendingChanges);
-  document.getElementById('ngramsMatchMode').addEventListener('change', checkNgramsPendingChanges);
+  ngramsQueryInput.addEventListener('input', () => { checkNgramsPendingChanges(); debouncedBuildNgrams(); });
+  document.getElementById('ngramsNgramMode').addEventListener('change', () => { checkNgramsPendingChanges(); debouncedBuildNgrams(); });
+  document.getElementById('ngramsDisplayMode').addEventListener('change', () => { checkNgramsPendingChanges(); debouncedBuildNgrams(); });
+  document.getElementById('ngramsMatchMode').addEventListener('change', () => { checkNgramsPendingChanges(); debouncedBuildNgrams(); });
 
   // Segments tab controls - track changes
+  const debouncedDoSearch = debounce(doSearch, 250);
   q.addEventListener('input', () => {
     const val = q.value;
     const hasRegexChars = /[.*+?^${}()|[\]\\]/.test(val);
@@ -2144,10 +2159,11 @@
       matchMode.value = 'regex';
     }
     checkSegmentsPendingChanges();
+    debouncedDoSearch();
   });
-  ngramMode.addEventListener('change', checkSegmentsPendingChanges);
-  gran.addEventListener('change', checkSegmentsPendingChanges);
-  matchMode.addEventListener('change', checkSegmentsPendingChanges);
+  ngramMode.addEventListener('change', () => { checkSegmentsPendingChanges(); doSearch(); });
+  gran.addEventListener('change', () => { checkSegmentsPendingChanges(); doSearch(); });
+  matchMode.addEventListener('change', () => { checkSegmentsPendingChanges(); doSearch(); });
 
   // Color scale toggles
   document.querySelectorAll('.color-scale-toggle').forEach(cb => {
@@ -2190,6 +2206,10 @@
     }
   }
   renderLinesPlayFilter();
+  // Auto-apply when lines plays filter checkboxes change
+  document.getElementById('linesPlaysFilter').addEventListener('change', () => {
+    doLinesSearch();
+  });
 
   function selectedLinesPlayIds() {
     const ids = [];
@@ -2415,6 +2435,7 @@
 
   function updateLinesRefreshButton() {
     const btn = document.getElementById('linesRefresh');
+    if (!btn) return;
     if (linesPendingChanges) {
       btn.classList.add('refresh-btn-pending');
       btn.textContent = 'Refresh ⟳';
@@ -2435,11 +2456,11 @@
   }
 
   // Lines tab event listeners
-  document.getElementById('linesRefresh').addEventListener('click', doLinesSearch);
+  const debouncedDoLinesSearch = debounce(doLinesSearch, 250);
   document.getElementById('linesQuery').addEventListener('keydown', e => { if (e.key === 'Enter') doLinesSearch(); });
-  document.getElementById('linesQuery').addEventListener('input', checkLinesPendingChanges);
-  document.getElementById('linesNgramMode').addEventListener('change', checkLinesPendingChanges);
-  document.getElementById('linesMatchMode').addEventListener('change', checkLinesPendingChanges);
+  document.getElementById('linesQuery').addEventListener('input', () => { checkLinesPendingChanges(); debouncedDoLinesSearch(); });
+  document.getElementById('linesNgramMode').addEventListener('change', () => { checkLinesPendingChanges(); doLinesSearch(); });
+  document.getElementById('linesMatchMode').addEventListener('change', () => { checkLinesPendingChanges(); doLinesSearch(); });
 
   // Lines pagination controls
   document.getElementById('linesFirstPage').addEventListener('click', () => {
