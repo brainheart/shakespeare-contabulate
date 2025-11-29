@@ -718,8 +718,7 @@
     // Only segments are supported for deep links currently
     // Display
     p.set('cs', colorScaleEnabled ? '1' : '0');
-    p.set('cp', colorScalePalette);
-    p.set('csteps', String(colorScaleSteps));
+    // palette and steps omitted for cleaner URLs
     p.set('hl', highlightEnabled ? '1' : '0');
     // Segments
     p.set('q', q.value.trim());
@@ -1156,8 +1155,7 @@
       try {
         // Display
         if (sp.has('cs')) colorScaleEnabled = sp.get('cs') === '1';
-        if (sp.has('cp')) colorScalePalette = sp.get('cp');
-        if (sp.has('csteps')) colorScaleSteps = parseInt(sp.get('csteps')) || colorScaleSteps;
+        // ignore palette and steps from URL to keep behavior consistent and URLs clean
         if (sp.has('hl')) highlightEnabled = sp.get('hl') === '1';
         syncColorScaleToggles(); syncColorScaleOptions(); syncHighlightToggles();
         // Tab (ignored; segments only)
