@@ -825,11 +825,6 @@
   let ngramsSelectedSegments = new Set();
   
   // Removed play checkbox filter (use column regex filters instead)
-  // Auto-apply when segments plays filter checkboxes change
-  playsFilter.addEventListener('change', () => {
-    const query = q.value.trim();
-    if (query) renderRows(buildRows(query));
-  });
   
   // Build all available segments list
   let allAvailableSegments = [];
@@ -1207,7 +1202,6 @@
     // Always use the explicitly selected n-gram mode
     const n = parseInt(ngramModeVal);
 
-    const playsSel = selectedPlayIds();
     const granVal = gran.value;
 
     // Character view limitation
