@@ -288,6 +288,10 @@
       font-style: normal;
       font-weight: 600;
     }
+    /* Color legend */
+    .legend-wrap { display: inline-flex; gap: 4px; align-items: center; margin-top: 4px; }
+    .legend-swatch { width: 26px; height: 14px; border: 1px solid var(--border); border-radius: 2px; display: inline-block; }
+    .legend-labels { display: flex; justify-content: space-between; gap: 2rem; font-size: 0.85rem; color: #665544; margin-top: 2px; max-width: 220px; }
   </style>
 </head>
 <body>
@@ -330,9 +334,25 @@
 
     <details>
       <summary class="sr"><strong>Filters & Display</strong></summary>
-      <div style="margin-bottom: 0.5rem; display: flex; gap: 1rem; align-items: center;">
+      <div style="margin-bottom: 0.5rem; display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
         <label><input type="checkbox" class="color-scale-toggle" checked> Color scale numeric columns</label>
+        <div class="color-scale-options">
+          <label>Palette:
+            <select class="color-scale-palette">
+              <option value="blue-diverging" selected>Blue (white center)</option>
+              <option value="blue-linear">Blue (light→dark)</option>
+              <option value="burgundy-gold">Burgundy→Gold</option>
+            </select>
+          </label>
+          <label>Steps:
+            <select class="color-scale-steps">
+              <option value="5" selected>5</option>
+              <option value="7">7</option>
+            </select>
+          </label>
+        </div>
       </div>
+      <div class="color-scale-legend"></div>
       <div style="margin-bottom: 0.75rem;">
         <label style="font-weight: 500;">Minimum hits: <input type="number" id="minHits" value="0" min="0" style="width: 5rem; padding: 0.4rem;"></label>
         <label style="font-weight: 500; margin-left: 1rem;">Minimum word count: <input type="number" id="minWords" value="0" min="0" style="width: 6rem; padding: 0.4rem;"></label>
@@ -473,9 +493,25 @@
 
     <details>
       <summary class="sr"><strong>Filters & Display</strong></summary>
-      <div style="margin-bottom: 0.5rem; display: flex; gap: 1rem; align-items: center;">
+      <div style="margin-bottom: 0.5rem; display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
         <label><input type="checkbox" class="color-scale-toggle" checked> Color scale numeric columns</label>
+        <div class="color-scale-options">
+          <label>Palette:
+            <select class="color-scale-palette">
+              <option value="blue-diverging" selected>Blue (white center)</option>
+              <option value="blue-linear">Blue (light→dark)</option>
+              <option value="burgundy-gold">Burgundy→Gold</option>
+            </select>
+          </label>
+          <label>Steps:
+            <select class="color-scale-steps">
+              <option value="5" selected>5</option>
+              <option value="7">7</option>
+            </select>
+          </label>
+        </div>
       </div>
+      <div class="color-scale-legend"></div>
       <div id="linesPlaysFilter"></div>
     </details>
 
@@ -519,6 +555,8 @@
   
   // Color scale toggle state (global across tabs)
   let colorScaleEnabled = true;
+  let colorScalePalette = 'blue-diverging';
+  let colorScaleSteps = 5;
   function syncColorScaleToggles() {
     document.querySelectorAll('.color-scale-toggle').forEach(cb => {
       if (cb) cb.checked = colorScaleEnabled;
@@ -575,14 +613,7 @@
     const rows = Array.from(table.querySelectorAll('tbody tr'));
     if (rows.length === 0) return;
     const colCount = (rows[0]?.children?.length) || 0;
-    // 5-step palette to match provided example
-    const palette = [
-      'rgb(250, 250, 250)', // very light
-      'rgb(209, 209, 209)', // light gray
-      'rgb(176, 176, 176)', // mid gray
-      'rgb(134, 164, 177)', // slate blue
-      'rgb(0, 63, 92)'      // deep blue
-    ];
+    const palette = getPalette(colorScalePalette, colorScaleSteps);
     // For each column, compute min/max of numeric cells
     for (let c = 0; c < colCount; c++) {
       const colTds = rows.map(r => r.children[c]).filter(Boolean);
@@ -602,15 +633,15 @@
       const max = Math.max(...values);
       if (!(max > min)) continue; // no spread
 
-      // Compute 20/40/60/80% quantiles
-      const [q20, q40, q60, q80] = quantiles(values, [0.2, 0.4, 0.6, 0.8]);
+      // Compute quantile thresholds based on selected steps
+      const thresholds = [];
+      for (let i = 1; i < palette.length; i++) {
+        thresholds.push(i / palette.length);
+      }
+      const qs = quantiles(values, thresholds);
       for (const [td, v] of cells) {
         let idx = 0;
-        if (v <= q20) idx = 0;
-        else if (v <= q40) idx = 1;
-        else if (v <= q60) idx = 2;
-        else if (v <= q80) idx = 3;
-        else idx = 4;
+        while (idx < qs.length && v > qs[idx]) idx++;
         const bg = palette[idx];
         td.style.backgroundColor = bg;
         td.style.color = pickTextColorForBg(bg);
@@ -626,6 +657,57 @@
     applyOrClear('#results');
     applyOrClear('#ngramsTable');
     applyOrClear('#linesResults');
+    renderAllLegends();
+  }
+  function getPalette(name, steps) {
+    steps = parseInt(steps) || 5;
+    const clampSteps = (arr) => {
+      if (arr.length === steps) return arr;
+      // simple resampling by index
+      const out = [];
+      for (let i = 0; i < steps; i++) {
+        const idx = Math.round(i * (arr.length - 1) / (steps - 1));
+        out.push(arr[idx]);
+      }
+      return out;
+    };
+    if (name === 'blue-diverging') {
+      // Ensure white at the center for odd steps
+      const base5 = ['rgb(209, 209, 209)','rgb(176, 176, 176)','rgb(250, 250, 250)','rgb(134, 164, 177)','rgb(0, 63, 92)'];
+      const base7 = ['rgb(220,220,220)','rgb(200,200,200)','rgb(180,180,180)','rgb(250,250,250)','rgb(150,175,185)','rgb(110,140,160)','rgb(0,63,92)'];
+      return clampSteps(steps === 7 ? base7 : base5);
+    } else if (name === 'blue-linear') {
+      const base5 = ['rgb(230,240,245)','rgb(190,210,222)','rgb(150,180,200)','rgb(90,120,150)','rgb(0,63,92)'];
+      const base7 = ['rgb(240,245,248)','rgb(210,225,235)','rgb(180,205,220)','rgb(150,180,200)','rgb(120,155,180)','rgb(80,110,140)','rgb(0,63,92)'];
+      return clampSteps(steps === 7 ? base7 : base5);
+    } else if (name === 'burgundy-gold') {
+      const base5 = ['rgb(240,237,229)','rgb(230,220,200)','rgb(212,175,55)','rgb(170,110,120)','rgb(139,21,56)'];
+      const base7 = ['rgb(245,242,235)','rgb(235,228,210)','rgb(225,210,180)','rgb(212,175,55)','rgb(185,130,135)','rgb(160,90,110)','rgb(139,21,56)'];
+      return clampSteps(steps === 7 ? base7 : base5);
+    }
+    return getPalette('blue-diverging', steps);
+  }
+  function renderLegend(container, palette) {
+    if (!container) return;
+    container.innerHTML = '';
+    const wrap = document.createElement('div');
+    wrap.className = 'legend-wrap';
+    palette.forEach((c, i) => {
+      const sw = document.createElement('span');
+      sw.className = 'legend-swatch';
+      sw.style.backgroundColor = c;
+      sw.title = i === 0 ? 'Low' : (i === palette.length - 1 ? 'High' : (palette.length % 2 === 1 && i === Math.floor(palette.length/2) ? 'Median' : ''));
+      wrap.appendChild(sw);
+    });
+    const labels = document.createElement('div');
+    labels.className = 'legend-labels';
+    labels.innerHTML = '<span>Low</span><span>Median</span><span>High</span>';
+    container.appendChild(wrap);
+    container.appendChild(labels);
+  }
+  function renderAllLegends() {
+    const pal = getPalette(colorScalePalette, colorScaleSteps);
+    document.querySelectorAll('.color-scale-legend').forEach(el => renderLegend(el, pal));
   }
 
   // Pending changes tracking
@@ -2059,8 +2141,16 @@
   document.querySelectorAll('.color-scale-toggle').forEach(cb => {
     cb.addEventListener('change', (e) => setColorScaleEnabled(e.target.checked));
   });
+  // Palette and steps options
+  document.querySelectorAll('.color-scale-palette').forEach(sel => {
+    sel.addEventListener('change', e => { colorScalePalette = e.target.value; applyColorScalesForVisibleTables(); });
+  });
+  document.querySelectorAll('.color-scale-steps').forEach(sel => {
+    sel.addEventListener('change', e => { colorScaleSteps = parseInt(e.target.value)||5; applyColorScalesForVisibleTables(); });
+  });
   // Ensure initial sync
   syncColorScaleToggles();
+  renderAllLegends();
 
   // Lines tab state
   let linesCurrentPage = 1;
