@@ -357,6 +357,7 @@
       <summary class="sr"><strong>Display Options</strong></summary>
       <div style="margin-bottom: 0.5rem; display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
         <label><input type="checkbox" class="color-scale-toggle" checked> Color scale numeric columns</label>
+        <label><input type="checkbox" class="highlight-toggle" checked> Highlight matching line text</label>
         <div class="color-scale-options">
           <label>Palette:
             <select class="color-scale-palette">
@@ -505,6 +506,7 @@
       <summary class="sr"><strong>Display Options</strong></summary>
       <div style="margin-bottom: 0.5rem; display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
         <label><input type="checkbox" class="color-scale-toggle" checked> Color scale numeric columns</label>
+        <label><input type="checkbox" class="highlight-toggle" checked> Highlight matching line text</label>
         <div class="color-scale-options">
           <label>Palette:
             <select class="color-scale-palette">
@@ -561,6 +563,8 @@
   
   // Color scale toggle state (global across tabs)
   let colorScaleEnabled = true;
+  // Highlight toggle state (global across tabs)
+  let highlightEnabled = true;
   let colorScalePalette = 'blue-diverging';
   let colorScaleSteps = 7;
   function syncColorScaleToggles() {
@@ -581,6 +585,18 @@
     syncColorScaleToggles();
     // Re-apply on currently rendered tables
     applyColorScalesForVisibleTables();
+  }
+  function syncHighlightToggles() {
+    document.querySelectorAll('.highlight-toggle').forEach(cb => { if (cb) cb.checked = highlightEnabled; });
+  }
+  function setHighlightEnabled(v) {
+    highlightEnabled = !!v;
+    syncHighlightToggles();
+    // Rebuild views so highlighting updates
+    const segQ = q.value.trim();
+    if (segQ) doSearch();
+    const linesQ = document.getElementById('linesQuery').value.trim();
+    if (linesQ) doLinesSearch();
   }
   function parseNumeric(text) {
     if (text == null) return NaN;
@@ -1283,7 +1299,7 @@
         const count = hlRe ? (clean.match(hlRe)?.length || 0) : 0;
         if (count > 0) {
           const play = playsById.get(ln.play_id);
-          const line_html = highlightHTML(clean, hlRe);
+          const line_html = (highlightEnabled && hlRe) ? highlightHTML(clean, hlRe) : escapeHTML(clean);
           rows.push({
             id: ln.canonical_id,
             play_id: ln.play_id,
@@ -2278,6 +2294,11 @@
   syncColorScaleToggles();
   syncColorScaleOptions();
   renderAllLegends();
+  // Highlight toggle handlers
+  document.querySelectorAll('.highlight-toggle').forEach(cb => {
+    cb.addEventListener('change', (e) => setHighlightEnabled(e.target.checked));
+  });
+  syncHighlightToggles();
 
   // Lines tab state
   let linesCurrentPage = 1;
@@ -2327,7 +2348,7 @@
 
       if (isRegex) {
         matches = searchPattern.test(line.text);
-        if (matches) {
+        if (matches && highlightEnabled) {
           highlightedText = line.text.replace(searchPattern, match => `<span class="hit">${match}</span>`);
         }
       } else {
@@ -2346,7 +2367,7 @@
             const matchWords = lineTokens.slice(i, i + n);
             let tempText = line.text;
             const regex = new RegExp(matchWords.map(w => '\\b' + w + '\\b').join('\\s+'), 'gi');
-            highlightedText = tempText.replace(regex, match => `<span class="hit">${match}</span>`);
+            highlightedText = highlightEnabled ? tempText.replace(regex, match => `<span class="hit">${match}</span>`) : tempText;
             break;
           }
         }
