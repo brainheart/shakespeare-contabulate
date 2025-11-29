@@ -199,6 +199,9 @@ def build(tei_dir: Path, out_dir: Path):
     for path in sorted(tei_dir.glob("*.xml")):
         metadata = play_metadata_map.get(path.name)
         scenes, lines_map, token_idx, token2_idx, token3_idx, characters, tokens_char_tmp, tokens_char2_tmp, tokens_char3_tmp, play_row = parse_play(path, play_id, metadata)
+        # Attach play_abbr to each scene for easier joins by abbr
+        for sc in scenes:
+            sc.setdefault("play_abbr", play_row.get("abbr"))
         scenes_all.extend(scenes)
         
         # Save per-scene line files and collect all lines for global file
@@ -233,6 +236,7 @@ def build(tei_dir: Path, out_dir: Path):
             cid = pid * 10000 + char_id_seq
             name_to_id[(pid, nm)] = cid
             agg["character_id"] = cid
+            agg["play_abbr"] = play_row.get("abbr")
             # convert scenes_appeared_in set -> sorted list
             agg["scenes_appeared_in"] = sorted(list(agg.get("scenes_appeared_in", set())))
             characters_rows.append(agg)
@@ -295,9 +299,36 @@ def build(tei_dir: Path, out_dir: Path):
             return 'U'
         # Default majority case: male
         return 'M'
+    # Build lookup for abbr by play_id for metadata joins
+    id_to_abbr = {p.get("play_id"): p.get("abbr") for p in plays}
+
+    # Support metadata keyed by either play_id or abbr
+    character_meta_by_pid = {}
+    character_meta_by_abbr = {}
+    for (pid, nm), sx in list(character_meta_map.items()):
+        # Existing map is keyed by pid; leave it in by_pid
+        character_meta_by_pid[(pid, nm)] = sx
+    # Also read abbr-based entries if present in metadata file (optional)
+    try:
+        with open(char_meta_path, 'r', encoding='utf-8') as f:
+            meta_json = json.load(f)
+            for rec in meta_json.get("characters", []):
+                ab = rec.get("abbr") or rec.get("play_abbr")
+                nm = rec.get("name")
+                sx = rec.get("sex")
+                if ab and nm and sx:
+                    character_meta_by_abbr[(ab.upper(), _norm_name(nm))] = sx.upper()
+    except Exception:
+        pass
+
     for ch in characters_rows:
         pid = ch.get("play_id"); nm = ch.get("name")
-        sex = character_meta_map.get((pid, _norm_name(nm)))
+        ab = ch.get("play_abbr") or id_to_abbr.get(pid)
+        sex = None
+        if pid is not None:
+            sex = character_meta_by_pid.get((pid, _norm_name(nm)))
+        if sex is None and ab:
+            sex = character_meta_by_abbr.get((ab.upper(), _norm_name(nm)))
         if not sex:
             sex = _heuristic_sex_from_name(nm)
         ch["sex"] = sex

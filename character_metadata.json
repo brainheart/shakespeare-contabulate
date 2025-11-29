@@ -3,6927 +3,8312 @@
     {
       "play_id": 1,
       "name": "ALL",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MND"
     },
     {
       "play_id": 1,
       "name": "BOTTOM",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MND"
     },
     {
       "play_id": 1,
       "name": "CHORUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MND"
     },
     {
       "play_id": 1,
       "name": "COBWEB",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MND"
     },
     {
       "play_id": 1,
       "name": "DEMETRIUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MND"
     },
     {
       "play_id": 1,
       "name": "EGEUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MND"
     },
     {
       "play_id": 1,
       "name": "FAIRY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MND"
     },
     {
       "play_id": 1,
       "name": "FIRST FAIRY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MND"
     },
     {
       "play_id": 1,
       "name": "FLUTE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MND"
     },
     {
       "play_id": 1,
       "name": "HELENA",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "MND"
     },
     {
       "play_id": 1,
       "name": "HERMIA",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "MND"
     },
     {
       "play_id": 1,
       "name": "HIPPOLYTA",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "MND"
     },
     {
       "play_id": 1,
       "name": "LYSANDER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MND"
     },
     {
       "play_id": 1,
       "name": "MOTE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MND"
     },
     {
       "play_id": 1,
       "name": "MUSTARDSEED",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MND"
     },
     {
       "play_id": 1,
       "name": "OBERON",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MND"
     },
     {
       "play_id": 1,
       "name": "PEASEBLOSSOM",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MND"
     },
     {
       "play_id": 1,
       "name": "PHILOSTRATE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MND"
     },
     {
       "play_id": 1,
       "name": "PROLOGUE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MND"
     },
     {
       "play_id": 1,
       "name": "QUINCE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MND"
     },
     {
       "play_id": 1,
       "name": "ROBIN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MND"
     },
     {
       "play_id": 1,
       "name": "SECOND FAIRY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MND"
     },
     {
       "play_id": 1,
       "name": "SNOUT",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MND"
     },
     {
       "play_id": 1,
       "name": "SNUG",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MND"
     },
     {
       "play_id": 1,
       "name": "STARVELING",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MND"
     },
     {
       "play_id": 1,
       "name": "THESEUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MND"
     },
     {
       "play_id": 1,
       "name": "TITANIA",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MND"
     },
     {
       "play_id": 2,
       "name": "ALL",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "AWW"
     },
     {
       "play_id": 2,
       "name": "BERTRAM",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "AWW"
     },
     {
       "play_id": 2,
       "name": "BOTH",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "AWW"
     },
     {
       "play_id": 2,
       "name": "COUNTESS",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "AWW"
     },
     {
       "play_id": 2,
       "name": "DIANA",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "AWW"
     },
     {
       "play_id": 2,
       "name": "DUKE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "AWW"
     },
     {
       "play_id": 2,
       "name": "FIRST COURT LORD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "AWW"
     },
     {
       "play_id": 2,
       "name": "FIRST GENTLEMAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "AWW"
     },
     {
       "play_id": 2,
       "name": "FIRST LORD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "AWW"
     },
     {
       "play_id": 2,
       "name": "FIRST SOLDIER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "AWW"
     },
     {
       "play_id": 2,
       "name": "FOOL",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "AWW"
     },
     {
       "play_id": 2,
       "name": "FOURTH COURT LORD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "AWW"
     },
     {
       "play_id": 2,
       "name": "GENTLEMAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "AWW"
     },
     {
       "play_id": 2,
       "name": "HELEN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "AWW"
     },
     {
       "play_id": 2,
       "name": "KING",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "AWW"
     },
     {
       "play_id": 2,
       "name": "LAFEW",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "AWW"
     },
     {
       "play_id": 2,
       "name": "LORD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "AWW"
     },
     {
       "play_id": 2,
       "name": "LORDS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "AWW"
     },
     {
       "play_id": 2,
       "name": "MARIANA",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "AWW"
     },
     {
       "play_id": 2,
       "name": "PAGE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "AWW"
     },
     {
       "play_id": 2,
       "name": "PAROLLES",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "AWW"
     },
     {
       "play_id": 2,
       "name": "SECOND COURT LORD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "AWW"
     },
     {
       "play_id": 2,
       "name": "SECOND GENTLEMAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "AWW"
     },
     {
       "play_id": 2,
       "name": "SECOND LORD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "AWW"
     },
     {
       "play_id": 2,
       "name": "SECOND SOLDIER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "AWW"
     },
     {
       "play_id": 2,
       "name": "SERVANT",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "AWW"
     },
     {
       "play_id": 2,
       "name": "STEWARD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "AWW"
     },
     {
       "play_id": 2,
       "name": "WIDOW",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "AWW"
     },
     {
       "play_id": 3,
       "name": "AGRIPPA",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ANT"
     },
     {
       "play_id": 3,
       "name": "ALEXAS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ANT"
     },
     {
       "play_id": 3,
       "name": "ALL",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ANT"
     },
     {
       "play_id": 3,
       "name": "ALL THE SERVITORS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ANT"
     },
     {
       "play_id": 3,
       "name": "AMBASSADOR",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ANT"
     },
     {
       "play_id": 3,
       "name": "ANTONY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ANT"
     },
     {
       "play_id": 3,
       "name": "BOTH",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ANT"
     },
     {
       "play_id": 3,
       "name": "BOY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ANT"
     },
     {
       "play_id": 3,
       "name": "CAESAR",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ANT"
     },
     {
       "play_id": 3,
       "name": "CANIDIUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ANT"
     },
     {
       "play_id": 3,
       "name": "CAPTAIN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ANT"
     },
     {
       "play_id": 3,
       "name": "CHARMIAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ANT"
     },
     {
       "play_id": 3,
       "name": "CLEOPATRA",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "ANT"
     },
     {
       "play_id": 3,
       "name": "COUNTRYMAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ANT"
     },
     {
       "play_id": 3,
       "name": "DEMETRIUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ANT"
     },
     {
       "play_id": 3,
       "name": "DERCETUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ANT"
     },
     {
       "play_id": 3,
       "name": "DIOMEDES",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ANT"
     },
     {
       "play_id": 3,
       "name": "DOLABELLA",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ANT"
     },
     {
       "play_id": 3,
       "name": "EGYPTIAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ANT"
     },
     {
       "play_id": 3,
       "name": "ENOBARBUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ANT"
     },
     {
       "play_id": 3,
       "name": "EROS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ANT"
     },
     {
       "play_id": 3,
       "name": "FIRST GUARD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ANT"
     },
     {
       "play_id": 3,
       "name": "FIRST SERVANT",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ANT"
     },
     {
       "play_id": 3,
       "name": "FIRST SOLDIER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ANT"
     },
     {
       "play_id": 3,
       "name": "FIRST WATCH",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ANT"
     },
     {
       "play_id": 3,
       "name": "FOURTH SOLDIER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ANT"
     },
     {
       "play_id": 3,
       "name": "GALLUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ANT"
     },
     {
       "play_id": 3,
       "name": "GUARDSMAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ANT"
     },
     {
       "play_id": 3,
       "name": "IRAS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ANT"
     },
     {
       "play_id": 3,
       "name": "LEPIDUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ANT"
     },
     {
       "play_id": 3,
       "name": "MAECENAS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ANT"
     },
     {
       "play_id": 3,
       "name": "MARDIAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ANT"
     },
     {
       "play_id": 3,
       "name": "MENAS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ANT"
     },
     {
       "play_id": 3,
       "name": "MESSENGER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ANT"
     },
     {
       "play_id": 3,
       "name": "OCTAVIA",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "ANT"
     },
     {
       "play_id": 3,
       "name": "PHILO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ANT"
     },
     {
       "play_id": 3,
       "name": "POMPEY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ANT"
     },
     {
       "play_id": 3,
       "name": "PROCULEIUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ANT"
     },
     {
       "play_id": 3,
       "name": "SCARUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ANT"
     },
     {
       "play_id": 3,
       "name": "SECOND GUARD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ANT"
     },
     {
       "play_id": 3,
       "name": "SECOND MESSENGER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ANT"
     },
     {
       "play_id": 3,
       "name": "SECOND SERVANT",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ANT"
     },
     {
       "play_id": 3,
       "name": "SECOND SOLDIER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ANT"
     },
     {
       "play_id": 3,
       "name": "SECOND WATCH",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ANT"
     },
     {
       "play_id": 3,
       "name": "SELEUCUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ANT"
     },
     {
       "play_id": 3,
       "name": "SENTRY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ANT"
     },
     {
       "play_id": 3,
       "name": "SERVANT",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ANT"
     },
     {
       "play_id": 3,
       "name": "SILIUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ANT"
     },
     {
       "play_id": 3,
       "name": "SOLDIER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ANT"
     },
     {
       "play_id": 3,
       "name": "SOOTHSAYER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ANT"
     },
     {
       "play_id": 3,
       "name": "TAURUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ANT"
     },
     {
       "play_id": 3,
       "name": "THIDIAS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ANT"
     },
     {
       "play_id": 3,
       "name": "THIRD GUARD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ANT"
     },
     {
       "play_id": 3,
       "name": "THIRD MESSENGER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ANT"
     },
     {
       "play_id": 3,
       "name": "THIRD SOLDIER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ANT"
     },
     {
       "play_id": 3,
       "name": "VARRIUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ANT"
     },
     {
       "play_id": 3,
       "name": "VENTIDIUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ANT"
     },
     {
       "play_id": 4,
       "name": "ADAM",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "AYL"
     },
     {
       "play_id": 4,
       "name": "ALL",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "AYL"
     },
     {
       "play_id": 4,
       "name": "AMIENS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "AYL"
     },
     {
       "play_id": 4,
       "name": "AUDREY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "AYL"
     },
     {
       "play_id": 4,
       "name": "CELIA",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "AYL"
     },
     {
       "play_id": 4,
       "name": "CHARLES",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "AYL"
     },
     {
       "play_id": 4,
       "name": "CORIN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "AYL"
     },
     {
       "play_id": 4,
       "name": "DENNIS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "AYL"
     },
     {
       "play_id": 4,
       "name": "DUKE FREDERICK",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "AYL"
     },
     {
       "play_id": 4,
       "name": "DUKE SENIOR",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "AYL"
     },
     {
       "play_id": 4,
       "name": "FIRST LORD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "AYL"
     },
     {
       "play_id": 4,
       "name": "FIRST PAGE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "AYL"
     },
     {
       "play_id": 4,
       "name": "HYMEN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "AYL"
     },
     {
       "play_id": 4,
       "name": "JAQUES",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "AYL"
     },
     {
       "play_id": 4,
       "name": "LE BEAU",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "AYL"
     },
     {
       "play_id": 4,
       "name": "OLIVER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "AYL"
     },
     {
       "play_id": 4,
       "name": "OLIVER MARTEXT",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "AYL"
     },
     {
       "play_id": 4,
       "name": "ORLANDO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "AYL"
     },
     {
       "play_id": 4,
       "name": "PAGES",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "AYL"
     },
     {
       "play_id": 4,
       "name": "PHOEBE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "AYL"
     },
     {
       "play_id": 4,
       "name": "ROSALIND",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "AYL"
     },
     {
       "play_id": 4,
       "name": "SECOND BROTHER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "AYL"
     },
     {
       "play_id": 4,
       "name": "SECOND LORD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "AYL"
     },
     {
       "play_id": 4,
       "name": "SECOND PAGE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "AYL"
     },
     {
       "play_id": 4,
       "name": "SILVIUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "AYL"
     },
     {
       "play_id": 4,
       "name": "TOUCHSTONE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "AYL"
     },
     {
       "play_id": 4,
       "name": "UNKNOWN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "AYL"
     },
     {
       "play_id": 4,
       "name": "WILLIAM",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "AYL"
     },
     {
       "play_id": 5,
       "name": "AEDILE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "AEDILES",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "ALL",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "ALL CITIZENS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "ALL CONSPIRATORS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "ALL LORDS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "ALL PATRICIANS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "ALL PEOPLE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "ALL PLEBEIANS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "AUFIDIUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "BOTH",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "BOTH TRIBUNES",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "BRUTUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "CITIZEN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "COMINIUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "CORIOLANUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "FIFTH CITIZEN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "FIRST AND SECOND SERVINGMEN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "FIRST CITIZEN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "FIRST CONSPIRATOR",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "FIRST LORD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "FIRST OFFICER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "FIRST ROMAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "FIRST SENATOR",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "FIRST SERVINGMAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "FIRST SOLDIER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "FIRST WATCH",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "FOURTH CITIZEN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "GENTLEWOMAN",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "HERALD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "LARTIUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "LIEUTENANT",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "LORDS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "MARTIUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "MENENIUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "MESSENGER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "NOBLE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "OFFICER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "PATRICIAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "ROMAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "SECOND CITIZEN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "SECOND CONSPIRATOR",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "SECOND LORD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "SECOND MESSENGER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "SECOND OFFICER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "SECOND ROMAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "SECOND SENATOR",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "SECOND SERVINGMAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "SECOND SOLDIER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "SECOND WATCH",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "SENATOR",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "SENATORS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "SEVENTH CITIZEN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "SICINIUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "SIXTH CITIZEN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "SOLDIER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "THIRD CITIZEN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "THIRD CONSPIRATOR",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "THIRD LORD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "THIRD ROMAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "THIRD SERVINGMAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "TRIBUNES",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "VALERIA",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "VALERIA , VIRGILIA",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "VIRGILIA",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "VOLSCE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "VOLUMNIA",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "YOUNG MARTIUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "COR"
     },
     {
       "play_id": 6,
       "name": "ALL",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "CYM"
     },
     {
       "play_id": 6,
       "name": "ARVIRAGUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "CYM"
     },
     {
       "play_id": 6,
       "name": "ATTENDANT",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "CYM"
     },
     {
       "play_id": 6,
       "name": "BELARIUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "CYM"
     },
     {
       "play_id": 6,
       "name": "BOTH",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "CYM"
     },
     {
       "play_id": 6,
       "name": "BROTHERS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "CYM"
     },
     {
       "play_id": 6,
       "name": "CAPTAIN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "CYM"
     },
     {
       "play_id": 6,
       "name": "CLOTEN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "CYM"
     },
     {
       "play_id": 6,
       "name": "CORNELIUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "CYM"
     },
     {
       "play_id": 6,
       "name": "CYMBELINE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "CYM"
     },
     {
       "play_id": 6,
       "name": "FIRST BROTHER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "CYM"
     },
     {
       "play_id": 6,
       "name": "FIRST CAPTAIN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "CYM"
     },
     {
       "play_id": 6,
       "name": "FIRST GENTLEMAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "CYM"
     },
     {
       "play_id": 6,
       "name": "FIRST LORD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "CYM"
     },
     {
       "play_id": 6,
       "name": "FIRST SENATOR",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "CYM"
     },
     {
       "play_id": 6,
       "name": "FRENCHMAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "CYM"
     },
     {
       "play_id": 6,
       "name": "GUIDERIUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "CYM"
     },
     {
       "play_id": 6,
       "name": "GUIDERIUS , AS POLYDOR , AND ARVIRAGUS , AS CADWAL",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "CYM"
     },
     {
       "play_id": 6,
       "name": "IACHIMO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "CYM"
     },
     {
       "play_id": 6,
       "name": "IMOGEN",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "CYM"
     },
     {
       "play_id": 6,
       "name": "JAILER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "CYM"
     },
     {
       "play_id": 6,
       "name": "JUPITER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "CYM"
     },
     {
       "play_id": 6,
       "name": "LADIES",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "CYM"
     },
     {
       "play_id": 6,
       "name": "LADY",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "CYM"
     },
     {
       "play_id": 6,
       "name": "LORD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "CYM"
     },
     {
       "play_id": 6,
       "name": "LUCIUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "CYM"
     },
     {
       "play_id": 6,
       "name": "MESSENGER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "CYM"
     },
     {
       "play_id": 6,
       "name": "MOTHER",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "CYM"
     },
     {
       "play_id": 6,
       "name": "PHILARIO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "CYM"
     },
     {
       "play_id": 6,
       "name": "PISANIO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "CYM"
     },
     {
       "play_id": 6,
       "name": "POSTHUMUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "CYM"
     },
     {
       "play_id": 6,
       "name": "QUEEN",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "CYM"
     },
     {
       "play_id": 6,
       "name": "SECOND BROTHER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "CYM"
     },
     {
       "play_id": 6,
       "name": "SECOND CAPTAIN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "CYM"
     },
     {
       "play_id": 6,
       "name": "SECOND GENTLEMAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "CYM"
     },
     {
       "play_id": 6,
       "name": "SECOND JAILER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "CYM"
     },
     {
       "play_id": 6,
       "name": "SECOND LORD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "CYM"
     },
     {
       "play_id": 6,
       "name": "SECOND SENATOR",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "CYM"
     },
     {
       "play_id": 6,
       "name": "SICILIUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "CYM"
     },
     {
       "play_id": 6,
       "name": "SOOTHSAYER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "CYM"
     },
     {
       "play_id": 6,
       "name": "TRIBUNE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "CYM"
     },
     {
       "play_id": 6,
       "name": "UNKNOWN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "CYM"
     },
     {
       "play_id": 7,
       "name": "ALL",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "HAM"
     },
     {
       "play_id": 7,
       "name": "AMBASSADOR",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "HAM"
     },
     {
       "play_id": 7,
       "name": "BARNARDO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "HAM"
     },
     {
       "play_id": 7,
       "name": "BARNARDO / MARCELLUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "HAM"
     },
     {
       "play_id": 7,
       "name": "CAPTAIN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "HAM"
     },
     {
       "play_id": 7,
       "name": "CORNELIUS / VOLTEMAND",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "HAM"
     },
     {
       "play_id": 7,
       "name": "DOCTOR",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "HAM"
     },
     {
       "play_id": 7,
       "name": "FIRST PLAYER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "HAM"
     },
     {
       "play_id": 7,
       "name": "FORTINBRAS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "HAM"
     },
     {
       "play_id": 7,
       "name": "FRANCISCO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "HAM"
     },
     {
       "play_id": 7,
       "name": "GENTLEMAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "HAM"
     },
     {
       "play_id": 7,
       "name": "GENTLEMEN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "HAM"
     },
     {
       "play_id": 7,
       "name": "GHOST",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "HAM"
     },
     {
       "play_id": 7,
       "name": "GRAVEDIGGER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "HAM"
     },
     {
       "play_id": 7,
       "name": "GUILDENSTERN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "HAM"
     },
     {
       "play_id": 7,
       "name": "HAMLET",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "HAM"
     },
     {
       "play_id": 7,
       "name": "HORATIO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "HAM"
     },
     {
       "play_id": 7,
       "name": "HORATIO / MARCELLUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "HAM"
     },
     {
       "play_id": 7,
       "name": "KING",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "HAM"
     },
     {
       "play_id": 7,
       "name": "LAERTES",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "HAM"
     },
     {
       "play_id": 7,
       "name": "LORD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "HAM"
     },
     {
       "play_id": 7,
       "name": "LUCIANUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "HAM"
     },
     {
       "play_id": 7,
       "name": "MARCELLUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "HAM"
     },
     {
       "play_id": 7,
       "name": "MESSENGER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "HAM"
     },
     {
       "play_id": 7,
       "name": "OPHELIA",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "HAM"
     },
     {
       "play_id": 7,
       "name": "OSRIC",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "HAM"
     },
     {
       "play_id": 7,
       "name": "OTHER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "HAM"
     },
     {
       "play_id": 7,
       "name": "PLAYER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "HAM"
     },
     {
       "play_id": 7,
       "name": "PLAYER KING",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "HAM"
     },
     {
       "play_id": 7,
       "name": "PLAYER QUEEN",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "HAM"
     },
     {
       "play_id": 7,
       "name": "POLONIUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "HAM"
     },
     {
       "play_id": 7,
       "name": "PROLOGUE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "HAM"
     },
     {
       "play_id": 7,
       "name": "QUEEN",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "HAM"
     },
     {
       "play_id": 7,
       "name": "REYNALDO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "HAM"
     },
     {
       "play_id": 7,
       "name": "ROSENCRANTZ",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "HAM"
     },
     {
       "play_id": 7,
       "name": "ROSENCRANTZ / GUILDENSTERN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "HAM"
     },
     {
       "play_id": 7,
       "name": "SAILOR",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "HAM"
     },
     {
       "play_id": 7,
       "name": "UNKNOWN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "HAM"
     },
     {
       "play_id": 7,
       "name": "VOLTEMAND",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "HAM"
     },
     {
       "play_id": 8,
       "name": "ARCHBISHOP",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H4"
     },
     {
       "play_id": 8,
       "name": "BARDOLPH",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H4"
     },
     {
       "play_id": 8,
       "name": "BLUNT",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H4"
     },
     {
       "play_id": 8,
       "name": "CARRIER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H4"
     },
     {
       "play_id": 8,
       "name": "CHAMBERLAIN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H4"
     },
     {
       "play_id": 8,
       "name": "DOUGLAS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H4"
     },
     {
       "play_id": 8,
       "name": "FALSTAFF",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H4"
     },
     {
       "play_id": 8,
       "name": "FIRST CARRIER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H4"
     },
     {
       "play_id": 8,
       "name": "FIRST TRAVELER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H4"
     },
     {
       "play_id": 8,
       "name": "FRANCIS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H4"
     },
     {
       "play_id": 8,
       "name": "GADSHILL",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H4"
     },
     {
       "play_id": 8,
       "name": "GLENDOWER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H4"
     },
     {
       "play_id": 8,
       "name": "HOSTESS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H4"
     },
     {
       "play_id": 8,
       "name": "HOTSPUR",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H4"
     },
     {
       "play_id": 8,
       "name": "KING",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H4"
     },
     {
       "play_id": 8,
       "name": "LADY PERCY",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "1H4"
     },
     {
       "play_id": 8,
       "name": "LANCASTER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H4"
     },
     {
       "play_id": 8,
       "name": "MESSENGER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H4"
     },
     {
       "play_id": 8,
       "name": "MORTIMER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H4"
     },
     {
       "play_id": 8,
       "name": "NORTHUMBERLAND",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H4"
     },
     {
       "play_id": 8,
       "name": "OSTLER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H4"
     },
     {
       "play_id": 8,
       "name": "PETO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H4"
     },
     {
       "play_id": 8,
       "name": "POINS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H4"
     },
     {
       "play_id": 8,
       "name": "PRINCE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H4"
     },
     {
       "play_id": 8,
       "name": "SECOND CARRIER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H4"
     },
     {
       "play_id": 8,
       "name": "SECOND MESSENGER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H4"
     },
     {
       "play_id": 8,
       "name": "SERVANT",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H4"
     },
     {
       "play_id": 8,
       "name": "SHERIFF",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H4"
     },
     {
       "play_id": 8,
       "name": "SIR MICHAEL",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H4"
     },
     {
       "play_id": 8,
       "name": "THIEVES",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H4"
     },
     {
       "play_id": 8,
       "name": "TRAVELERS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H4"
     },
     {
       "play_id": 8,
       "name": "VERNON",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H4"
     },
     {
       "play_id": 8,
       "name": "VINTNER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H4"
     },
     {
       "play_id": 8,
       "name": "WESTMORELAND",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H4"
     },
     {
       "play_id": 8,
       "name": "WORCESTER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H4"
     },
     {
       "play_id": 9,
       "name": "ARCHBISHOP",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H4"
     },
     {
       "play_id": 9,
       "name": "BARDOLPH",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H4"
     },
     {
       "play_id": 9,
       "name": "BEADLE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H4"
     },
     {
       "play_id": 9,
       "name": "BROTHERS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H4"
     },
     {
       "play_id": 9,
       "name": "BULLCALF",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H4"
     },
     {
       "play_id": 9,
       "name": "CHIEF JUSTICE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H4"
     },
     {
       "play_id": 9,
       "name": "COLEVILE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H4"
     },
     {
       "play_id": 9,
       "name": "DAVY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H4"
     },
     {
       "play_id": 9,
       "name": "DOLL",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H4"
     },
     {
       "play_id": 9,
       "name": "DRAWER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H4"
     },
     {
       "play_id": 9,
       "name": "FALSTAFF",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H4"
     },
     {
       "play_id": 9,
       "name": "FANG",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H4"
     },
     {
       "play_id": 9,
       "name": "FEEBLE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H4"
     },
     {
       "play_id": 9,
       "name": "FIRST GROOM",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H4"
     },
     {
       "play_id": 9,
       "name": "FRANCIS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H4"
     },
     {
       "play_id": 9,
       "name": "GOWER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H4"
     },
     {
       "play_id": 9,
       "name": "HARCOURT",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H4"
     },
     {
       "play_id": 9,
       "name": "HASTINGS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H4"
     },
     {
       "play_id": 9,
       "name": "HOSTESS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H4"
     },
     {
       "play_id": 9,
       "name": "HUMPHREY OF GLOUCESTER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H4"
     },
     {
       "play_id": 9,
       "name": "HUMPHREY OF GLOUCESTER , THOMAS OF CLARENCE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H4"
     },
     {
       "play_id": 9,
       "name": "JOHN OF LANCASTER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H4"
     },
     {
       "play_id": 9,
       "name": "KING",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H4"
     },
     {
       "play_id": 9,
       "name": "LADY NORTHUMBERLAND",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "2H4"
     },
     {
       "play_id": 9,
       "name": "LADY PERCY",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "2H4"
     },
     {
       "play_id": 9,
       "name": "LORD BARDOLPH",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H4"
     },
     {
       "play_id": 9,
       "name": "MESSENGER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H4"
     },
     {
       "play_id": 9,
       "name": "MORTON",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H4"
     },
     {
       "play_id": 9,
       "name": "MOULDY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H4"
     },
     {
       "play_id": 9,
       "name": "MOWBRAY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H4"
     },
     {
       "play_id": 9,
       "name": "NORTHUMBERLAND",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H4"
     },
     {
       "play_id": 9,
       "name": "OFFICERS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H4"
     },
     {
       "play_id": 9,
       "name": "PAGE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H4"
     },
     {
       "play_id": 9,
       "name": "PETO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H4"
     },
     {
       "play_id": 9,
       "name": "PISTOL",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H4"
     },
     {
       "play_id": 9,
       "name": "POINS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H4"
     },
     {
       "play_id": 9,
       "name": "PORTER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H4"
     },
     {
       "play_id": 9,
       "name": "PRINCE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H4"
     },
     {
       "play_id": 9,
       "name": "PRINCE , POINS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H4"
     },
     {
       "play_id": 9,
       "name": "SECOND DRAWER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H4"
     },
     {
       "play_id": 9,
       "name": "SECOND GROOM",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H4"
     },
     {
       "play_id": 9,
       "name": "SERVANT",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H4"
     },
     {
       "play_id": 9,
       "name": "SHADOW",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H4"
     },
     {
       "play_id": 9,
       "name": "SHALLOW",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H4"
     },
     {
       "play_id": 9,
       "name": "SILENCE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H4"
     },
     {
       "play_id": 9,
       "name": "SNARE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H4"
     },
     {
       "play_id": 9,
       "name": "THOMAS OF CLARENCE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H4"
     },
     {
       "play_id": 9,
       "name": "TRAVERS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H4"
     },
     {
       "play_id": 9,
       "name": "WART",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H4"
     },
     {
       "play_id": 9,
       "name": "WARWICK",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H4"
     },
     {
       "play_id": 9,
       "name": "WESTMORELAND",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H4"
     },
     {
       "play_id": 9,
       "name": "WILL",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H4"
     },
     {
       "play_id": 10,
       "name": "ALICE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H5"
     },
     {
       "play_id": 10,
       "name": "ALL",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H5"
     },
     {
       "play_id": 10,
       "name": "AMBASSADOR",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H5"
     },
     {
       "play_id": 10,
       "name": "BARDOLPH",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H5"
     },
     {
       "play_id": 10,
       "name": "BATES",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H5"
     },
     {
       "play_id": 10,
       "name": "BEDFORD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H5"
     },
     {
       "play_id": 10,
       "name": "BISHOP OF CANTERBURY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H5"
     },
     {
       "play_id": 10,
       "name": "BISHOP OF ELY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H5"
     },
     {
       "play_id": 10,
       "name": "BOURBON",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H5"
     },
     {
       "play_id": 10,
       "name": "BOY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H5"
     },
     {
       "play_id": 10,
       "name": "BRITTANY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H5"
     },
     {
       "play_id": 10,
       "name": "BURGUNDY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H5"
     },
     {
       "play_id": 10,
       "name": "CAMBRIDGE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H5"
     },
     {
       "play_id": 10,
       "name": "CONSTABLE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H5"
     },
     {
       "play_id": 10,
       "name": "COURT",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H5"
     },
     {
       "play_id": 10,
       "name": "DAUPHIN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H5"
     },
     {
       "play_id": 10,
       "name": "ERPINGHAM",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H5"
     },
     {
       "play_id": 10,
       "name": "EXETER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H5"
     },
     {
       "play_id": 10,
       "name": "FLUELLEN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H5"
     },
     {
       "play_id": 10,
       "name": "FRENCH SOLDIER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H5"
     },
     {
       "play_id": 10,
       "name": "GLOUCESTER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H5"
     },
     {
       "play_id": 10,
       "name": "GOVERNOR",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H5"
     },
     {
       "play_id": 10,
       "name": "GOWER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H5"
     },
     {
       "play_id": 10,
       "name": "GRANDPRÉ",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H5"
     },
     {
       "play_id": 10,
       "name": "GREY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H5"
     },
     {
       "play_id": 10,
       "name": "GREY / SCROOP",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H5"
     },
     {
       "play_id": 10,
       "name": "HERALD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H5"
     },
     {
       "play_id": 10,
       "name": "HOSTESS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H5"
     },
     {
       "play_id": 10,
       "name": "JAMY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H5"
     },
     {
       "play_id": 10,
       "name": "KATHERINE",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "H5"
     },
     {
       "play_id": 10,
       "name": "KING",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H5"
     },
     {
       "play_id": 10,
       "name": "KING HENRY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H5"
     },
     {
       "play_id": 10,
       "name": "KING OF FRANCE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H5"
     },
     {
       "play_id": 10,
       "name": "LORDS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H5"
     },
     {
       "play_id": 10,
       "name": "MACMORRIS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H5"
     },
     {
       "play_id": 10,
       "name": "MESSENGER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H5"
     },
     {
       "play_id": 10,
       "name": "MONTJOY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H5"
     },
     {
       "play_id": 10,
       "name": "NYM",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H5"
     },
     {
       "play_id": 10,
       "name": "ORLÉANS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H5"
     },
     {
       "play_id": 10,
       "name": "PISTOL",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H5"
     },
     {
       "play_id": 10,
       "name": "QUEEN OF FRANCE",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "H5"
     },
     {
       "play_id": 10,
       "name": "RAMBURES",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H5"
     },
     {
       "play_id": 10,
       "name": "SALISBURY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H5"
     },
     {
       "play_id": 10,
       "name": "SCROOP",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H5"
     },
     {
       "play_id": 10,
       "name": "WARWICK",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H5"
     },
     {
       "play_id": 10,
       "name": "WESTMORELAND",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H5"
     },
     {
       "play_id": 10,
       "name": "WILLIAMS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H5"
     },
     {
       "play_id": 10,
       "name": "YORK",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H5"
     },
     {
       "play_id": 11,
       "name": "ALANSON",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H6"
     },
     {
       "play_id": 11,
       "name": "ALL",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H6"
     },
     {
       "play_id": 11,
       "name": "BASSET",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H6"
     },
     {
       "play_id": 11,
       "name": "BASTARD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H6"
     },
     {
       "play_id": 11,
       "name": "BEDFORD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H6"
     },
     {
       "play_id": 11,
       "name": "BOY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H6"
     },
     {
       "play_id": 11,
       "name": "BURGUNDY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H6"
     },
     {
       "play_id": 11,
       "name": "CAPTAIN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H6"
     },
     {
       "play_id": 11,
       "name": "CHARLES",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H6"
     },
     {
       "play_id": 11,
       "name": "COUNTESS",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "1H6"
     },
     {
       "play_id": 11,
       "name": "EXETER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H6"
     },
     {
       "play_id": 11,
       "name": "FASTOLF",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H6"
     },
     {
       "play_id": 11,
       "name": "FIRST SERVINGMAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H6"
     },
     {
       "play_id": 11,
       "name": "FIRST WARDER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H6"
     },
     {
       "play_id": 11,
       "name": "GARGRAVE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H6"
     },
     {
       "play_id": 11,
       "name": "GENERAL",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H6"
     },
     {
       "play_id": 11,
       "name": "GLANSDALE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H6"
     },
     {
       "play_id": 11,
       "name": "GLOUCESTER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H6"
     },
     {
       "play_id": 11,
       "name": "JOHN TALBOT",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H6"
     },
     {
       "play_id": 11,
       "name": "KEEPER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H6"
     },
     {
       "play_id": 11,
       "name": "KING HENRY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H6"
     },
     {
       "play_id": 11,
       "name": "LAWYER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H6"
     },
     {
       "play_id": 11,
       "name": "LEGATE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H6"
     },
     {
       "play_id": 11,
       "name": "LUCY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H6"
     },
     {
       "play_id": 11,
       "name": "MARGARET",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "1H6"
     },
     {
       "play_id": 11,
       "name": "MASTER GUNNER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H6"
     },
     {
       "play_id": 11,
       "name": "MAYOR",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H6"
     },
     {
       "play_id": 11,
       "name": "MESSENGER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H6"
     },
     {
       "play_id": 11,
       "name": "MORTIMER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H6"
     },
     {
       "play_id": 11,
       "name": "OFFICER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H6"
     },
     {
       "play_id": 11,
       "name": "PLANTAGENET",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H6"
     },
     {
       "play_id": 11,
       "name": "PORTER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H6"
     },
     {
       "play_id": 11,
       "name": "PUCELLE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H6"
     },
     {
       "play_id": 11,
       "name": "REIGNIER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H6"
     },
     {
       "play_id": 11,
       "name": "SALISBURY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H6"
     },
     {
       "play_id": 11,
       "name": "SCOUT",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H6"
     },
     {
       "play_id": 11,
       "name": "SECOND MESSENGER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H6"
     },
     {
       "play_id": 11,
       "name": "SECOND SERVINGMAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H6"
     },
     {
       "play_id": 11,
       "name": "SECOND WARDER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H6"
     },
     {
       "play_id": 11,
       "name": "SENTINEL",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H6"
     },
     {
       "play_id": 11,
       "name": "SERGEANT",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H6"
     },
     {
       "play_id": 11,
       "name": "SERVINGMAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H6"
     },
     {
       "play_id": 11,
       "name": "SERVINGMEN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H6"
     },
     {
       "play_id": 11,
       "name": "SHEPHERD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H6"
     },
     {
       "play_id": 11,
       "name": "SOLDIER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H6"
     },
     {
       "play_id": 11,
       "name": "SOMERSET",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H6"
     },
     {
       "play_id": 11,
       "name": "SUFFOLK",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H6"
     },
     {
       "play_id": 11,
       "name": "TALBOT",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H6"
     },
     {
       "play_id": 11,
       "name": "THIRD MESSENGER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H6"
     },
     {
       "play_id": 11,
       "name": "THIRD SERVINGMAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H6"
     },
     {
       "play_id": 11,
       "name": "VERNON",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H6"
     },
     {
       "play_id": 11,
       "name": "WARWICK",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H6"
     },
     {
       "play_id": 11,
       "name": "WATCH",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H6"
     },
     {
       "play_id": 11,
       "name": "WINCHESTER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H6"
     },
     {
       "play_id": 11,
       "name": "WOODVILLE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H6"
     },
     {
       "play_id": 11,
       "name": "YORK",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "1H6"
     },
     {
       "play_id": 12,
       "name": "ALL",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "BEADLE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "BEVIS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "BOLINGBROKE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "BROTHER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "BUCKINGHAM",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "CADE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "CARDINAL",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "CLERK",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "CLIFFORD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "COMMONS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "DICK",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "DUCHESS",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "EDWARD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "FIRST CITIZEN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "FIRST GENTLEMAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "FIRST MURDERER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "FIRST NEIGHBOR",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "FIRST PETITIONER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "FIRST PRENTICE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "GEORGE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "GLOUCESTER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "HERALD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "HOLLAND",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "HORNER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "HUME",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "IDEN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "JOURDAIN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "KING HENRY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "LIEUTENANT",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "MAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "MASTER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "MATE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "MAYOR",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "MESSENGER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "MICHAEL",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "PETER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "POST",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "QUEEN MARGARET",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "RICHARD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "SALISBURY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "SALISBURY , WARWICK",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "SAYE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "SCALES",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "SECOND GENTLEMAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "SECOND MESSENGER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "SECOND MURDERER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "SECOND NEIGHBOR",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "SECOND PETITIONER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "SECOND PRENTICE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "SERVANT",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "SHERIFF",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "SIMPCOX",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "SMITH",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "SOLDIER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "SOMERSET",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "SPIRIT",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "STAFFORD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "STANLEY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "SUFFOLK",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "THIRD NEIGHBOR",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "VAUX",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "WARWICK",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "WHITMORE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "WIFE",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "YORK",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H6"
     },
     {
       "play_id": 12,
       "name": "YOUNG CLIFFORD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "2H6"
     },
     {
       "play_id": 13,
       "name": "ALL",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "3H6"
     },
     {
       "play_id": 13,
       "name": "CLARENCE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "3H6"
     },
     {
       "play_id": 13,
       "name": "CLIFFORD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "3H6"
     },
     {
       "play_id": 13,
       "name": "EDWARD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "3H6"
     },
     {
       "play_id": 13,
       "name": "EXETER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "3H6"
     },
     {
       "play_id": 13,
       "name": "FATHER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "3H6"
     },
     {
       "play_id": 13,
       "name": "FIRST GAMEKEEPER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "3H6"
     },
     {
       "play_id": 13,
       "name": "FIRST MESSENGER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "3H6"
     },
     {
       "play_id": 13,
       "name": "FIRST WATCH",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "3H6"
     },
     {
       "play_id": 13,
       "name": "GEORGE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "3H6"
     },
     {
       "play_id": 13,
       "name": "HASTINGS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "3H6"
     },
     {
       "play_id": 13,
       "name": "HUNTSMAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "3H6"
     },
     {
       "play_id": 13,
       "name": "KING EDWARD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "3H6"
     },
     {
       "play_id": 13,
       "name": "KING HENRY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "3H6"
     },
     {
       "play_id": 13,
       "name": "KING LEWIS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "3H6"
     },
     {
       "play_id": 13,
       "name": "LADY BONA",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "3H6"
     },
     {
       "play_id": 13,
       "name": "LADY GREY",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "3H6"
     },
     {
       "play_id": 13,
       "name": "LIEUTENANT",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "3H6"
     },
     {
       "play_id": 13,
       "name": "MAYOR",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "3H6"
     },
     {
       "play_id": 13,
       "name": "MESSENGER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "3H6"
     },
     {
       "play_id": 13,
       "name": "MONTAGUE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "3H6"
     },
     {
       "play_id": 13,
       "name": "MONTGOMERY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "3H6"
     },
     {
       "play_id": 13,
       "name": "NOBLEMAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "3H6"
     },
     {
       "play_id": 13,
       "name": "NORFOLK",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "3H6"
     },
     {
       "play_id": 13,
       "name": "NORTHUMBERLAND",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "3H6"
     },
     {
       "play_id": 13,
       "name": "OXFORD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "3H6"
     },
     {
       "play_id": 13,
       "name": "POST",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "3H6"
     },
     {
       "play_id": 13,
       "name": "PRINCE EDWARD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "3H6"
     },
     {
       "play_id": 13,
       "name": "QUEEN ELIZABETH",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "3H6"
     },
     {
       "play_id": 13,
       "name": "QUEEN MARGARET",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "3H6"
     },
     {
       "play_id": 13,
       "name": "RICHARD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "3H6"
     },
     {
       "play_id": 13,
       "name": "RIVERS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "3H6"
     },
     {
       "play_id": 13,
       "name": "RUTLAND",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "3H6"
     },
     {
       "play_id": 13,
       "name": "SECOND GAMEKEEPER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "3H6"
     },
     {
       "play_id": 13,
       "name": "SECOND MESSENGER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "3H6"
     },
     {
       "play_id": 13,
       "name": "SECOND WATCH",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "3H6"
     },
     {
       "play_id": 13,
       "name": "SIR JOHN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "3H6"
     },
     {
       "play_id": 13,
       "name": "SOLDIER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "3H6"
     },
     {
       "play_id": 13,
       "name": "SOMERSET",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "3H6"
     },
     {
       "play_id": 13,
       "name": "SOMERVILLE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "3H6"
     },
     {
       "play_id": 13,
       "name": "SON",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "3H6"
     },
     {
       "play_id": 13,
       "name": "THIRD WATCH",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "3H6"
     },
     {
       "play_id": 13,
       "name": "TUTOR",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "3H6"
     },
     {
       "play_id": 13,
       "name": "WARWICK",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "3H6"
     },
     {
       "play_id": 13,
       "name": "WESTMORLAND",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "3H6"
     },
     {
       "play_id": 13,
       "name": "YORK",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "3H6"
     },
     {
       "play_id": 14,
       "name": "ABERGAVENNY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H8"
     },
     {
       "play_id": 14,
       "name": "ALL",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H8"
     },
     {
       "play_id": 14,
       "name": "ANNE",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "H8"
     },
     {
       "play_id": 14,
       "name": "BOTH",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H8"
     },
     {
       "play_id": 14,
       "name": "BRANDON",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H8"
     },
     {
       "play_id": 14,
       "name": "BUCKINGHAM",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H8"
     },
     {
       "play_id": 14,
       "name": "BUTTS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H8"
     },
     {
       "play_id": 14,
       "name": "CAMPEIUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H8"
     },
     {
       "play_id": 14,
       "name": "CAPUCHIUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H8"
     },
     {
       "play_id": 14,
       "name": "CHAMBERLAIN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H8"
     },
     {
       "play_id": 14,
       "name": "CHANCELLOR",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H8"
     },
     {
       "play_id": 14,
       "name": "CRANMER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H8"
     },
     {
       "play_id": 14,
       "name": "CRIER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H8"
     },
     {
       "play_id": 14,
       "name": "CROMWELL",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H8"
     },
     {
       "play_id": 14,
       "name": "DENNY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H8"
     },
     {
       "play_id": 14,
       "name": "FIRST GENTLEMAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H8"
     },
     {
       "play_id": 14,
       "name": "GARDINER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H8"
     },
     {
       "play_id": 14,
       "name": "GARTER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H8"
     },
     {
       "play_id": 14,
       "name": "GENTLEMAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H8"
     },
     {
       "play_id": 14,
       "name": "GENTLEMAN USHER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H8"
     },
     {
       "play_id": 14,
       "name": "GRIFFITH",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H8"
     },
     {
       "play_id": 14,
       "name": "GUILFORD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H8"
     },
     {
       "play_id": 14,
       "name": "KATHERINE",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "H8"
     },
     {
       "play_id": 14,
       "name": "KEEPER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H8"
     },
     {
       "play_id": 14,
       "name": "KING",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H8"
     },
     {
       "play_id": 14,
       "name": "LINCOLN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H8"
     },
     {
       "play_id": 14,
       "name": "LOVELL",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H8"
     },
     {
       "play_id": 14,
       "name": "MESSENGER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H8"
     },
     {
       "play_id": 14,
       "name": "NORFOLK",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H8"
     },
     {
       "play_id": 14,
       "name": "OLD LADY",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "H8"
     },
     {
       "play_id": 14,
       "name": "ONE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H8"
     },
     {
       "play_id": 14,
       "name": "PAGE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H8"
     },
     {
       "play_id": 14,
       "name": "PATIENCE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H8"
     },
     {
       "play_id": 14,
       "name": "PORTER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H8"
     },
     {
       "play_id": 14,
       "name": "PORTER’S MAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H8"
     },
     {
       "play_id": 14,
       "name": "QUEEN KATHERINE",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "H8"
     },
     {
       "play_id": 14,
       "name": "SANDS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H8"
     },
     {
       "play_id": 14,
       "name": "SCRIBE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H8"
     },
     {
       "play_id": 14,
       "name": "SECOND GENTLEMAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H8"
     },
     {
       "play_id": 14,
       "name": "SECRETARY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H8"
     },
     {
       "play_id": 14,
       "name": "SERGEANT",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H8"
     },
     {
       "play_id": 14,
       "name": "SERVANT",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H8"
     },
     {
       "play_id": 14,
       "name": "SUFFOLK",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H8"
     },
     {
       "play_id": 14,
       "name": "SURREY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H8"
     },
     {
       "play_id": 14,
       "name": "SURVEYOR",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H8"
     },
     {
       "play_id": 14,
       "name": "THIRD GENTLEMAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H8"
     },
     {
       "play_id": 14,
       "name": "VAUX",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H8"
     },
     {
       "play_id": 14,
       "name": "WOLSEY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H8"
     },
     {
       "play_id": 14,
       "name": "WOMAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "H8"
     },
     {
       "play_id": 15,
       "name": "ANTONY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JC"
     },
     {
       "play_id": 15,
       "name": "ARTEMIDORUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JC"
     },
     {
       "play_id": 15,
       "name": "BOTH",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JC"
     },
     {
       "play_id": 15,
       "name": "BRUTUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JC"
     },
     {
       "play_id": 15,
       "name": "CAESAR",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JC"
     },
     {
       "play_id": 15,
       "name": "CALPHURNIA",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JC"
     },
     {
       "play_id": 15,
       "name": "CARPENTER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JC"
     },
     {
       "play_id": 15,
       "name": "CASCA",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JC"
     },
     {
       "play_id": 15,
       "name": "CASSIUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JC"
     },
     {
       "play_id": 15,
       "name": "CATO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JC"
     },
     {
       "play_id": 15,
       "name": "CICERO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JC"
     },
     {
       "play_id": 15,
       "name": "CINNA",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JC"
     },
     {
       "play_id": 15,
       "name": "CLAUDIUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JC"
     },
     {
       "play_id": 15,
       "name": "CLITUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JC"
     },
     {
       "play_id": 15,
       "name": "COBBLER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JC"
     },
     {
       "play_id": 15,
       "name": "DARDANUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JC"
     },
     {
       "play_id": 15,
       "name": "DECIUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JC"
     },
     {
       "play_id": 15,
       "name": "FIRST PLEBEIAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JC"
     },
     {
       "play_id": 15,
       "name": "FIRST SOLDIER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JC"
     },
     {
       "play_id": 15,
       "name": "FLAVIUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JC"
     },
     {
       "play_id": 15,
       "name": "FOURTH PLEBEIAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JC"
     },
     {
       "play_id": 15,
       "name": "GHOST",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JC"
     },
     {
       "play_id": 15,
       "name": "LEPIDUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JC"
     },
     {
       "play_id": 15,
       "name": "LIGARIUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JC"
     },
     {
       "play_id": 15,
       "name": "LUCILIUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JC"
     },
     {
       "play_id": 15,
       "name": "LUCIUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JC"
     },
     {
       "play_id": 15,
       "name": "MARULLUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JC"
     },
     {
       "play_id": 15,
       "name": "MESSALA",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JC"
     },
     {
       "play_id": 15,
       "name": "MESSENGER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JC"
     },
     {
       "play_id": 15,
       "name": "METELLUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JC"
     },
     {
       "play_id": 15,
       "name": "OCTAVIUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JC"
     },
     {
       "play_id": 15,
       "name": "PINDARUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JC"
     },
     {
       "play_id": 15,
       "name": "PLEBEIANS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JC"
     },
     {
       "play_id": 15,
       "name": "POET",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JC"
     },
     {
       "play_id": 15,
       "name": "POPILIUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JC"
     },
     {
       "play_id": 15,
       "name": "PORTIA",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "JC"
     },
     {
       "play_id": 15,
       "name": "PUBLIUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JC"
     },
     {
       "play_id": 15,
       "name": "SECOND PLEBEIAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JC"
     },
     {
       "play_id": 15,
       "name": "SECOND SOLDIER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JC"
     },
     {
       "play_id": 15,
       "name": "SERVANT",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JC"
     },
     {
       "play_id": 15,
       "name": "SOOTHSAYER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JC"
     },
     {
       "play_id": 15,
       "name": "STRATO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JC"
     },
     {
       "play_id": 15,
       "name": "THIRD PLEBEIAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JC"
     },
     {
       "play_id": 15,
       "name": "THIRD SOLDIER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JC"
     },
     {
       "play_id": 15,
       "name": "TITINIUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JC"
     },
     {
       "play_id": 15,
       "name": "TITINIUS / MESSALA",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JC"
     },
     {
       "play_id": 15,
       "name": "TREBONIUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JC"
     },
     {
       "play_id": 15,
       "name": "VARRO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JC"
     },
     {
       "play_id": 15,
       "name": "VOLUMNIUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JC"
     },
     {
       "play_id": 16,
       "name": "ARTHUR",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JN"
     },
     {
       "play_id": 16,
       "name": "AUSTRIA",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JN"
     },
     {
       "play_id": 16,
       "name": "BASTARD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JN"
     },
     {
       "play_id": 16,
       "name": "BIGOT",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JN"
     },
     {
       "play_id": 16,
       "name": "BLANCHE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JN"
     },
     {
       "play_id": 16,
       "name": "CHATILLION",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JN"
     },
     {
       "play_id": 16,
       "name": "CITIZEN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JN"
     },
     {
       "play_id": 16,
       "name": "CONSTANCE",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "JN"
     },
     {
       "play_id": 16,
       "name": "DAUPHIN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JN"
     },
     {
       "play_id": 16,
       "name": "ENGLISH HERALD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JN"
     },
     {
       "play_id": 16,
       "name": "ESSEX",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JN"
     },
     {
       "play_id": 16,
       "name": "EXECUTIONER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JN"
     },
     {
       "play_id": 16,
       "name": "FRENCH HERALD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JN"
     },
     {
       "play_id": 16,
       "name": "GURNEY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JN"
     },
     {
       "play_id": 16,
       "name": "HUBERT",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JN"
     },
     {
       "play_id": 16,
       "name": "KING JOHN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JN"
     },
     {
       "play_id": 16,
       "name": "KING PHILIP",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JN"
     },
     {
       "play_id": 16,
       "name": "LADY FAULCONBRIDGE",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "JN"
     },
     {
       "play_id": 16,
       "name": "MELUN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JN"
     },
     {
       "play_id": 16,
       "name": "MESSENGER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JN"
     },
     {
       "play_id": 16,
       "name": "PANDULPH",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JN"
     },
     {
       "play_id": 16,
       "name": "PEMBROKE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JN"
     },
     {
       "play_id": 16,
       "name": "PEMBROKE , BIGOT",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JN"
     },
     {
       "play_id": 16,
       "name": "PETER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JN"
     },
     {
       "play_id": 16,
       "name": "PHILIP FAULCONBRIDGE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JN"
     },
     {
       "play_id": 16,
       "name": "PRINCE HENRY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JN"
     },
     {
       "play_id": 16,
       "name": "QUEEN ELEANOR",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "JN"
     },
     {
       "play_id": 16,
       "name": "ROBERT FAULCONBRIDGE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JN"
     },
     {
       "play_id": 16,
       "name": "SALISBURY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "JN"
     },
     {
       "play_id": 17,
       "name": "ALBANY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "LR"
     },
     {
       "play_id": 17,
       "name": "ALBANY/CORNWALL",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "LR"
     },
     {
       "play_id": 17,
       "name": "BURGUNDY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "LR"
     },
     {
       "play_id": 17,
       "name": "CAPTAIN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "LR"
     },
     {
       "play_id": 17,
       "name": "CORDELIA",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "LR"
     },
     {
       "play_id": 17,
       "name": "CORNWALL",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "LR"
     },
     {
       "play_id": 17,
       "name": "CURAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "LR"
     },
     {
       "play_id": 17,
       "name": "DOCTOR",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "LR"
     },
     {
       "play_id": 17,
       "name": "EDGAR",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "LR"
     },
     {
       "play_id": 17,
       "name": "EDMUND",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "LR"
     },
     {
       "play_id": 17,
       "name": "FIRST SERVANT",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "LR"
     },
     {
       "play_id": 17,
       "name": "FOOL",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "LR"
     },
     {
       "play_id": 17,
       "name": "FRANCE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "LR"
     },
     {
       "play_id": 17,
       "name": "GENTLEMAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "LR"
     },
     {
       "play_id": 17,
       "name": "GLOUCESTER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "LR"
     },
     {
       "play_id": 17,
       "name": "GONERIL",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "LR"
     },
     {
       "play_id": 17,
       "name": "HERALD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "LR"
     },
     {
       "play_id": 17,
       "name": "KENT",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "LR"
     },
     {
       "play_id": 17,
       "name": "KNIGHT",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "LR"
     },
     {
       "play_id": 17,
       "name": "LEAR",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "LR"
     },
     {
       "play_id": 17,
       "name": "MESSENGER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "LR"
     },
     {
       "play_id": 17,
       "name": "OLD MAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "LR"
     },
     {
       "play_id": 17,
       "name": "OSWALD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "LR"
     },
     {
       "play_id": 17,
       "name": "REGAN",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "LR"
     },
     {
       "play_id": 17,
       "name": "SECOND SERVANT",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "LR"
     },
     {
       "play_id": 17,
       "name": "THIRD SERVANT",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "LR"
     },
     {
       "play_id": 18,
       "name": "A LORD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "LLL"
     },
     {
       "play_id": 18,
       "name": "ARMADO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "LLL"
     },
     {
       "play_id": 18,
       "name": "BEROWNE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "LLL"
     },
     {
       "play_id": 18,
       "name": "BOY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "LLL"
     },
     {
       "play_id": 18,
       "name": "BOYET",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "LLL"
     },
     {
       "play_id": 18,
       "name": "COSTARD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "LLL"
     },
     {
       "play_id": 18,
       "name": "DULL",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "LLL"
     },
     {
       "play_id": 18,
       "name": "DUMAINE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "LLL"
     },
     {
       "play_id": 18,
       "name": "FORESTER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "LLL"
     },
     {
       "play_id": 18,
       "name": "HOLOFERNES",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "LLL"
     },
     {
       "play_id": 18,
       "name": "JAQUENETTA",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "LLL"
     },
     {
       "play_id": 18,
       "name": "KATHERINE",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "LLL"
     },
     {
       "play_id": 18,
       "name": "KING",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "LLL"
     },
     {
       "play_id": 18,
       "name": "LONGAVILLE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "LLL"
     },
     {
       "play_id": 18,
       "name": "MARCADE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "LLL"
     },
     {
       "play_id": 18,
       "name": "MARIA",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "LLL"
     },
     {
       "play_id": 18,
       "name": "NATHANIEL",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "LLL"
     },
     {
       "play_id": 18,
       "name": "PRINCESS",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "LLL"
     },
     {
       "play_id": 18,
       "name": "ROSALINE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "LLL"
     },
     {
       "play_id": 18,
       "name": "SPRING",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "LLL"
     },
     {
       "play_id": 18,
       "name": "WINTER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "LLL"
     },
     {
       "play_id": 19,
       "name": "ALL",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MAC"
     },
     {
       "play_id": 19,
       "name": "ANGUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MAC"
     },
     {
       "play_id": 19,
       "name": "BANQUO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MAC"
     },
     {
       "play_id": 19,
       "name": "CAITHNESS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MAC"
     },
     {
       "play_id": 19,
       "name": "CAPTAIN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MAC"
     },
     {
       "play_id": 19,
       "name": "DOCTOR",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MAC"
     },
     {
       "play_id": 19,
       "name": "DONALBAIN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MAC"
     },
     {
       "play_id": 19,
       "name": "DUNCAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MAC"
     },
     {
       "play_id": 19,
       "name": "FIRST APPARITION",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MAC"
     },
     {
       "play_id": 19,
       "name": "FIRST MURDERER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MAC"
     },
     {
       "play_id": 19,
       "name": "FIRST WITCH",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "MAC"
     },
     {
       "play_id": 19,
       "name": "FLEANCE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MAC"
     },
     {
       "play_id": 19,
       "name": "GENTLEWOMAN",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "MAC"
     },
     {
       "play_id": 19,
       "name": "HECATE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MAC"
     },
     {
       "play_id": 19,
       "name": "LADY MACBETH",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "MAC"
     },
     {
       "play_id": 19,
       "name": "LADY MACDUFF",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "MAC"
     },
     {
       "play_id": 19,
       "name": "LENNOX",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MAC"
     },
     {
       "play_id": 19,
       "name": "LORD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MAC"
     },
     {
       "play_id": 19,
       "name": "LORDS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MAC"
     },
     {
       "play_id": 19,
       "name": "MACBETH",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MAC"
     },
     {
       "play_id": 19,
       "name": "MACBETH AND LENNOX",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MAC"
     },
     {
       "play_id": 19,
       "name": "MACDUFF",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MAC"
     },
     {
       "play_id": 19,
       "name": "MALCOLM",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MAC"
     },
     {
       "play_id": 19,
       "name": "MENTEITH",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MAC"
     },
     {
       "play_id": 19,
       "name": "MESSENGER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MAC"
     },
     {
       "play_id": 19,
       "name": "MURDERER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MAC"
     },
     {
       "play_id": 19,
       "name": "MURDERERS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MAC"
     },
     {
       "play_id": 19,
       "name": "OLD MAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MAC"
     },
     {
       "play_id": 19,
       "name": "PORTER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MAC"
     },
     {
       "play_id": 19,
       "name": "ROSS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MAC"
     },
     {
       "play_id": 19,
       "name": "SECOND APPARITION",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MAC"
     },
     {
       "play_id": 19,
       "name": "SECOND MURDERER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MAC"
     },
     {
       "play_id": 19,
       "name": "SECOND WITCH",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "MAC"
     },
     {
       "play_id": 19,
       "name": "SERVANT",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MAC"
     },
     {
       "play_id": 19,
       "name": "SEYTON",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MAC"
     },
     {
       "play_id": 19,
       "name": "SIWARD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MAC"
     },
     {
       "play_id": 19,
       "name": "SOLDIER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MAC"
     },
     {
       "play_id": 19,
       "name": "SON",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MAC"
     },
     {
       "play_id": 19,
       "name": "THIRD APPARITION",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MAC"
     },
     {
       "play_id": 19,
       "name": "THIRD MURDERER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MAC"
     },
     {
       "play_id": 19,
       "name": "THIRD WITCH",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "MAC"
     },
     {
       "play_id": 19,
       "name": "YOUNG SIWARD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MAC"
     },
     {
       "play_id": 20,
       "name": "ABHORSON",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MM"
     },
     {
       "play_id": 20,
       "name": "ANGELO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MM"
     },
     {
       "play_id": 20,
       "name": "ANGELO , ESCALUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MM"
     },
     {
       "play_id": 20,
       "name": "BARNARDINE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MM"
     },
     {
       "play_id": 20,
       "name": "BAWD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MM"
     },
     {
       "play_id": 20,
       "name": "CLAUDIO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MM"
     },
     {
       "play_id": 20,
       "name": "DUKE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MM"
     },
     {
       "play_id": 20,
       "name": "ELBOW",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MM"
     },
     {
       "play_id": 20,
       "name": "ESCALUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MM"
     },
     {
       "play_id": 20,
       "name": "FIRST GENTLEMAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MM"
     },
     {
       "play_id": 20,
       "name": "FRIAR PETER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MM"
     },
     {
       "play_id": 20,
       "name": "FRIAR THOMAS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MM"
     },
     {
       "play_id": 20,
       "name": "FROTH",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MM"
     },
     {
       "play_id": 20,
       "name": "ISABELLA",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MM"
     },
     {
       "play_id": 20,
       "name": "JULIET",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "MM"
     },
     {
       "play_id": 20,
       "name": "JUSTICE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MM"
     },
     {
       "play_id": 20,
       "name": "LUCIO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MM"
     },
     {
       "play_id": 20,
       "name": "MARIANA",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MM"
     },
     {
       "play_id": 20,
       "name": "MESSENGER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MM"
     },
     {
       "play_id": 20,
       "name": "NUN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MM"
     },
     {
       "play_id": 20,
       "name": "POMPEY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MM"
     },
     {
       "play_id": 20,
       "name": "PROVOST",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MM"
     },
     {
       "play_id": 20,
       "name": "SECOND GENTLEMAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MM"
     },
     {
       "play_id": 20,
       "name": "SERVANT",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MM"
     },
     {
       "play_id": 20,
       "name": "UNKNOWN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MM"
     },
     {
       "play_id": 21,
       "name": "ANTONIO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ADO"
     },
     {
       "play_id": 21,
       "name": "BALTHASAR",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ADO"
     },
     {
       "play_id": 21,
       "name": "BEATRICE",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "ADO"
     },
     {
       "play_id": 21,
       "name": "BENEDICK",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ADO"
     },
     {
       "play_id": 21,
       "name": "BORACHIO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ADO"
     },
     {
       "play_id": 21,
       "name": "BORACHIO / CONRADE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ADO"
     },
     {
       "play_id": 21,
       "name": "BOY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ADO"
     },
     {
       "play_id": 21,
       "name": "CLAUDIO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ADO"
     },
     {
       "play_id": 21,
       "name": "CONRADE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ADO"
     },
     {
       "play_id": 21,
       "name": "DOGBERRY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ADO"
     },
     {
       "play_id": 21,
       "name": "DON JOHN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ADO"
     },
     {
       "play_id": 21,
       "name": "FIRST LORD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ADO"
     },
     {
       "play_id": 21,
       "name": "FIRST WATCHMAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ADO"
     },
     {
       "play_id": 21,
       "name": "FRIAR",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ADO"
     },
     {
       "play_id": 21,
       "name": "HERO",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "ADO"
     },
     {
       "play_id": 21,
       "name": "LEONATO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ADO"
     },
     {
       "play_id": 21,
       "name": "LEONATO’S BROTHER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ADO"
     },
     {
       "play_id": 21,
       "name": "MARGARET",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "ADO"
     },
     {
       "play_id": 21,
       "name": "MESSENGER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ADO"
     },
     {
       "play_id": 21,
       "name": "PRINCE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ADO"
     },
     {
       "play_id": 21,
       "name": "SEACOAL",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ADO"
     },
     {
       "play_id": 21,
       "name": "SECOND WATCHMAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ADO"
     },
     {
       "play_id": 21,
       "name": "SEXTON",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ADO"
     },
     {
       "play_id": 21,
       "name": "UNKNOWN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ADO"
     },
     {
       "play_id": 21,
       "name": "URSULA",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ADO"
     },
     {
       "play_id": 21,
       "name": "VERGES",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ADO"
     },
     {
       "play_id": 22,
       "name": "ALL",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "OTH"
     },
     {
       "play_id": 22,
       "name": "BIANCA",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "OTH"
     },
     {
       "play_id": 22,
       "name": "BRABANTIO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "OTH"
     },
     {
       "play_id": 22,
       "name": "CASSIO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "OTH"
     },
     {
       "play_id": 22,
       "name": "CLOWN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "OTH"
     },
     {
       "play_id": 22,
       "name": "DESDEMONA",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "OTH"
     },
     {
       "play_id": 22,
       "name": "DUKE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "OTH"
     },
     {
       "play_id": 22,
       "name": "EMILIA",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "OTH"
     },
     {
       "play_id": 22,
       "name": "FIRST GENTLEMAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "OTH"
     },
     {
       "play_id": 22,
       "name": "FIRST SENATOR",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "OTH"
     },
     {
       "play_id": 22,
       "name": "GENTLEMEN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "OTH"
     },
     {
       "play_id": 22,
       "name": "GRATIANO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "OTH"
     },
     {
       "play_id": 22,
       "name": "HERALD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "OTH"
     },
     {
       "play_id": 22,
       "name": "IAGO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "OTH"
     },
     {
       "play_id": 22,
       "name": "LODOVICO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "OTH"
     },
     {
       "play_id": 22,
       "name": "MESSENGER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "OTH"
     },
     {
       "play_id": 22,
       "name": "MONTANO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "OTH"
     },
     {
       "play_id": 22,
       "name": "MUSICIAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "OTH"
     },
     {
       "play_id": 22,
       "name": "OFFICER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "OTH"
     },
     {
       "play_id": 22,
       "name": "OTHELLO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "OTH"
     },
     {
       "play_id": 22,
       "name": "RODERIGO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "OTH"
     },
     {
       "play_id": 22,
       "name": "SAILOR",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "OTH"
     },
     {
       "play_id": 22,
       "name": "SECOND GENTLEMAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "OTH"
     },
     {
       "play_id": 22,
       "name": "SECOND SENATOR",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "OTH"
     },
     {
       "play_id": 22,
       "name": "THIRD GENTLEMAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "OTH"
     },
     {
       "play_id": 23,
       "name": "ALL",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "PER"
     },
     {
       "play_id": 23,
       "name": "ANTIOCHUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "PER"
     },
     {
       "play_id": 23,
       "name": "BAWD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "PER"
     },
     {
       "play_id": 23,
       "name": "BOLT",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "PER"
     },
     {
       "play_id": 23,
       "name": "BOTH",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "PER"
     },
     {
       "play_id": 23,
       "name": "CERIMON",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "PER"
     },
     {
       "play_id": 23,
       "name": "CLEON",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "PER"
     },
     {
       "play_id": 23,
       "name": "DAUGHTER",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "PER"
     },
     {
       "play_id": 23,
       "name": "DIANA",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "PER"
     },
     {
       "play_id": 23,
       "name": "DIONYZA",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "PER"
     },
     {
       "play_id": 23,
       "name": "ESCANES",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "PER"
     },
     {
       "play_id": 23,
       "name": "FIRST FISHERMAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "PER"
     },
     {
       "play_id": 23,
       "name": "FIRST GENTLEMAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "PER"
     },
     {
       "play_id": 23,
       "name": "FIRST KNIGHT",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "PER"
     },
     {
       "play_id": 23,
       "name": "FIRST LORD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "PER"
     },
     {
       "play_id": 23,
       "name": "FIRST PIRATE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "PER"
     },
     {
       "play_id": 23,
       "name": "FIRST SAILOR",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "PER"
     },
     {
       "play_id": 23,
       "name": "FIRST SUPPLIANT",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "PER"
     },
     {
       "play_id": 23,
       "name": "GENTLEMAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "PER"
     },
     {
       "play_id": 23,
       "name": "GOWER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "PER"
     },
     {
       "play_id": 23,
       "name": "HELICANUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "PER"
     },
     {
       "play_id": 23,
       "name": "KNIGHTS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "PER"
     },
     {
       "play_id": 23,
       "name": "LEONINE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "PER"
     },
     {
       "play_id": 23,
       "name": "LORD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "PER"
     },
     {
       "play_id": 23,
       "name": "LYCHORIDA",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "PER"
     },
     {
       "play_id": 23,
       "name": "LYSIMACHUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "PER"
     },
     {
       "play_id": 23,
       "name": "MARINA",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "PER"
     },
     {
       "play_id": 23,
       "name": "MARSHAL",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "PER"
     },
     {
       "play_id": 23,
       "name": "MESSENGER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "PER"
     },
     {
       "play_id": 23,
       "name": "PANDER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "PER"
     },
     {
       "play_id": 23,
       "name": "PERICLES",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "PER"
     },
     {
       "play_id": 23,
       "name": "PHILEMON",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "PER"
     },
     {
       "play_id": 23,
       "name": "PIRATE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "PER"
     },
     {
       "play_id": 23,
       "name": "SAILOR FROM MYTILENE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "PER"
     },
     {
       "play_id": 23,
       "name": "SECOND FISHERMAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "PER"
     },
     {
       "play_id": 23,
       "name": "SECOND GENTLEMAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "PER"
     },
     {
       "play_id": 23,
       "name": "SECOND KNIGHT",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "PER"
     },
     {
       "play_id": 23,
       "name": "SECOND LORD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "PER"
     },
     {
       "play_id": 23,
       "name": "SECOND PIRATE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "PER"
     },
     {
       "play_id": 23,
       "name": "SECOND SAILOR",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "PER"
     },
     {
       "play_id": 23,
       "name": "SERVANT",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "PER"
     },
     {
       "play_id": 23,
       "name": "SIMONIDES",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "PER"
     },
     {
       "play_id": 23,
       "name": "THAISA",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "PER"
     },
     {
       "play_id": 23,
       "name": "THALIARD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "PER"
     },
     {
       "play_id": 23,
       "name": "THIRD FISHERMAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "PER"
     },
     {
       "play_id": 23,
       "name": "THIRD KNIGHT",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "PER"
     },
     {
       "play_id": 23,
       "name": "THIRD LORD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "PER"
     },
     {
       "play_id": 23,
       "name": "THIRD PIRATE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "PER"
     },
     {
       "play_id": 23,
       "name": "TYRIAN SAILOR",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "PER"
     },
     {
       "play_id": 24,
       "name": "ABBOT",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R2"
     },
     {
       "play_id": 24,
       "name": "ALL",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R2"
     },
     {
       "play_id": 24,
       "name": "ANOTHER LORD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R2"
     },
     {
       "play_id": 24,
       "name": "AUMERLE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R2"
     },
     {
       "play_id": 24,
       "name": "BAGOT",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R2"
     },
     {
       "play_id": 24,
       "name": "BERKELEY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R2"
     },
     {
       "play_id": 24,
       "name": "BOLINGBROKE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R2"
     },
     {
       "play_id": 24,
       "name": "BUSHY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R2"
     },
     {
       "play_id": 24,
       "name": "CARLISLE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R2"
     },
     {
       "play_id": 24,
       "name": "DUCHESS",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "R2"
     },
     {
       "play_id": 24,
       "name": "EXTON",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R2"
     },
     {
       "play_id": 24,
       "name": "FIRST HERALD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R2"
     },
     {
       "play_id": 24,
       "name": "FITZWATER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R2"
     },
     {
       "play_id": 24,
       "name": "GARDENER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R2"
     },
     {
       "play_id": 24,
       "name": "GAUNT",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R2"
     },
     {
       "play_id": 24,
       "name": "GREEN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R2"
     },
     {
       "play_id": 24,
       "name": "GROOM",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R2"
     },
     {
       "play_id": 24,
       "name": "KEEPER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R2"
     },
     {
       "play_id": 24,
       "name": "KING HENRY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R2"
     },
     {
       "play_id": 24,
       "name": "KING RICHARD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R2"
     },
     {
       "play_id": 24,
       "name": "LADY",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "R2"
     },
     {
       "play_id": 24,
       "name": "MAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R2"
     },
     {
       "play_id": 24,
       "name": "MARSHAL",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R2"
     },
     {
       "play_id": 24,
       "name": "MOWBRAY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R2"
     },
     {
       "play_id": 24,
       "name": "NORTHUMBERLAND",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R2"
     },
     {
       "play_id": 24,
       "name": "PERCY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R2"
     },
     {
       "play_id": 24,
       "name": "QUEEN",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "R2"
     },
     {
       "play_id": 24,
       "name": "RICHARD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R2"
     },
     {
       "play_id": 24,
       "name": "ROSS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R2"
     },
     {
       "play_id": 24,
       "name": "SALISBURY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R2"
     },
     {
       "play_id": 24,
       "name": "SCROOP",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R2"
     },
     {
       "play_id": 24,
       "name": "SECOND HERALD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R2"
     },
     {
       "play_id": 24,
       "name": "SERVINGMAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R2"
     },
     {
       "play_id": 24,
       "name": "SURREY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R2"
     },
     {
       "play_id": 24,
       "name": "WELSH CAPTAIN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R2"
     },
     {
       "play_id": 24,
       "name": "WILLOUGHBY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R2"
     },
     {
       "play_id": 24,
       "name": "YORK",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R2"
     },
     {
       "play_id": 25,
       "name": "A LORD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "ALL",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "ANNE",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "ARCHBISHOP",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "BLUNT",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "BOTH",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "BOY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "BRAKENBURY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "BUCKINGHAM",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "CARDINAL",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "CATESBY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "CHILDREN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "CHRISTOPHER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "CLARENCE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "DAUGHTER",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "DORSET",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "DUCHESS",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "ELY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "FIRST CITIZEN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "FIRST MESSENGER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "FIRST MURDERER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "FOURTH MESSENGER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "GENTLEMAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "GHOST OF ANNE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "GHOST OF BUCKINGHAM",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "GHOST OF CLARENCE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "GHOST OF EDWARD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "GHOST OF GREY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "GHOST OF HASTINGS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "GHOST OF HENRY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "GHOST OF RIVERS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "GHOST OF VAUGHAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "GHOSTS OF PRINCES",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "GREY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "HASTINGS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "HERBERT",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "KEEPER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "KING EDWARD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "LORDS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "LOVELL",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "MAYOR",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "MESSENGER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "MURDERER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "MURDERERS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "NORFOLK",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "OXFORD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "PAGE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "PRIEST",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "PRINCE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "PURSUIVANT",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "QUEEN ELIZABETH",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "QUEEN MARGARET",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "RATCLIFFE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "RICHARD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "RICHMOND",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "RIVERS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "SCRIVENER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "SECOND CITIZEN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "SECOND MESSENGER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "SECOND MURDERER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "SHERIFF",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "STANLEY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "SURREY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "THIRD CITIZEN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "THIRD MESSENGER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "TYRREL",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "VAUGHAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R3"
     },
     {
       "play_id": 25,
       "name": "YORK",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "R3"
     },
     {
       "play_id": 26,
       "name": "ABRAM",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ROM"
     },
     {
       "play_id": 26,
       "name": "APOTHECARY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ROM"
     },
     {
       "play_id": 26,
       "name": "BALTHASAR",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ROM"
     },
     {
       "play_id": 26,
       "name": "BENVOLIO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ROM"
     },
     {
       "play_id": 26,
       "name": "CAPULET",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ROM"
     },
     {
       "play_id": 26,
       "name": "CAPULET’S COUSIN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ROM"
     },
     {
       "play_id": 26,
       "name": "CITIZEN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ROM"
     },
     {
       "play_id": 26,
       "name": "CITIZENS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ROM"
     },
     {
       "play_id": 26,
       "name": "FIRST MUSICIAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ROM"
     },
     {
       "play_id": 26,
       "name": "FIRST SERVINGMAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ROM"
     },
     {
       "play_id": 26,
       "name": "FIRST WATCH",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ROM"
     },
     {
       "play_id": 26,
       "name": "FRIAR JOHN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ROM"
     },
     {
       "play_id": 26,
       "name": "FRIAR LAWRENCE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ROM"
     },
     {
       "play_id": 26,
       "name": "GREGORY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ROM"
     },
     {
       "play_id": 26,
       "name": "JULIET",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "ROM"
     },
     {
       "play_id": 26,
       "name": "LADY CAPULET",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "ROM"
     },
     {
       "play_id": 26,
       "name": "LADY MONTAGUE",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "ROM"
     },
     {
       "play_id": 26,
       "name": "MERCUTIO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ROM"
     },
     {
       "play_id": 26,
       "name": "MONTAGUE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ROM"
     },
     {
       "play_id": 26,
       "name": "NURSE",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "ROM"
     },
     {
       "play_id": 26,
       "name": "PAGE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ROM"
     },
     {
       "play_id": 26,
       "name": "PARIS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ROM"
     },
     {
       "play_id": 26,
       "name": "PETER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ROM"
     },
     {
       "play_id": 26,
       "name": "PETRUCHIO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ROM"
     },
     {
       "play_id": 26,
       "name": "PRINCE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ROM"
     },
     {
       "play_id": 26,
       "name": "ROMEO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ROM"
     },
     {
       "play_id": 26,
       "name": "SAMPSON",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ROM"
     },
     {
       "play_id": 26,
       "name": "SECOND MUSICIAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ROM"
     },
     {
       "play_id": 26,
       "name": "SECOND SERVINGMAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ROM"
     },
     {
       "play_id": 26,
       "name": "SECOND WATCH",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ROM"
     },
     {
       "play_id": 26,
       "name": "SERVINGMAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ROM"
     },
     {
       "play_id": 26,
       "name": "THIRD MUSICIAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ROM"
     },
     {
       "play_id": 26,
       "name": "THIRD SERVINGMAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ROM"
     },
     {
       "play_id": 26,
       "name": "THIRD WATCH",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ROM"
     },
     {
       "play_id": 26,
       "name": "TYBALT",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ROM"
     },
     {
       "play_id": 27,
       "name": "ABBESS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ERR"
     },
     {
       "play_id": 27,
       "name": "ADRIANA",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "ERR"
     },
     {
       "play_id": 27,
       "name": "ANGELO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ERR"
     },
     {
       "play_id": 27,
       "name": "ANTIPHOLUS OF EPHESUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ERR"
     },
     {
       "play_id": 27,
       "name": "ANTIPHOLUS OF SYRACUSE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ERR"
     },
     {
       "play_id": 27,
       "name": "BALTHASAR",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ERR"
     },
     {
       "play_id": 27,
       "name": "COURTESAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ERR"
     },
     {
       "play_id": 27,
       "name": "DROMIO OF EPHESUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ERR"
     },
     {
       "play_id": 27,
       "name": "DROMIO OF SYRACUSE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ERR"
     },
     {
       "play_id": 27,
       "name": "DUKE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ERR"
     },
     {
       "play_id": 27,
       "name": "EGEON",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ERR"
     },
     {
       "play_id": 27,
       "name": "FIRST MERCHANT",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ERR"
     },
     {
       "play_id": 27,
       "name": "JAILER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ERR"
     },
     {
       "play_id": 27,
       "name": "LUCE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ERR"
     },
     {
       "play_id": 27,
       "name": "LUCIANA",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "ERR"
     },
     {
       "play_id": 27,
       "name": "MESSENGER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ERR"
     },
     {
       "play_id": 27,
       "name": "OFFICER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ERR"
     },
     {
       "play_id": 27,
       "name": "PINCH",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ERR"
     },
     {
       "play_id": 27,
       "name": "SECOND MERCHANT",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "ERR"
     },
     {
       "play_id": 28,
       "name": "ALL",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MV"
     },
     {
       "play_id": 28,
       "name": "ANTONIO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MV"
     },
     {
       "play_id": 28,
       "name": "ARRAGON",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MV"
     },
     {
       "play_id": 28,
       "name": "BALTHAZAR",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MV"
     },
     {
       "play_id": 28,
       "name": "BASSANIO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MV"
     },
     {
       "play_id": 28,
       "name": "DUKE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MV"
     },
     {
       "play_id": 28,
       "name": "GOBBO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MV"
     },
     {
       "play_id": 28,
       "name": "GRATIANO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MV"
     },
     {
       "play_id": 28,
       "name": "JESSICA",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "MV"
     },
     {
       "play_id": 28,
       "name": "LANCELET",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MV"
     },
     {
       "play_id": 28,
       "name": "LEONARDO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MV"
     },
     {
       "play_id": 28,
       "name": "LORENZO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MV"
     },
     {
       "play_id": 28,
       "name": "MESSENGER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MV"
     },
     {
       "play_id": 28,
       "name": "MOROCCO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MV"
     },
     {
       "play_id": 28,
       "name": "NERISSA",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "MV"
     },
     {
       "play_id": 28,
       "name": "PORTIA",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "MV"
     },
     {
       "play_id": 28,
       "name": "SALARINO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MV"
     },
     {
       "play_id": 28,
       "name": "SALERIO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MV"
     },
     {
       "play_id": 28,
       "name": "SERVINGMAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MV"
     },
     {
       "play_id": 28,
       "name": "SHYLOCK",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MV"
     },
     {
       "play_id": 28,
       "name": "SOLANIO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MV"
     },
     {
       "play_id": 28,
       "name": "STEPHANO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MV"
     },
     {
       "play_id": 28,
       "name": "TUBAL",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MV"
     },
     {
       "play_id": 28,
       "name": "UNKNOWN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "MV"
     },
     {
       "play_id": 29,
       "name": "ANNE",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "WIV"
     },
     {
       "play_id": 29,
       "name": "BARDOLPH",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "WIV"
     },
     {
       "play_id": 29,
       "name": "DOCTOR CAIUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "WIV"
     },
     {
       "play_id": 29,
       "name": "FAIRIES",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "WIV"
     },
     {
       "play_id": 29,
       "name": "FALSTAFF",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "WIV"
     },
     {
       "play_id": 29,
       "name": "FENTON",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "WIV"
     },
     {
       "play_id": 29,
       "name": "FORD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "WIV"
     },
     {
       "play_id": 29,
       "name": "HOST",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "WIV"
     },
     {
       "play_id": 29,
       "name": "JOHN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "WIV"
     },
     {
       "play_id": 29,
       "name": "MISTRESS FORD",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "WIV"
     },
     {
       "play_id": 29,
       "name": "MISTRESS FORD AND MISTRESS PAGE",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "WIV"
     },
     {
       "play_id": 29,
       "name": "MISTRESS PAGE",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "WIV"
     },
     {
       "play_id": 29,
       "name": "MISTRESS QUICKLY",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "WIV"
     },
     {
       "play_id": 29,
       "name": "NYM",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "WIV"
     },
     {
       "play_id": 29,
       "name": "PAGE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "WIV"
     },
     {
       "play_id": 29,
       "name": "PAGE , DOCTOR CAIUS , AND SIR HUGH",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "WIV"
     },
     {
       "play_id": 29,
       "name": "PAGE , SHALLOW , AND SLENDER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "WIV"
     },
     {
       "play_id": 29,
       "name": "PISTOL",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "WIV"
     },
     {
       "play_id": 29,
       "name": "ROBERT",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "WIV"
     },
     {
       "play_id": 29,
       "name": "ROBERT AND JOHN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "WIV"
     },
     {
       "play_id": 29,
       "name": "ROBIN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "WIV"
     },
     {
       "play_id": 29,
       "name": "RUGBY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "WIV"
     },
     {
       "play_id": 29,
       "name": "SHALLOW",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "WIV"
     },
     {
       "play_id": 29,
       "name": "SHALLOW , PAGE , ETC .",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "WIV"
     },
     {
       "play_id": 29,
       "name": "SIMPLE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "WIV"
     },
     {
       "play_id": 29,
       "name": "SIR HUGH",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "WIV"
     },
     {
       "play_id": 29,
       "name": "SLENDER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "WIV"
     },
     {
       "play_id": 29,
       "name": "WILLIAM",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "WIV"
     },
     {
       "play_id": 30,
       "name": "ALL THE SERVANTS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "SHR"
     },
     {
       "play_id": 30,
       "name": "BAPTISTA",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "SHR"
     },
     {
       "play_id": 30,
       "name": "BIANCA",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "SHR"
     },
     {
       "play_id": 30,
       "name": "BIONDELLO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "SHR"
     },
     {
       "play_id": 30,
       "name": "CURTIS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "SHR"
     },
     {
       "play_id": 30,
       "name": "FIRST SERVANT",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "SHR"
     },
     {
       "play_id": 30,
       "name": "FIRST SERVINGMAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "SHR"
     },
     {
       "play_id": 30,
       "name": "GREMIO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "SHR"
     },
     {
       "play_id": 30,
       "name": "GREMIO AND TRANIO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "SHR"
     },
     {
       "play_id": 30,
       "name": "GRUMIO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "SHR"
     },
     {
       "play_id": 30,
       "name": "GRUMIO AND BIONDELLO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "SHR"
     },
     {
       "play_id": 30,
       "name": "HABERDASHER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "SHR"
     },
     {
       "play_id": 30,
       "name": "HORTENSIO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "SHR"
     },
     {
       "play_id": 30,
       "name": "JOSEPH",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "SHR"
     },
     {
       "play_id": 30,
       "name": "KATHERINE",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "SHR"
     },
     {
       "play_id": 30,
       "name": "LUCENTIO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "SHR"
     },
     {
       "play_id": 30,
       "name": "MERCHANT",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "SHR"
     },
     {
       "play_id": 30,
       "name": "NATHANIEL",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "SHR"
     },
     {
       "play_id": 30,
       "name": "NICHOLAS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "SHR"
     },
     {
       "play_id": 30,
       "name": "PAGE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "SHR"
     },
     {
       "play_id": 30,
       "name": "PETER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "SHR"
     },
     {
       "play_id": 30,
       "name": "PETRUCHIO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "SHR"
     },
     {
       "play_id": 30,
       "name": "PHILLIP",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "SHR"
     },
     {
       "play_id": 30,
       "name": "SERVANT",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "SHR"
     },
     {
       "play_id": 30,
       "name": "SLY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "SHR"
     },
     {
       "play_id": 30,
       "name": "TAILOR",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "SHR"
     },
     {
       "play_id": 30,
       "name": "TRANIO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "SHR"
     },
     {
       "play_id": 30,
       "name": "VINCENTIO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "SHR"
     },
     {
       "play_id": 30,
       "name": "WIDOW",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "SHR"
     },
     {
       "play_id": 31,
       "name": "ADRIAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TMP"
     },
     {
       "play_id": 31,
       "name": "ALONSO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TMP"
     },
     {
       "play_id": 31,
       "name": "ANTONIO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TMP"
     },
     {
       "play_id": 31,
       "name": "ARIEL",
-      "sex": "U"
+      "sex": "U",
+      "abbr": "TMP"
     },
     {
       "play_id": 31,
       "name": "BOATSWAIN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TMP"
     },
     {
       "play_id": 31,
       "name": "CALIBAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TMP"
     },
     {
       "play_id": 31,
       "name": "CERES",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TMP"
     },
     {
       "play_id": 31,
       "name": "FERDINAND",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TMP"
     },
     {
       "play_id": 31,
       "name": "FERDINAND / MIRANDA",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TMP"
     },
     {
       "play_id": 31,
       "name": "FRANCISCO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TMP"
     },
     {
       "play_id": 31,
       "name": "GONZALO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TMP"
     },
     {
       "play_id": 31,
       "name": "IRIS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TMP"
     },
     {
       "play_id": 31,
       "name": "JUNO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TMP"
     },
     {
       "play_id": 31,
       "name": "MARINERS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TMP"
     },
     {
       "play_id": 31,
       "name": "MASTER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TMP"
     },
     {
       "play_id": 31,
       "name": "MIRANDA",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "TMP"
     },
     {
       "play_id": 31,
       "name": "PROSPERO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TMP"
     },
     {
       "play_id": 31,
       "name": "SEBASTIAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TMP"
     },
     {
       "play_id": 31,
       "name": "STEPHANO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TMP"
     },
     {
       "play_id": 31,
       "name": "TRINCULO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TMP"
     },
     {
       "play_id": 31,
       "name": "UNKNOWN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TMP"
     },
     {
       "play_id": 32,
       "name": "ANTONIO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TGV"
     },
     {
       "play_id": 32,
       "name": "DUKE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TGV"
     },
     {
       "play_id": 32,
       "name": "EGLAMOUR",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TGV"
     },
     {
       "play_id": 32,
       "name": "FIRST OUTLAW",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TGV"
     },
     {
       "play_id": 32,
       "name": "HOST",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TGV"
     },
     {
       "play_id": 32,
       "name": "JULIA",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "TGV"
     },
     {
       "play_id": 32,
       "name": "LANCE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TGV"
     },
     {
       "play_id": 32,
       "name": "LUCETTA",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TGV"
     },
     {
       "play_id": 32,
       "name": "OUTLAWS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TGV"
     },
     {
       "play_id": 32,
       "name": "PANTINO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TGV"
     },
     {
       "play_id": 32,
       "name": "PROTEUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TGV"
     },
     {
       "play_id": 32,
       "name": "SECOND OUTLAW",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TGV"
     },
     {
       "play_id": 32,
       "name": "SERVANT",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TGV"
     },
     {
       "play_id": 32,
       "name": "SPEED",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TGV"
     },
     {
       "play_id": 32,
       "name": "SYLVIA",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "TGV"
     },
     {
       "play_id": 32,
       "name": "THIRD OUTLAW",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TGV"
     },
     {
       "play_id": 32,
       "name": "THURIO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TGV"
     },
     {
       "play_id": 32,
       "name": "VALENTINE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TGV"
     },
     {
       "play_id": 33,
       "name": "ANTIGONUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "WT"
     },
     {
       "play_id": 33,
       "name": "ARCHIDAMUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "WT"
     },
     {
       "play_id": 33,
       "name": "AUTOLYCUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "WT"
     },
     {
       "play_id": 33,
       "name": "CAMILLO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "WT"
     },
     {
       "play_id": 33,
       "name": "CLEOMENES",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "WT"
     },
     {
       "play_id": 33,
       "name": "CLEOMENES , DION",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "WT"
     },
     {
       "play_id": 33,
       "name": "DION",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "WT"
     },
     {
       "play_id": 33,
       "name": "DORCAS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "WT"
     },
     {
       "play_id": 33,
       "name": "EMILIA",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "WT"
     },
     {
       "play_id": 33,
       "name": "FIRST GENTLEMAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "WT"
     },
     {
       "play_id": 33,
       "name": "FIRST LADY",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "WT"
     },
     {
       "play_id": 33,
       "name": "FLORIZELL",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "WT"
     },
     {
       "play_id": 33,
       "name": "HERMIONE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "WT"
     },
     {
       "play_id": 33,
       "name": "JAILER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "WT"
     },
     {
       "play_id": 33,
       "name": "LEONTES",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "WT"
     },
     {
       "play_id": 33,
       "name": "LORD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "WT"
     },
     {
       "play_id": 33,
       "name": "LORDS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "WT"
     },
     {
       "play_id": 33,
       "name": "MAMILLIUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "WT"
     },
     {
       "play_id": 33,
       "name": "MARINER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "WT"
     },
     {
       "play_id": 33,
       "name": "MOPSA",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "WT"
     },
     {
       "play_id": 33,
       "name": "OFFICER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "WT"
     },
     {
       "play_id": 33,
       "name": "PAULINA",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "WT"
     },
     {
       "play_id": 33,
       "name": "PERDITA",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "WT"
     },
     {
       "play_id": 33,
       "name": "POLIXENES",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "WT"
     },
     {
       "play_id": 33,
       "name": "SECOND GENTLEMAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "WT"
     },
     {
       "play_id": 33,
       "name": "SECOND LADY",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "WT"
     },
     {
       "play_id": 33,
       "name": "SERVANT",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "WT"
     },
     {
       "play_id": 33,
       "name": "SHEPHERD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "WT"
     },
     {
       "play_id": 33,
       "name": "SHEPHERD’S SON",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "WT"
     },
     {
       "play_id": 33,
       "name": "THIRD GENTLEMAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "WT"
     },
     {
       "play_id": 33,
       "name": "TIME",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "WT"
     },
     {
       "play_id": 34,
       "name": "ALCIBIADES",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIM"
     },
     {
       "play_id": 34,
       "name": "ALL",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIM"
     },
     {
       "play_id": 34,
       "name": "ALL LADIES",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIM"
     },
     {
       "play_id": 34,
       "name": "ALL LORDS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIM"
     },
     {
       "play_id": 34,
       "name": "ALL THE MEN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIM"
     },
     {
       "play_id": 34,
       "name": "APEMANTUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIM"
     },
     {
       "play_id": 34,
       "name": "BOTH",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIM"
     },
     {
       "play_id": 34,
       "name": "BOTH WOMEN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIM"
     },
     {
       "play_id": 34,
       "name": "CAPHIS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIM"
     },
     {
       "play_id": 34,
       "name": "CUPID",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIM"
     },
     {
       "play_id": 34,
       "name": "FIRST AND SECOND FRIENDS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIM"
     },
     {
       "play_id": 34,
       "name": "FIRST BANDIT",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIM"
     },
     {
       "play_id": 34,
       "name": "FIRST FRIEND",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIM"
     },
     {
       "play_id": 34,
       "name": "FIRST LADY",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "TIM"
     },
     {
       "play_id": 34,
       "name": "FIRST LORD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIM"
     },
     {
       "play_id": 34,
       "name": "FIRST SENATOR",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIM"
     },
     {
       "play_id": 34,
       "name": "FIRST SERVANT",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIM"
     },
     {
       "play_id": 34,
       "name": "FIRST STRANGER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIM"
     },
     {
       "play_id": 34,
       "name": "FLAMINIUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIM"
     },
     {
       "play_id": 34,
       "name": "FLAVIUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIM"
     },
     {
       "play_id": 34,
       "name": "FOOL",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIM"
     },
     {
       "play_id": 34,
       "name": "FOURTH FRIEND",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIM"
     },
     {
       "play_id": 34,
       "name": "FOURTH SENATOR",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIM"
     },
     {
       "play_id": 34,
       "name": "HORTENSIUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIM"
     },
     {
       "play_id": 34,
       "name": "ISIDORE’S MAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIM"
     },
     {
       "play_id": 34,
       "name": "JEWELER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIM"
     },
     {
       "play_id": 34,
       "name": "LUCILIUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIM"
     },
     {
       "play_id": 34,
       "name": "LUCIUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIM"
     },
     {
       "play_id": 34,
       "name": "LUCIUS’ MAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIM"
     },
     {
       "play_id": 34,
       "name": "LUCULLUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIM"
     },
     {
       "play_id": 34,
       "name": "MERCHANT",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIM"
     },
     {
       "play_id": 34,
       "name": "MESSENGER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIM"
     },
     {
       "play_id": 34,
       "name": "OLD MAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIM"
     },
     {
       "play_id": 34,
       "name": "OTHERS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIM"
     },
     {
       "play_id": 34,
       "name": "PAGE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIM"
     },
     {
       "play_id": 34,
       "name": "PAINTER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIM"
     },
     {
       "play_id": 34,
       "name": "PHILOTUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIM"
     },
     {
       "play_id": 34,
       "name": "PHRYNIA",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIM"
     },
     {
       "play_id": 34,
       "name": "POET",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIM"
     },
     {
       "play_id": 34,
       "name": "SECOND BANDIT",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIM"
     },
     {
       "play_id": 34,
       "name": "SECOND FRIEND",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIM"
     },
     {
       "play_id": 34,
       "name": "SECOND LORD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIM"
     },
     {
       "play_id": 34,
       "name": "SECOND SENATOR",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIM"
     },
     {
       "play_id": 34,
       "name": "SECOND SERVANT",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIM"
     },
     {
       "play_id": 34,
       "name": "SECOND STRANGER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIM"
     },
     {
       "play_id": 34,
       "name": "SEMPRONIUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIM"
     },
     {
       "play_id": 34,
       "name": "SENATOR",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIM"
     },
     {
       "play_id": 34,
       "name": "SERVANT",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIM"
     },
     {
       "play_id": 34,
       "name": "SERVANTS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIM"
     },
     {
       "play_id": 34,
       "name": "SERVILIUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIM"
     },
     {
       "play_id": 34,
       "name": "SOLDIER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIM"
     },
     {
       "play_id": 34,
       "name": "SOME OTHER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIM"
     },
     {
       "play_id": 34,
       "name": "SOME SPEAK",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIM"
     },
     {
       "play_id": 34,
       "name": "THIRD BANDIT",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIM"
     },
     {
       "play_id": 34,
       "name": "THIRD FRIEND",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIM"
     },
     {
       "play_id": 34,
       "name": "THIRD LORD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIM"
     },
     {
       "play_id": 34,
       "name": "THIRD SENATOR",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIM"
     },
     {
       "play_id": 34,
       "name": "THIRD SERVANT",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIM"
     },
     {
       "play_id": 34,
       "name": "THIRD STRANGER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIM"
     },
     {
       "play_id": 34,
       "name": "TIMANDRA",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIM"
     },
     {
       "play_id": 34,
       "name": "TIMON",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIM"
     },
     {
       "play_id": 34,
       "name": "TITUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIM"
     },
     {
       "play_id": 34,
       "name": "VARRO’S FIRST MAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIM"
     },
     {
       "play_id": 34,
       "name": "VARRO’S MAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIM"
     },
     {
       "play_id": 34,
       "name": "VARRO’S SECOND MAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIM"
     },
     {
       "play_id": 34,
       "name": "VENTIDIUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIM"
     },
     {
       "play_id": 35,
       "name": "AARON",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIT"
     },
     {
       "play_id": 35,
       "name": "AEMILIUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIT"
     },
     {
       "play_id": 35,
       "name": "BASSIANUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIT"
     },
     {
       "play_id": 35,
       "name": "CAPTAIN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIT"
     },
     {
       "play_id": 35,
       "name": "CHIRON",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIT"
     },
     {
       "play_id": 35,
       "name": "COUNTRY FELLOW",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIT"
     },
     {
       "play_id": 35,
       "name": "DEMETRIUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIT"
     },
     {
       "play_id": 35,
       "name": "FIRST GOTH",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIT"
     },
     {
       "play_id": 35,
       "name": "GOTH",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIT"
     },
     {
       "play_id": 35,
       "name": "GOTHS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIT"
     },
     {
       "play_id": 35,
       "name": "LAVINIA",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "TIT"
     },
     {
       "play_id": 35,
       "name": "LUCIUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIT"
     },
     {
       "play_id": 35,
       "name": "MARCUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIT"
     },
     {
       "play_id": 35,
       "name": "MARTIUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIT"
     },
     {
       "play_id": 35,
       "name": "MESSENGER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIT"
     },
     {
       "play_id": 35,
       "name": "MUTIUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIT"
     },
     {
       "play_id": 35,
       "name": "NURSE",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "TIT"
     },
     {
       "play_id": 35,
       "name": "PUBLIUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIT"
     },
     {
       "play_id": 35,
       "name": "QUINTUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIT"
     },
     {
       "play_id": 35,
       "name": "ROMAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIT"
     },
     {
       "play_id": 35,
       "name": "ROMANS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIT"
     },
     {
       "play_id": 35,
       "name": "SATURNINUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIT"
     },
     {
       "play_id": 35,
       "name": "SECOND GOTH",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIT"
     },
     {
       "play_id": 35,
       "name": "TAMORA",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "TIT"
     },
     {
       "play_id": 35,
       "name": "TITUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIT"
     },
     {
       "play_id": 35,
       "name": "TRIBUNES",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIT"
     },
     {
       "play_id": 35,
       "name": "UNKNOWN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIT"
     },
     {
       "play_id": 35,
       "name": "YOUNG LUCIUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TIT"
     },
     {
       "play_id": 36,
       "name": "A MYRMIDON",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TRO"
     },
     {
       "play_id": 36,
       "name": "ACHILLES",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TRO"
     },
     {
       "play_id": 36,
       "name": "AENEAS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TRO"
     },
     {
       "play_id": 36,
       "name": "AGAMEMNON",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TRO"
     },
     {
       "play_id": 36,
       "name": "AJAX",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TRO"
     },
     {
       "play_id": 36,
       "name": "ALEXANDER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TRO"
     },
     {
       "play_id": 36,
       "name": "ALL",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TRO"
     },
     {
       "play_id": 36,
       "name": "ANDROMACHE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TRO"
     },
     {
       "play_id": 36,
       "name": "BASTARD",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TRO"
     },
     {
       "play_id": 36,
       "name": "BOY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TRO"
     },
     {
       "play_id": 36,
       "name": "CALCHAS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TRO"
     },
     {
       "play_id": 36,
       "name": "CASSANDRA",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TRO"
     },
     {
       "play_id": 36,
       "name": "CRESSIDA",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TRO"
     },
     {
       "play_id": 36,
       "name": "DEIPHOBUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TRO"
     },
     {
       "play_id": 36,
       "name": "DIOMEDES",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TRO"
     },
     {
       "play_id": 36,
       "name": "HECTOR",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TRO"
     },
     {
       "play_id": 36,
       "name": "HELEN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TRO"
     },
     {
       "play_id": 36,
       "name": "HELENUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TRO"
     },
     {
       "play_id": 36,
       "name": "MAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TRO"
     },
     {
       "play_id": 36,
       "name": "MENELAUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TRO"
     },
     {
       "play_id": 36,
       "name": "NESTOR",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TRO"
     },
     {
       "play_id": 36,
       "name": "PANDARUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TRO"
     },
     {
       "play_id": 36,
       "name": "PARIS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TRO"
     },
     {
       "play_id": 36,
       "name": "PATROCLUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TRO"
     },
     {
       "play_id": 36,
       "name": "PRIAM",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TRO"
     },
     {
       "play_id": 36,
       "name": "SOLDIERS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TRO"
     },
     {
       "play_id": 36,
       "name": "THERSITES",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TRO"
     },
     {
       "play_id": 36,
       "name": "TROILUS",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TRO"
     },
     {
       "play_id": 36,
       "name": "ULYSSES",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TRO"
     },
     {
       "play_id": 37,
       "name": "ANDREW",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TN"
     },
     {
       "play_id": 37,
       "name": "ANTONIO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TN"
     },
     {
       "play_id": 37,
       "name": "CAPTAIN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TN"
     },
     {
       "play_id": 37,
       "name": "CURIO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TN"
     },
     {
       "play_id": 37,
       "name": "FABIAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TN"
     },
     {
       "play_id": 37,
       "name": "FIRST OFFICER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TN"
     },
     {
       "play_id": 37,
       "name": "FOOL",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TN"
     },
     {
       "play_id": 37,
       "name": "MALVOLIO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TN"
     },
     {
       "play_id": 37,
       "name": "MARIA",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "TN"
     },
     {
       "play_id": 37,
       "name": "OLIVIA",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "TN"
     },
     {
       "play_id": 37,
       "name": "ORSINO",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TN"
     },
     {
       "play_id": 37,
       "name": "PRIEST",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TN"
     },
     {
       "play_id": 37,
       "name": "SEBASTIAN",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TN"
     },
     {
       "play_id": 37,
       "name": "SECOND OFFICER",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TN"
     },
     {
       "play_id": 37,
       "name": "SERVANT",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TN"
     },
     {
       "play_id": 37,
       "name": "TOBY",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TN"
     },
     {
       "play_id": 37,
       "name": "VALENTINE",
-      "sex": "M"
+      "sex": "M",
+      "abbr": "TN"
     },
     {
       "play_id": 37,
       "name": "VIOLA",
-      "sex": "F"
+      "sex": "F",
+      "abbr": "TN"
     }
   ]
 }
