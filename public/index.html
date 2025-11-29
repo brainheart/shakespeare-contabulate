@@ -707,6 +707,11 @@
   // Column filters maps (declare early for deep-link)
   const segmentsColumnFilters = new Map();
   const linesColumnFilters = new Map();
+  // Segments pagination and rows (declare early for deep-link)
+  let segmentsCurrentPage = 1;
+  let segmentsPageSize = 50;
+  let segmentsAllRows = [];
+  let lastSegmentsBaseRows = [];
   // Deep link: human-readable query params (fallback to legacy base64 `state`)
   function buildQueryParamsFromState() {
     const p = new URLSearchParams();
@@ -1274,11 +1279,7 @@
   }
 
 
-  // Pagination state
-  let segmentsCurrentPage = 1;
-  let segmentsPageSize = 50;
-  let segmentsAllRows = [];
-  
+  // Pagination state (segments vars declared earlier to support deep-link init)
   let ngramsCurrentPage = 1;
   let ngramsPageSize = 100;
   let ngramsAllRows = [];
