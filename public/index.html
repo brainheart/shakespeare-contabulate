@@ -701,6 +701,9 @@
     applyOrClear('#linesResults');
     renderAllLegends();
   }
+  // Sort state defaults (declare before deep-link logic uses them)
+  let sortKey = null, sortDir = 'desc';
+  let linesSortKey = 'line_num', linesSortDir = 'asc';
   // Deep link: encode/decode state
   function encodeState(obj) {
     try { return btoa(unescape(encodeURIComponent(JSON.stringify(obj)))); } catch(e) { return ''; }
@@ -1250,8 +1253,6 @@
   }
 
   
-
-  let sortKey = null, sortDir = 'desc';
   let ngramsSortKey = 'totalCount', ngramsSortDir = 'desc';
   // Column filters state
   const segmentsColumnFilters = new Map(); // key -> {type: 'number'|'text', min?, max?, pattern?}
@@ -2442,8 +2443,6 @@
   let linesCurrentPage = 1;
   let linesPageSize = 50;
   let linesAllRows = [];
-  let linesSortKey = 'line_num';
-  let linesSortDir = 'asc';
   let linesPendingChanges = false;
   let lastLinesState = {
     query: '',
