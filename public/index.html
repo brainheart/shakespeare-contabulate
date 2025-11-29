@@ -718,6 +718,7 @@
     const btn = document.querySelector('.tab-btn.active');
     return btn ? btn.dataset.tab : 'segments';
   }
+  let appliedDeepLinkState = false;
   function mapToArray(m) {
     const out = [];
     if (!m) return out;
@@ -868,6 +869,7 @@
       } else if (targetTab === 'lines') {
         linesTab.style.display = 'block';
       }
+      updateDeepLink();
     });
   });
 
@@ -1188,6 +1190,7 @@
       const qv = q.value.trim(); if (qv) doSearch();
       const lqv = document.getElementById('linesQuery').value.trim(); if (lqv) doLinesSearch();
       applyColorScalesForVisibleTables();
+      appliedDeepLinkState = true;
     } catch(e) { /* ignore */ }
     updateDeepLink();
   })();
@@ -2762,13 +2765,16 @@
     renderLinesPage();
   });
 
-  // initial state for contexts tab
-  gran.value = 'play';
-  q.value = 'love';
-  doSearch();
+  // initial state for contexts tab (only if no deep link state applied)
+  if (!appliedDeepLinkState) {
+    gran.value = 'play';
+    q.value = 'love';
+    doSearch();
+  }
 
-  // initial state for ngrams tab - set up some interesting character comparisons for "love"
-  document.getElementById('ngramsQuery').value = 'love';
+  // initial state for ngrams tab - set defaults only if no deep link state
+  if (!appliedDeepLinkState) {
+    document.getElementById('ngramsQuery').value = 'love';
   
   // Add some interesting characters from different plays
   // We'll add Romeo, Juliet, Hamlet, and Ophelia as they're well-known lovers/tragic figures
@@ -2798,8 +2804,9 @@
     }
   });
   
-  renderSelectedSegments();
-  buildNgramsComparison();
+    renderSelectedSegments();
+    buildNgramsComparison();
+  }
 })();
 </script>
 </body>
