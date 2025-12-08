@@ -175,7 +175,7 @@ def build(tei_dir: Path, out_dir: Path):
             for item in metadata_json.get("plays", []):
                 play_metadata_map[item["filename"]] = item
 
-    # Load optional character metadata (e.g., sex) keyed by (play_id, name)
+    # Load optional character metadata (e.g., gender) keyed by (play_id, name)
     char_meta_path = Path(__file__).parent / "character_metadata.json"
     def _norm_name(s: str) -> str:
         return (s or "").upper().strip().replace("\n", " ").replace("\r", " ")
@@ -187,9 +187,12 @@ def build(tei_dir: Path, out_dir: Path):
                 for rec in meta_json.get("characters", []):
                     pid = rec.get("play_id")
                     nm = rec.get("name")
-                    sex = rec.get("sex")
-                    if pid is None or not nm or not sex: continue
-                    character_meta_map[(int(pid), _norm_name(nm))] = sex.upper()
+                    # Support either 'gender' or legacy 'sex' in metadata
+                    g = rec.get("gender") if rec.get("gender") is not None else rec.get("sex")
+                    if pid is None or not nm or not g: continue
+                    up = str(g).upper()
+                    if up in ("U","UNKNOWN"): up = "A"  # normalize unknown to ambiguous
+                    character_meta_map[(int(pid), _norm_name(nm))] = up
         except Exception:
             character_meta_map = {}
     
@@ -256,14 +259,14 @@ def build(tei_dir: Path, out_dir: Path):
             for tok, cnt in tokdict.items():
                 tokens_char3_idx.setdefault(tok, []).append((cid, cnt))
         plays.append(play_row); play_id += 1
-    # Attach sex to characters using metadata and heuristics
-    def _heuristic_sex_from_name(name: str) -> str:
+    # Attach gender to characters using metadata and heuristics
+    def _heuristic_gender_from_name(name: str) -> str:
         n = _norm_name(name)
         n2 = re.sub(r"[^A-Z\s]", " ", n)
         # Strong female role/title cues
         female_words = [
-            "QUEEN","LADY","PRINCESS","MISTRESS","GENTLEWOMAN","NURSE","MAID",
-            "MOTHER","WITCH","COUNTESS","DUCHESS","WIFE","DAUGHTER","PRIESTESS"
+            "QUEEN","LADY","PRINCESS","MISTRESS","GENTLEWOMAN","WOMAN","NURSE","MAID",
+            "MOTHER","WITCH","COUNTESS","DUCHESS","WIFE","DAUGHTER","PRIESTESS","HOSTESS","ABBESS"
         ]
         # Strong male role/title cues
         male_words = [
@@ -274,6 +277,10 @@ def build(tei_dir: Path, out_dir: Path):
             return 'F'
         if any(re.search(fr"\b{w}\b", n2) for w in male_words):
             return 'M'
+        # Names ending with ESS are typically female (DUCHESS, COUNTESS, PRINCESS, HOSTESS, ABBESS)
+        # Exception: CAITHNESS is a male character
+        if re.search(r"\bESS$", n) and n != "CAITHNESS":
+            return 'F'
         # Common female given names and heroines (not exhaustive)
         female_names = {
             "JULIET","DESDEMONA","OPHELIA","PORTIA","NERISSA","ROSALIND","CELIA","HERMIA","HELENA",
@@ -296,9 +303,9 @@ def build(tei_dir: Path, out_dir: Path):
         # Rare genuinely unclear cases
         unknown_names = {"ARIEL"}
         if n in unknown_names:
-            return 'U'
-        # Default majority case: male
-        return 'M'
+            return 'A'  # Ambiguous
+        # Default fallback: ambiguous rather than forcing male
+        return 'A'
     # Build lookup for abbr by play_id for metadata joins
     id_to_abbr = {p.get("play_id"): p.get("abbr") for p in plays}
 
@@ -315,23 +322,31 @@ def build(tei_dir: Path, out_dir: Path):
             for rec in meta_json.get("characters", []):
                 ab = rec.get("abbr") or rec.get("play_abbr")
                 nm = rec.get("name")
-                sx = rec.get("sex")
-                if ab and nm and sx:
-                    character_meta_by_abbr[(ab.upper(), _norm_name(nm))] = sx.upper()
+                gx = rec.get("gender") if rec.get("gender") is not None else rec.get("sex")
+                if ab and nm and gx:
+                    up = str(gx).upper()
+                    if up in ("U","UNKNOWN"): up = "A"
+                    character_meta_by_abbr[(ab.upper(), _norm_name(nm))] = up
     except Exception:
         pass
 
     for ch in characters_rows:
         pid = ch.get("play_id"); nm = ch.get("name")
         ab = ch.get("play_abbr") or id_to_abbr.get(pid)
-        sex = None
+        gender = None
         if pid is not None:
-            sex = character_meta_by_pid.get((pid, _norm_name(nm)))
-        if sex is None and ab:
-            sex = character_meta_by_abbr.get((ab.upper(), _norm_name(nm)))
-        if not sex:
-            sex = _heuristic_sex_from_name(nm)
-        ch["sex"] = sex
+            gender = character_meta_by_pid.get((pid, _norm_name(nm)))
+        if gender is None and ab:
+            gender = character_meta_by_abbr.get((ab.upper(), _norm_name(nm)))
+        # Apply heuristic if missing
+        if not gender:
+            gender = _heuristic_gender_from_name(nm)
+        else:
+            # If metadata says Male but heuristic strongly suggests Female, override to F
+            h = _heuristic_gender_from_name(nm)
+            if gender == 'M' and h == 'F':
+                gender = 'F'
+        ch["gender"] = gender
 
     (data_dir / "plays.json").write_text(json.dumps(plays, ensure_ascii=False), encoding="utf-8")
     (data_dir / "chunks.json").write_text(json.dumps(scenes_all, ensure_ascii=False), encoding="utf-8")
