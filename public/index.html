@@ -937,35 +937,8 @@
   const playsById = new Map(plays.map(p => [p.play_id, p]));
   const charactersById = new Map(characters.map(c => [c.character_id, c]));
 
-  // Fallback heuristic if gender is not included in characters.json
+  // Name normalization util used elsewhere
   function normName(s){ return String(s||'').toUpperCase().replace(/\s+/g,' ').trim(); }
-  function heuristicGenderFromName(name){
-    const n = normName(name);
-    // Strong female cues
-    if (/\bQUEEN\b|\bLADY\b|\bPRINCESS\b|\bMISTRESS\b|\bMIST\.?\b|\bWOMAN\b|\bGENTLEWOMAN\b|\bNURSE\b|\bMAID\b|\bMOTHER\b/.test(n)) return 'F';
-    // Female titles ending with ESS (e.g., HOSTESS, ABBESS, DUCHESS, COUNTESS, PRIORESS, EMPRESS)
-    if (/\b(?!CAITHNESS$)[A-Z][A-Z .'-]*ESS\b$/.test(n)) return 'F';
-    // Male cues
-    if (/\bKING\b|\bLORD\b|\bDUKE\b|\bPRINCE\b|\bSIR\b|\bMAN\b|\bGENTLEMAN\b|\bFATHER\b/.test(n)) return 'M';
-    return 'A'; // Ambiguous
-  }
-  function deriveGender(rec){
-    const recorded = lookupGenderFromRecord(rec);
-    const h = heuristicGenderFromName(rec && rec.name);
-    // Never override an explicit Female
-    if (recorded === 'F') return 'F';
-    // If recorded Male but heuristic strongly suggests Female, override to F
-    if (recorded === 'M' && h === 'F') return 'F';
-    // Fall back to recorded, then heuristic
-    return recorded || h || 'A';
-  }
-  function lookupGenderFromRecord(rec){
-    const v = (rec && (rec.gender ?? rec.sex));
-    if (!v) return null;
-    const up = String(v).toUpperCase().trim();
-    if (up === 'U' || up === 'UNKNOWN') return 'A';
-    return up;
-  }
 
   // Ngrams tab state
   let ngramsSelectedSegments = new Set();
@@ -1655,7 +1628,7 @@
         const denom = denomFor(n,'character',c);
         const totalWords = c.total_words_spoken || 0;
         const ngramCount = Math.max(0, totalWords - (n - 1));
-        const gender = deriveGender(c);
+        const gender = (c.gender ?? c.sex ?? 'A').toString().toUpperCase();
         rows.push({ play_title:c.play_title, name:c.name, gender, total_words_spoken:totalWords, ngram_count:ngramCount, count, pct: denom? count/denom : 0 });
       }
       setHeaders([
