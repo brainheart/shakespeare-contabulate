@@ -941,10 +941,12 @@
   function normName(s){ return String(s||'').toUpperCase().replace(/\s+/g,' ').trim(); }
   function heuristicSexFromName(name){
     const n = normName(name);
+    // Rule: any name ending with "ESS" (e.g., HOSTESS, ABBESS, DUCHESS) => Female
+    if (/\b[A-Z][A-Z .'-]*ESS\b$/.test(n)) return 'F';
     if (/\bQUEEN\b|\bLADY\b|\bPRINCESS\b|\bMISTRESS\b|\bMIST\.?\b|\bWOMAN\b|\bGENTLEWOMAN\b|\bNURSE\b|\bMAID\b/.test(n)) return 'F';
     if (/\bKING\b|\bLORD\b|\bDUKE\b|\bPRINCE\b|\bSIR\b|\bMAN\b|\bGENTLEMAN\b/.test(n)) return 'M';
     if (/\bMOTHER\b/.test(n)) return 'F';
-    if (/\bFATHER\b|\bFATHER\b/.test(n)) return 'M';
+    if (/\bFATHER\b/.test(n)) return 'M';
     return 'U';
   }
   function lookupSexFromRecord(rec){ return (rec && rec.sex) ? String(rec.sex).toUpperCase() : null; }
