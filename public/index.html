@@ -385,6 +385,10 @@
       <thead><tr id="headRow"></tr></thead>
       <tbody></tbody>
     </table>
+    <div id="segmentsFilterActions" style="margin-top: 0.35rem; display: none;">
+      <button id="clearSegmentsFilters" class="link-btn" style="padding: 0;">Clear all filters for this view</button>
+      <span class="muted" id="segmentsFiltersInfo" style="margin-left: .35rem;"></span>
+    </div>
     
     <div class="pagination" id="segmentsPagination" style="display: none;">
       <button id="segmentsFirstPage">First</button>
@@ -538,7 +542,11 @@
       <thead><tr id="linesHeadRow"></tr></thead>
       <tbody id="linesTableBody"></tbody>
     </table>
-    
+    <div id="linesFilterActions" style="margin-top: 0.35rem; display: none;">
+      <button id="clearLinesFilters" class="link-btn" style="padding: 0;">Clear all filters for this view</button>
+      <span class="muted" id="linesFiltersInfo" style="margin-left: .35rem;"></span>
+    </div>
+
     <div class="pagination" id="linesPagination" style="display: none;">
       <button id="linesFirstPage">First</button>
       <button id="linesPrevPage">Prev</button>
@@ -701,7 +709,13 @@
   let sortKey = null, sortDir = 'desc';
   let linesSortKey = 'line_num', linesSortDir = 'asc';
   // Column filters maps (declare early for deep-link)
-  const segmentsColumnFilters = new Map();
+  // Scope segments filters by current granularity (play/genre/act/scene/line/character)
+  const segmentsFiltersByGran = new Map(); // gran -> Map(columnKey -> filter)
+  function getSegmentsFiltersMap() {
+    const g = (typeof gran !== 'undefined' && gran && gran.value) ? gran.value : 'scene';
+    if (!segmentsFiltersByGran.has(g)) segmentsFiltersByGran.set(g, new Map());
+    return segmentsFiltersByGran.get(g);
+  }
   const linesColumnFilters = new Map();
   // Segments pagination and rows (declare early for deep-link)
   let segmentsCurrentPage = 1;
@@ -723,8 +737,9 @@
     p.set('mm', matchMode.value);
     if (sortKey) p.set('sk', sortKey);
     if (sortDir) p.set('sd', sortDir);
-    // Segment column filters
-    for (const [key, v] of segmentsColumnFilters.entries()) {
+    // Segment column filters (only for current granularity)
+    const segFilters = getSegmentsFiltersMap();
+    for (const [key, v] of segFilters.entries()) {
       if (v.type === 'number') {
         const min = (v.min ?? '');
         const max = (v.max ?? '');
@@ -772,6 +787,18 @@
     const p = buildQueryParamsFromState();
     const url = location.origin + location.pathname + '?' + p.toString();
     document.querySelectorAll('.deep-link').forEach(a => { a.href = url; a.textContent = url; });
+  }
+  function updateSegmentsFilterActions() {
+    const container = document.getElementById('segmentsFilterActions');
+    if (!container) return;
+    const count = getSegmentsFiltersMap().size;
+    if (count > 0) {
+      container.style.display = 'block';
+      const info = document.getElementById('segmentsFiltersInfo');
+      if (info) info.textContent = `(${count} active filter${count>1?'s':''})`;
+    } else {
+      container.style.display = 'none';
+    }
   }
   function getPalette(name, steps) {
     steps = parseInt(steps) || 5;
@@ -1156,15 +1183,16 @@
         if (sp.has('mm')) matchMode.value = sp.get('mm');
         if (sp.has('sk')) sortKey = sp.get('sk');
         if (sp.has('sd')) sortDir = sp.get('sd');
-        segmentsColumnFilters.clear();
+        // Clear filters only for current granularity
+        getSegmentsFiltersMap().clear();
         for (const [k, v] of sp.entries()) {
           if (k.startsWith('s_fn_')) {
             const key = k.slice(5);
             const [min, max] = (v || '').split('~');
-            segmentsColumnFilters.set(key, { type:'number', min, max });
+            getSegmentsFiltersMap().set(key, { type:'number', min, max });
           } else if (k.startsWith('s_ft_')) {
             const key = k.slice(5);
-            segmentsColumnFilters.set(key, { type:'text', pattern: v || '' });
+            getSegmentsFiltersMap().set(key, { type:'text', pattern: v || '' });
           }
         }
       } catch(e) { /* continue to finally */ }
@@ -1201,10 +1229,11 @@
         if (st.segments.matchMode) matchMode.value = st.segments.matchMode;
         if (st.segments.sortKey) sortKey = st.segments.sortKey;
         if (st.segments.sortDir) sortDir = st.segments.sortDir;
-        segmentsColumnFilters.clear();
+        // Clear and set filters only for current granularity
+        getSegmentsFiltersMap().clear();
         if (st.segments.filters) {
           const m = arrayToMap(st.segments.filters);
-          for (const [k,v] of m.entries()) segmentsColumnFilters.set(k,v);
+          for (const [k,v] of m.entries()) getSegmentsFiltersMap().set(k,v);
         }
       }
       // Lines
@@ -1625,7 +1654,8 @@
 
   function applySegmentsFilters(rows) {
     let out = rows;
-    for (const [key, f] of segmentsColumnFilters.entries()) {
+    const segFilters = getSegmentsFiltersMap();
+    for (const [key, f] of segFilters.entries()) {
       if (!f) continue;
       const type = f.type || 'text';
       if (type === 'number') {
@@ -1657,6 +1687,7 @@
     if (!rows || rows.length===0){ 
       tbody.innerHTML = '<tr><td colspan="8" class="muted">No results.</td></tr>'; 
       document.getElementById('segmentsPagination').style.display = 'none';
+      updateSegmentsFilterActions();
       return; 
     }
     // Keep base rows for later re-filtering
@@ -1666,6 +1697,7 @@
     if (rows.length === 0) { 
       tbody.innerHTML = '<tr><td colspan="8" class="muted">No results match the filters.</td></tr>'; 
       document.getElementById('segmentsPagination').style.display = 'none';
+      updateSegmentsFilterActions();
       return; 
     }
     
@@ -1684,6 +1716,7 @@
     if (rows.length === 0) {
       tbody.innerHTML = '<tr><td colspan="8" class="muted">No results match the filters.</td></tr>';
       document.getElementById('segmentsPagination').style.display = 'none';
+      updateSegmentsFilterActions();
       return;
     }
     rows = sortRows(rows);
@@ -1711,7 +1744,7 @@
     const rect = th.getBoundingClientRect();
     const pop = document.createElement('div');
     pop.className = 'filter-popover';
-    let stateMap = (table === 'lines') ? linesColumnFilters : segmentsColumnFilters;
+    let stateMap = (table === 'lines') ? linesColumnFilters : getSegmentsFiltersMap();
     const existing = stateMap.get(key) || { type };
     if (type === 'number') {
       pop.innerHTML = `
@@ -1744,13 +1777,13 @@
       const maxV = pop.querySelector('.f-max').value;
       if (minV === '' && maxV === '') stateMap.delete(key);
       else stateMap.set(key, { type: 'number', min: minV, max: maxV });
-      if (table === 'lines') renderLinesPage(); else refreshSegmentsFromFilters();
+      if (table === 'lines') { renderLinesPage(); updateLinesFilterActions(); updateDeepLink(); } else { refreshSegmentsFromFilters(); updateSegmentsFilterActions(); updateDeepLink(); }
     }, 200);
     const applyText = debounce(() => {
       const pat = pop.querySelector('.f-pattern').value.trim();
       if (!pat) stateMap.delete(key);
       else stateMap.set(key, { type: 'text', pattern: pat });
-      if (table === 'lines') renderLinesPage(); else refreshSegmentsFromFilters();
+      if (table === 'lines') { renderLinesPage(); updateLinesFilterActions(); updateDeepLink(); } else { refreshSegmentsFromFilters(); updateSegmentsFilterActions(); updateDeepLink(); }
     }, 200);
     if (type === 'number') {
       pop.querySelector('.f-min').addEventListener('input', applyNumber);
@@ -1761,7 +1794,7 @@
     pop.querySelector('.f-clear').addEventListener('click', (e) => {
       e.preventDefault();
       stateMap.delete(key);
-      if (table === 'lines') renderLinesPage(); else refreshSegmentsFromFilters();
+      if (table === 'lines') { renderLinesPage(); updateLinesFilterActions(); updateDeepLink(); } else { refreshSegmentsFromFilters(); updateSegmentsFilterActions(); updateDeepLink(); }
     });
     pop.querySelector('.f-close').addEventListener('click', (e) => { e.preventDefault(); closeFilterPopover(); });
   }
@@ -1807,10 +1840,38 @@
     // Apply color scales if enabled
     applyOrClear('#results');
     updateDeepLink();
+    updateSegmentsFilterActions();
   }
 
   // removed copy/jump actions
   document.getElementById('results').addEventListener('click', (e) => {});
+
+  // Clear all filters for current granularity
+  const clearSegFiltersBtn = document.getElementById('clearSegmentsFilters');
+  if (clearSegFiltersBtn) {
+    clearSegFiltersBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const m = getSegmentsFiltersMap();
+      if (m.size === 0) return;
+      m.clear();
+      refreshSegmentsFromFilters();
+      updateSegmentsFilterActions();
+      updateDeepLink();
+    });
+  }
+
+  // Clear all filters for lines table
+  const clearLinesFiltersBtn = document.getElementById('clearLinesFilters');
+  if (clearLinesFiltersBtn) {
+    clearLinesFiltersBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (linesColumnFilters.size === 0) return;
+      linesColumnFilters.clear();
+      renderLinesPage();
+      updateLinesFilterActions();
+      updateDeepLink();
+    });
+  }
 
   function buildHighlightRegexFromState() { return null; }
 
@@ -2630,6 +2691,18 @@
       }
     });
   }
+  function updateLinesFilterActions() {
+    const container = document.getElementById('linesFilterActions');
+    if (!container) return;
+    const count = linesColumnFilters.size;
+    if (count > 0) {
+      container.style.display = 'block';
+      const info = document.getElementById('linesFiltersInfo');
+      if (info) info.textContent = `(${count} active filter${count>1?'s':''})`;
+    } else {
+      container.style.display = 'none';
+    }
+  }
 
   function applyLinesFilters(rows) {
     if (!rows) return [];
@@ -2694,6 +2767,7 @@
     // Apply color scales if enabled
     applyOrClear('#linesResults');
     updateDeepLink();
+    updateLinesFilterActions();
   }
 
   function doLinesSearch() {
@@ -2701,6 +2775,7 @@
     if (!query) {
       document.getElementById('linesTableBody').innerHTML = '';
       document.getElementById('linesPagination').style.display = 'none';
+      updateLinesFilterActions();
       return;
     }
 
@@ -2708,12 +2783,14 @@
     if (!rows) {
       document.getElementById('linesTableBody').innerHTML = '<tr><td colspan="6" class="warning">Invalid search or no data available.</td></tr>';
       document.getElementById('linesPagination').style.display = 'none';
+      updateLinesFilterActions();
       return;
     }
 
     if (rows.length === 0) {
       document.getElementById('linesTableBody').innerHTML = '<tr><td colspan="6" class="muted">No lines matched.</td></tr>';
       document.getElementById('linesPagination').style.display = 'none';
+      updateLinesFilterActions();
       return;
     }
 
