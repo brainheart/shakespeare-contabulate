@@ -16,6 +16,7 @@ env/
 public/data/*
 public/lines/
 !public/data/character_sex.json
+!public/data/characters.json
 
 # Logs
 *.log
