@@ -941,13 +941,23 @@
   function normName(s){ return String(s||'').toUpperCase().replace(/\s+/g,' ').trim(); }
   function heuristicSexFromName(name){
     const n = normName(name);
-    // Rule: any name ending with "ESS" (e.g., HOSTESS, ABBESS, DUCHESS) => Female
-    if (/\b[A-Z][A-Z .'-]*ESS\b$/.test(n)) return 'F';
-    if (/\bQUEEN\b|\bLADY\b|\bPRINCESS\b|\bMISTRESS\b|\bMIST\.?\b|\bWOMAN\b|\bGENTLEWOMAN\b|\bNURSE\b|\bMAID\b/.test(n)) return 'F';
-    if (/\bKING\b|\bLORD\b|\bDUKE\b|\bPRINCE\b|\bSIR\b|\bMAN\b|\bGENTLEMAN\b/.test(n)) return 'M';
-    if (/\bMOTHER\b/.test(n)) return 'F';
-    if (/\bFATHER\b/.test(n)) return 'M';
+    // Strong female cues
+    if (/\bQUEEN\b|\bLADY\b|\bPRINCESS\b|\bMISTRESS\b|\bMIST\.?\b|\bWOMAN\b|\bGENTLEWOMAN\b|\bNURSE\b|\bMAID\b|\bMOTHER\b/.test(n)) return 'F';
+    // Female titles ending with ESS (e.g., HOSTESS, ABBESS, DUCHESS, COUNTESS, PRIORESS, EMPRESS)
+    if (/\b(?!CAITHNESS$)[A-Z][A-Z .'-]*ESS\b$/.test(n)) return 'F';
+    // Male cues
+    if (/\bKING\b|\bLORD\b|\bDUKE\b|\bPRINCE\b|\bSIR\b|\bMAN\b|\bGENTLEMAN\b|\bFATHER\b/.test(n)) return 'M';
     return 'U';
+  }
+  function deriveSex(rec){
+    const recorded = lookupSexFromRecord(rec);
+    const h = heuristicSexFromName(rec && rec.name);
+    // Never override an explicit Female
+    if (recorded === 'F') return 'F';
+    // If recorded Male but heuristic strongly suggests Female, override to F
+    if (recorded === 'M' && h === 'F') return 'F';
+    // Fall back to recorded, then heuristic
+    return recorded || h || 'U';
   }
   function lookupSexFromRecord(rec){ return (rec && rec.sex) ? String(rec.sex).toUpperCase() : null; }
 
@@ -1639,7 +1649,7 @@
         const denom = denomFor(n,'character',c);
         const totalWords = c.total_words_spoken || 0;
         const ngramCount = Math.max(0, totalWords - (n - 1));
-        const sex = lookupSexFromRecord(c) || heuristicSexFromName(c.name);
+        const sex = deriveSex(c);
         rows.push({ play_title:c.play_title, name:c.name, sex, total_words_spoken:totalWords, ngram_count:ngramCount, count, pct: denom? count/denom : 0 });
       }
       setHeaders([
