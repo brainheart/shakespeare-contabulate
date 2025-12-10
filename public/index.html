@@ -152,6 +152,35 @@
       font-size: 0.9rem;
       color: var(--ink);
     }
+    .term-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      align-items: center;
+    }
+    .term-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.25rem 0.6rem;
+      background: rgba(139, 21, 56, 0.08);
+      border: 1px solid rgba(139, 21, 56, 0.2);
+      border-radius: 999px;
+      font-size: 0.95rem;
+      color: var(--ink);
+    }
+    .term-pill button {
+      border: none;
+      background: transparent;
+      color: #5c1228;
+      cursor: pointer;
+      font-size: 1rem;
+      padding: 0 0.2rem;
+      line-height: 1;
+    }
+    .term-pill button:hover {
+      color: #000;
+    }
     #playsFilter { 
       max-height: 8rem;
       overflow:auto;
@@ -350,6 +379,14 @@
           <option value="regex">regex pattern</option>
         </select>
         <input id="q" type="text" placeholder="" value="love" style="flex: 1; min-width: 20rem; font-size: 1rem;">
+      </div>
+      <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; font-size: 0.98rem; margin-top: 0.5rem;">
+        <span style="font-weight: 600;">Compare with</span>
+        <input id="additionalTermInput" type="text" placeholder="Add another term (e.g., hate)" style="flex: 1; min-width: 14rem; font-size: 0.95rem; padding: 0.45rem 0.6rem;">
+        <button id="addTermBtn" type="button" style="padding: 0.45rem 0.8rem;">Add term</button>
+      </div>
+      <div id="termsList" class="term-chips muted" style="margin-top: 0.35rem; font-size: 0.95rem;">
+        No extra terms yet. Add some to see side-by-side columns.
       </div>
     </div>
 
@@ -576,6 +613,10 @@
   const theadRow = document.getElementById('headRow');
   const tbody = document.querySelector('#results tbody');
   const ngramTableContainer = document.getElementById('ngramTableContainer');
+  const addTermInput = document.getElementById('additionalTermInput');
+  const addTermBtn = document.getElementById('addTermBtn');
+  const termsList = document.getElementById('termsList');
+  let extraTerms = [];
   
   // Color scale toggle state (global across tabs)
   let colorScaleEnabled = true;
@@ -613,6 +654,71 @@
     if (segQ) doSearch();
     const linesQ = document.getElementById('linesQuery').value.trim();
     if (linesQ) doLinesSearch();
+  }
+  function normalizeTerm(term) {
+    return String(term || '').toLowerCase().replace(/\s+/g, ' ').trim();
+  }
+  function pruneExtraTermsAgainstPrimary() {
+    const primaryNorm = normalizeTerm(q.value || '');
+    const filtered = extraTerms.filter(t => normalizeTerm(t) !== primaryNorm);
+    if (filtered.length !== extraTerms.length) {
+      extraTerms = filtered;
+      renderExtraTerms();
+    }
+  }
+  function getActiveTerms() {
+    const seen = new Set();
+    const out = [];
+    const add = (term) => {
+      const norm = normalizeTerm(term);
+      if (!norm || seen.has(norm)) return;
+      seen.add(norm);
+      out.push(term.trim());
+    };
+    add(q.value || '');
+    extraTerms.forEach(add);
+    return out;
+  }
+  function renderExtraTerms() {
+    if (!termsList) return;
+    const terms = extraTerms.filter(t => t && t.trim());
+    if (terms.length === 0) {
+      termsList.classList.add('muted');
+      termsList.textContent = 'No extra terms yet. Add some to see side-by-side columns.';
+      return;
+    }
+    termsList.classList.remove('muted');
+    termsList.innerHTML = '';
+    terms.forEach((term, idx) => {
+      const pill = document.createElement('span');
+      pill.className = 'term-pill';
+      pill.innerHTML = `<span>${escapeHTML(term)}</span><button type="button" class="remove-term" data-idx="${idx}" aria-label="Remove term ${escapeHTML(term)}">×</button>`;
+      termsList.appendChild(pill);
+    });
+    termsList.querySelectorAll('.remove-term').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const i = parseInt(btn.dataset.idx, 10);
+        if (!Number.isNaN(i)) {
+          extraTerms.splice(i, 1);
+          renderExtraTerms();
+          checkSegmentsPendingChanges();
+          doSearch();
+        }
+      });
+    });
+  }
+  function addExtraTerm(term) {
+    const val = (term ?? '').trim();
+    if (!val) return;
+    const normVal = normalizeTerm(val);
+    const primaryNorm = normalizeTerm(q.value || '');
+    if (normVal === primaryNorm) return;
+    const existing = extraTerms.map(normalizeTerm);
+    if (existing.includes(normVal)) return;
+    extraTerms.push(val);
+    renderExtraTerms();
+    checkSegmentsPendingChanges();
+    doSearch();
   }
   function parseNumeric(text) {
     if (text == null) return NaN;
@@ -735,6 +841,8 @@
     p.set('nm', ngramMode.value);
     p.set('gran', gran.value);
     p.set('mm', matchMode.value);
+    const extras = extraTerms.map(t => t.trim()).filter(Boolean);
+    if (extras.length) p.set('qt', extras.join('|'));
     if (sortKey) p.set('sk', sortKey);
     if (sortDir) p.set('sd', sortDir);
     // Segment column filters (only for current granularity)
@@ -862,7 +970,8 @@
     query: '',
     ngramMode: '',
     gran: '',
-    matchMode: ''
+    matchMode: '',
+    extraTerms: []
   };
   
   // Last search state for ngrams
@@ -1017,6 +1126,7 @@
   }
   
   buildAvailableSegments();
+  renderExtraTerms();
   
   // Render available segments based on search
   function renderAvailableSegments() {
@@ -1172,6 +1282,11 @@
         if (sp.has('nm')) ngramMode.value = sp.get('nm');
         if (sp.has('gran')) gran.value = sp.get('gran');
         if (sp.has('mm')) matchMode.value = sp.get('mm');
+        if (sp.has('qt')) {
+          extraTerms = sp.get('qt').split('|').map(t => t.trim()).filter(Boolean);
+          pruneExtraTermsAgainstPrimary();
+          renderExtraTerms();
+        }
         if (sp.has('sk')) sortKey = sp.get('sk');
         if (sp.has('sd')) sortDir = sp.get('sd');
         // Clear filters only for current granularity
@@ -1218,6 +1333,11 @@
         if (st.segments.ngramMode) ngramMode.value = st.segments.ngramMode;
         if (st.segments.gran) gran.value = st.segments.gran;
         if (st.segments.matchMode) matchMode.value = st.segments.matchMode;
+        if (Array.isArray(st.segments.extraTerms)) {
+          extraTerms = st.segments.extraTerms.filter(Boolean);
+          pruneExtraTermsAgainstPrimary();
+          renderExtraTerms();
+        }
         if (st.segments.sortKey) sortKey = st.segments.sortKey;
         if (st.segments.sortDir) sortDir = st.segments.sortDir;
         // Clear and set filters only for current granularity
@@ -1387,6 +1507,7 @@
     const tw = (levelKey==='scene') ? (meta.total_words||0)
                : (levelKey==='act') ? (actTotals.get(`${meta.play_id}:${meta.act}`)||0)
                : (levelKey==='play') ? (playTotals.get(meta.play_id)||0)
+               : (levelKey==='genre') ? ((meta && meta.total_words) || 0)
                : (levelKey==='character') ? (meta.total_words_spoken||0) : 0;
     return Math.max(0, tw - (n-1));
   }
@@ -1402,14 +1523,15 @@
     return Array.from(merged.entries());
   }
 
-  function buildRows(query){
+  function buildRowsForTerms(terms){
+    const granVal = gran.value;
     const isRegex = (matchMode.value === 'regex');
     const ngramModeVal = ngramMode.value;
-    
-    // Always use the explicitly selected n-gram mode
-    const n = parseInt(ngramModeVal);
+    const n = parseInt(ngramModeVal, 10);
+    const activeTerms = (terms || []).map(t => t.trim()).filter(Boolean);
+    if (activeTerms.length === 0) return null;
 
-    const granVal = gran.value;
+    const termKeys = activeTerms.map((_, i) => `t${i}`);
 
     // Character view limitation
     if (granVal === 'character' && n > 3) {
@@ -1422,224 +1544,288 @@
       ? (n === 1 ? tokensChar : n === 2 ? tokensChar2 : tokensChar3)
       : (n === 1 ? tokens : n === 2 ? tokens2 : tokens3);
 
-    let allPostings = [];
-
+    const compiledRegexes = [];
     if (isRegex) {
-      // Regex mode: match pattern against all token keys
-      try {
-        const pattern = new RegExp(query.trim(), 'i');
-        const matchingKeys = Object.keys(idx).filter(k => pattern.test(k));
-        
-        if (matchingKeys.length === 0) {
+      for (const term of activeTerms) {
+        try { compiledRegexes.push(new RegExp(term.trim(), 'i')); }
+        catch (e) {
           theadRow.innerHTML = '';
-          tbody.innerHTML = '<tr><td class="muted">No tokens matched regex pattern.</td></tr>';
+          tbody.innerHTML = `<tr><td class="warning">Invalid regex: ${e.message}</td></tr>`;
           return null;
         }
-        
-        // Show warning if too many matches (performance)
-        if (matchingKeys.length > 1000) {
-          console.log('⚠️ Pattern matched ' + matchingKeys.length + ' tokens (showing aggregated results)');
-        }
-
-        // Aggregate all matching tokens
-        allPostings = aggregatePostings(matchingKeys.map(k => idx[k]), n);
-      } catch (e) {
-        theadRow.innerHTML = '';
-        tbody.innerHTML = `<tr><td class="warning">Invalid regex: ${e.message}</td></tr>`;
-        return null;
       }
-    } else {
-      // Literal mode: exact match
-      // For single words, just use the query as-is (lowercased)
-      // For bigrams/trigrams, split by whitespace and take first n terms
-      const terms = query.trim().toLowerCase().split(/\s+/).filter(Boolean);
-      const key = terms.slice(0, n).join(' ');
-      allPostings = idx[key] || [];
     }
 
-    const rows = [];
+    const rowsMap = new Map();
+    function ensureRow(key, buildFn) {
+      if (!rowsMap.has(key)) rowsMap.set(key, buildFn());
+      return rowsMap.get(key);
+    }
+    function finalizeRows(includePct) {
+      const arr = Array.from(rowsMap.values());
+      arr.forEach(r => {
+        termKeys.forEach((tk) => {
+          const cKey = `${tk}_count`;
+          if (r[cKey] == null) r[cKey] = 0;
+          if (includePct) {
+            const pKey = `${tk}_pct`;
+            if (r[pKey] == null) r[pKey] = 0;
+          }
+        });
+      });
+      return arr;
+    }
+    function buildTermColumns(includePct = true) {
+      const cols = [];
+      activeTerms.forEach((term, idx) => {
+        cols.push({ key: `${termKeys[idx]}_count`, label: `"${term}" hits`, type: 'number', defaultDir: 'desc' });
+        if (includePct) cols.push({ key: `${termKeys[idx]}_pct`, label: `"${term}" %`, type: 'number', defaultDir: 'desc' });
+      });
+      return cols;
+    }
+    function getPostingsForTerm(termIdx) {
+      if (isRegex) {
+        const pattern = compiledRegexes[termIdx];
+        if (!pattern) return [];
+        return aggregatePostings(Object.keys(idx).filter(k => pattern.test(k)).map(k => idx[k]), n);
+      }
+      const parts = activeTerms[termIdx].toLowerCase().split(/\s+/).filter(Boolean);
+      const key = parts.slice(0, n).join(' ');
+      return idx[key] || [];
+    }
+
+    const genreTotals = new Map();
+    if (granVal === 'genre') {
+      plays.forEach(play => {
+        const g = play.genre || 'unknown';
+        genreTotals.set(g, (genreTotals.get(g) || 0) + (play.total_words || 0));
+      });
+    }
 
     if (granVal === 'line') {
-      // Build line-level rows with full line text
       if (!Array.isArray(allLines) || allLines.length === 0) {
         theadRow.innerHTML = '';
         tbody.innerHTML = '<tr><td class="muted">Lines data not available.</td></tr>';
         return null;
       }
-      let hlRe = null;
-      try {
-        if (isRegex) {
-          const pat = query.trim();
-          hlRe = pat ? new RegExp(pat, 'gi') : null;
-        } else {
-          const terms = query.trim().toLowerCase().split(/\s+/).filter(Boolean);
-          const n = parseInt(ngramModeVal);
-          const keyTerms = terms.slice(0, n);
-          const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-          hlRe = keyTerms.length > 0 ? new RegExp('\\b' + keyTerms.map(esc).join('\\s+') + '\\b', 'gi') : null;
+      const lineRegexes = [];
+      if (isRegex) {
+        for (const term of activeTerms) {
+          try { lineRegexes.push(new RegExp(term.trim(), 'gi')); }
+          catch (e) {
+            theadRow.innerHTML = '';
+            tbody.innerHTML = `<tr><td class="warning">Invalid regex: ${e.message}</td></tr>`;
+            return null;
+          }
         }
-      } catch (e) {
-        theadRow.innerHTML = '';
-        tbody.innerHTML = `<tr><td class="warning">Invalid pattern for lines: ${e.message}</td></tr>`;
-        return null;
+      } else {
+        activeTerms.forEach(term => {
+          const terms = term.trim().toLowerCase().split(/\s+/).filter(Boolean).slice(0, n);
+          if (terms.length === 0) { lineRegexes.push(null); return; }
+          const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          const pat = '\\b' + terms.map(esc).join('\\s+') + '\\b';
+          lineRegexes.push(new RegExp(pat, 'gi'));
+        });
       }
+      const highlightParts = lineRegexes.filter(Boolean).map(r => r.source);
+      const highlightRe = (!highlightEnabled || highlightParts.length === 0) ? null : new RegExp(highlightParts.join('|'), 'gi');
 
       for (const ln of allLines) {
-        const t = (ln.text || '').toString();
-        const clean = t.replace(/\s+/g, ' ').trim();
-        const count = hlRe ? (clean.match(hlRe)?.length || 0) : 0;
-        if (count > 0) {
-          const play = playsById.get(ln.play_id);
-          const line_html = (highlightEnabled && hlRe) ? highlightHTML(clean, hlRe) : escapeHTML(clean);
-          rows.push({
-            id: ln.canonical_id,
-            play_id: ln.play_id,
-            play_title: play ? play.title : '',
-            act: ln.act,
-            scene: ln.scene,
-            line_num: ln.line_num,
-            speaker: ln.speaker || '',
-            line: clean,
-            line_html,
-            count
-          });
+        const clean = (ln.text || '').toString().replace(/\s+/g, ' ').trim();
+        let hasTerm = false;
+        const row = {
+          id: ln.canonical_id,
+          play_id: ln.play_id,
+          play_title: (playsById.get(ln.play_id) || {}).title || '',
+          act: ln.act,
+          scene: ln.scene,
+          line_num: ln.line_num,
+          speaker: ln.speaker || '',
+          line: clean
+        };
+        lineRegexes.forEach((re, idx) => {
+          if (!re) return;
+          const c = (clean.match(re) || []).length;
+          if (c > 0) {
+            hasTerm = true;
+            row[`${termKeys[idx]}_count`] = c;
+          }
+        });
+        if (hasTerm) {
+          row.line_html = highlightRe ? highlightHTML(clean, highlightRe) : escapeHTML(clean);
+          rowsMap.set(row.id, row);
         }
       }
 
-      setHeaders([
-        {key:'id', label:'Location', defaultDir:'asc', type:'text'},
-        {key:'speaker', label:'Speaker', defaultDir:'asc', type:'text'},
-        {key:'line', label:'Line', type:'text'}
-      ]);
-      return rows;
+      const baseCols = [
+        { key: 'id', label: 'Location', defaultDir: 'asc', type: 'text' },
+        { key: 'speaker', label: 'Speaker', defaultDir: 'asc', type: 'text' }
+      ];
+      const termCols = buildTermColumns(false);
+      baseCols.push(...termCols);
+      baseCols.push({ key: 'line', label: 'Line', type: 'text' });
+      setHeaders(baseCols);
+      if (termCols.length) { sortKey = termCols[0].key; sortDir = 'desc'; }
+      return finalizeRows(false);
     }
 
     if (granVal==='scene'){
-      for (const [scene_id, count] of allPostings){
-        const m = chunkById.get(scene_id); if (!m) continue;
-        const d = denomFor(n,'scene',m);
-        const totalWords = m.total_words || 0;
-        const ngramCount = Math.max(0, totalWords - (n - 1));
-        rows.push({ id: m.canonical_id, play_title: m.play_title, genre:m.genre, play_id:m.play_id, act:m.act, scene:m.scene, total_words:totalWords, ngram_count:ngramCount, count, pct: d? count/d : 0, scene_id });
-      }
-      setHeaders([
+      const baseCols = [
         {key:'id', label:'Location', defaultDir:'asc', type:'text'},
         {key:'play_title', label:'Play', defaultDir:'asc', type:'text'},
         {key:'act', label:'Act', type:'number'},
         {key:'scene', label:'Scene', type:'number'},
-        {key:'ngram_count', label: n===1 ? 'Word count' : n===2 ? 'Bigram count' : 'Trigram count', type:'number'},
-        {key:'count', label:'Hits', type:'number'},
-        {key:'pct', label:`% of ${n===1?'scene words':n===2?'scene bigrams':'scene trigrams'}`, type:'number'},
-      ]);
-      return rows;
+        {key:'ngram_count', label: n===1 ? 'Word count' : n===2 ? 'Bigram count' : 'Trigram count', type:'number'}
+      ];
+      activeTerms.forEach((term, termIdx) => {
+        const postings = getPostingsForTerm(termIdx);
+        for (const [scene_id, count] of postings){
+          const m = chunkById.get(scene_id); if (!m) continue;
+          const row = ensureRow(scene_id, () => {
+            const totalWords = m.total_words || 0;
+            const ngramCount = Math.max(0, totalWords - (n - 1));
+            return { id: m.canonical_id, play_title: m.play_title, genre:m.genre, play_id:m.play_id, act:m.act, scene:m.scene, total_words:totalWords, ngram_count:ngramCount, scene_id };
+          });
+          const d = denomFor(n,'scene',m);
+          row[`${termKeys[termIdx]}_count`] = count;
+          row[`${termKeys[termIdx]}_pct`] = d ? count/d : 0;
+        }
+      });
+      const termCols = buildTermColumns(true);
+      setHeaders([...baseCols, ...termCols]);
+      if (termCols.length) { sortKey = termCols[0].key; sortDir = 'desc'; }
+      return finalizeRows(true);
     }
 
     if (granVal==='act'){
-      const tmp = new Map();
-      const actWordCounts = new Map();
-      for (const [scene_id,c] of allPostings){
-        const m = chunkById.get(scene_id); if (!m) continue;
-        const k = `${m.play_id}:${m.act}`;
-        tmp.set(k, (tmp.get(k)||0) + c);
-        actWordCounts.set(k, (actWordCounts.get(k)||0) + (m.total_words||0));
-      }
-      for (const [k,count] of tmp.entries()){
-        const [pid, actNum] = k.split(':').map(Number);
-        const play = playsById.get(pid);
-        const denom = denomFor(n,'act',{play_id:pid,act:actNum});
-        const total_words = actWordCounts.get(k) || 0;
-        const ngramCount = Math.max(0, total_words - (n - 1));
-        rows.push({ id: `${play.abbr}.${actNum}`, play_title: play.title, genre:play.genre, play_id:pid, act:actNum, total_words, ngram_count:ngramCount, count, pct: denom? count/denom : 0 });
-      }
-      setHeaders([
+      const baseCols = [
         {key:'id', label:'Location', defaultDir:'asc', type:'text'},
         {key:'play_title', label:'Play', defaultDir:'asc', type:'text'},
         {key:'act', label:'Act', type:'number'},
-        {key:'ngram_count', label: n===1 ? 'Word count' : n===2 ? 'Bigram count' : 'Trigram count', type:'number'},
-        {key:'count', label:'Hits', type:'number'},
-        {key:'pct', label:`% of ${n===1?'act words':n===2?'act bigrams':'act trigrams'}`, type:'number'},
-      ]);
-      return rows;
+        {key:'ngram_count', label: n===1 ? 'Word count' : n===2 ? 'Bigram count' : 'Trigram count', type:'number'}
+      ];
+      activeTerms.forEach((term, termIdx) => {
+        const postings = getPostingsForTerm(termIdx);
+        const countsByAct = new Map();
+        for (const [scene_id,c] of postings){
+          const m = chunkById.get(scene_id); if (!m) continue;
+          const k = `${m.play_id}:${m.act}`;
+          countsByAct.set(k, (countsByAct.get(k)||0) + c);
+        }
+        for (const [k,count] of countsByAct.entries()){
+          const [pidStr, actNumStr] = k.split(':');
+          const pid = parseInt(pidStr, 10);
+          const actNum = parseInt(actNumStr, 10);
+          const play = playsById.get(pid);
+          if (!play) continue;
+          const row = ensureRow(k, () => {
+            const total_words = actTotals.get(k) || 0;
+            const ngramCount = Math.max(0, total_words - (n - 1));
+            return { id: `${play.abbr}.${actNum}`, play_title: play.title, genre:play.genre, play_id:pid, act:actNum, total_words, ngram_count:ngramCount };
+          });
+          const d = denomFor(n,'act',{play_id:pid,act:actNum});
+          row[`${termKeys[termIdx]}_count`] = count;
+          row[`${termKeys[termIdx]}_pct`] = d ? count/d : 0;
+        }
+      });
+      const termCols = buildTermColumns(true);
+      setHeaders([...baseCols, ...termCols]);
+      if (termCols.length) { sortKey = termCols[0].key; sortDir = 'desc'; }
+      return finalizeRows(true);
     }
 
     if (granVal==='play'){
-      const tmp = new Map();
-      for (const [scene_id,c] of allPostings){
-        const m = chunkById.get(scene_id); if (!m) continue;
-        tmp.set(m.play_id, (tmp.get(m.play_id)||0) + c);
-      }
-      for (const [pid,count] of tmp.entries()){
-        const p = playsById.get(pid);
-        const denom = denomFor(n,'play',{play_id:pid});
-        const num_lines = p.total_lines ?? 0;
-        const total_words = p.total_words ?? 0;
-        const ngramCount = Math.max(0, total_words - (n - 1));
-        rows.push({ id:p.abbr, play_id:pid, title:p.title, genre:p.genre, first_year:p.first_performance_year||'', num_lines, total_words, ngram_count:ngramCount, count, pct: denom? count/denom : 0 });
-      }
-      setHeaders([
+      const baseCols = [
         {key:'id', label:'Location', defaultDir:'asc', type:'text'},
         {key:'title', label:'Play', defaultDir:'asc', type:'text'},
         {key:'genre', label:'Genre', defaultDir:'asc', type:'text'},
         {key:'first_year', label:'Year', type:'number'},
         {key:'num_lines', label:'# lines', type:'number'},
-        {key:'ngram_count', label: n===1 ? 'Word count' : n===2 ? 'Bigram count' : 'Trigram count', type:'number'},
-        {key:'count', label:'Hits', type:'number'},
-        {key:'pct', label:`% of ${n===1?'play words':n===2?'play bigrams':'play trigrams'}`, type:'number'},
-      ]);
-      return rows;
+        {key:'ngram_count', label: n===1 ? 'Word count' : n===2 ? 'Bigram count' : 'Trigram count', type:'number'}
+      ];
+      activeTerms.forEach((term, termIdx) => {
+        const postings = getPostingsForTerm(termIdx);
+        const countsByPlay = new Map();
+        for (const [scene_id,c] of postings){
+          const m = chunkById.get(scene_id); if (!m) continue;
+          countsByPlay.set(m.play_id, (countsByPlay.get(m.play_id)||0) + c);
+        }
+        for (const [pid,count] of countsByPlay.entries()){
+          const p = playsById.get(pid);
+          if (!p) continue;
+          const row = ensureRow(pid, () => {
+            const total_words = p.total_words ?? 0;
+            const ngramCount = Math.max(0, total_words - (n - 1));
+            return { id:p.abbr, play_id:pid, title:p.title, genre:p.genre, first_year:p.first_performance_year||'', num_lines:p.total_lines ?? 0, total_words, ngram_count:ngramCount };
+          });
+          const d = denomFor(n,'play',{play_id:pid});
+          row[`${termKeys[termIdx]}_count`] = count;
+          row[`${termKeys[termIdx]}_pct`] = d ? count/d : 0;
+        }
+      });
+      const termCols = buildTermColumns(true);
+      setHeaders([...baseCols, ...termCols]);
+      if (termCols.length) { sortKey = termCols[0].key; sortDir = 'desc'; }
+      return finalizeRows(true);
     }
 
     if (granVal==='genre'){
-      const tmp = new Map();
-      
-      // Calculate total words for each genre from ALL plays (not just those with hits)
-      const genreTotals = new Map();
-      for (const play of plays) {
-        const genre = play.genre || 'unknown';
-        genreTotals.set(genre, (genreTotals.get(genre) || 0) + (play.total_words || 0));
-      }
-      
-      // Aggregate hit counts by genre
-      for (const [scene_id,c] of allPostings){
-        const m = chunkById.get(scene_id); if (!m) continue;
-        const genre = m.genre || 'unknown';
-        tmp.set(genre, (tmp.get(genre)||0) + c);
-      }
-      
-      for (const [genre,count] of tmp.entries()){
-        const totalWords = genreTotals.get(genre) || 0;
-        const denom = Math.max(0, totalWords - (n-1));
-        const ngramCount = Math.max(0, totalWords - (n - 1));
-        rows.push({ genre, total_words: totalWords, ngram_count:ngramCount, count, pct: denom? count/denom : 0 });
-      }
-      setHeaders([
+      const baseCols = [
         {key:'genre', label:'Genre', defaultDir:'asc', type:'text'},
-        {key:'ngram_count', label: n===1 ? 'Word count' : n===2 ? 'Bigram count' : 'Trigram count', type:'number'},
-        {key:'count', label:'Hits', type:'number'},
-        {key:'pct', label:`% of ${n===1?'genre words':n===2?'genre bigrams':'genre trigrams'}`, type:'number'},
-      ]);
-      return rows;
+        {key:'ngram_count', label: n===1 ? 'Word count' : n===2 ? 'Bigram count' : 'Trigram count', type:'number'}
+      ];
+      activeTerms.forEach((term, termIdx) => {
+        const postings = getPostingsForTerm(termIdx);
+        const countsByGenre = new Map();
+        for (const [scene_id,c] of postings){
+          const m = chunkById.get(scene_id); if (!m) continue;
+          const genre = m.genre || 'unknown';
+          countsByGenre.set(genre, (countsByGenre.get(genre)||0) + c);
+        }
+        for (const [genre,count] of countsByGenre.entries()){
+          const totalWords = genreTotals.get(genre) || 0;
+          const row = ensureRow(genre, () => {
+            const ngramCount = Math.max(0, totalWords - (n - 1));
+            return { genre, total_words: totalWords, ngram_count:ngramCount };
+          });
+          const denom = denomFor(n, 'genre', { total_words: totalWords });
+          row[`${termKeys[termIdx]}_count`] = count;
+          row[`${termKeys[termIdx]}_pct`] = denom ? count/denom : 0;
+        }
+      });
+      const termCols = buildTermColumns(true);
+      setHeaders([...baseCols, ...termCols]);
+      if (termCols.length) { sortKey = termCols[0].key; sortDir = 'desc'; }
+      return finalizeRows(true);
     }
 
     if (granVal==='character'){
-      for (const [char_id, count] of allPostings){
-        const c = charactersById.get(char_id);
-        if (!c) continue;
-        const denom = denomFor(n,'character',c);
-        const totalWords = c.total_words_spoken || 0;
-        const ngramCount = Math.max(0, totalWords - (n - 1));
-        const gender = (c.gender ?? c.sex ?? 'A').toString().toUpperCase();
-        rows.push({ play_title:c.play_title, name:c.name, gender, total_words_spoken:totalWords, ngram_count:ngramCount, count, pct: denom? count/denom : 0 });
-      }
-      setHeaders([
+      const baseCols = [
         {key:'name', label:'Character', defaultDir:'asc', type:'text'},
         {key:'gender', label:'Gender', defaultDir:'asc', type:'text'},
         {key:'play_title', label:'Play', defaultDir:'asc', type:'text'},
-        {key:'ngram_count', label: n===1 ? 'Word count' : n===2 ? 'Bigram count' : 'Trigram count', type:'number'},
-        {key:'count', label:'Hits', type:'number'},
-        {key:'pct', label:`% of character ${n===1?'words':n===2?'bigrams':'trigrams'}`, type:'number'},
-      ]);
-      return rows;
+        {key:'ngram_count', label: n===1 ? 'Word count' : n===2 ? 'Bigram count' : 'Trigram count', type:'number'}
+      ];
+      activeTerms.forEach((term, termIdx) => {
+        const postings = getPostingsForTerm(termIdx);
+        for (const [char_id, count] of postings){
+          const c = charactersById.get(char_id);
+          if (!c) continue;
+          const row = ensureRow(char_id, () => {
+            const totalWords = c.total_words_spoken || 0;
+            const ngramCount = Math.max(0, totalWords - (n - 1));
+            const gender = (c.gender ?? c.sex ?? 'A').toString().toUpperCase();
+            return { play_title:c.play_title, name:c.name, gender, total_words_spoken:totalWords, ngram_count:ngramCount };
+          });
+          const denom = denomFor(n,'character',c);
+          row[`${termKeys[termIdx]}_count`] = count;
+          row[`${termKeys[termIdx]}_pct`] = denom ? count/denom : 0;
+        }
+      });
+      const termCols = buildTermColumns(true);
+      setHeaders([...baseCols, ...termCols]);
+      if (termCols.length) { sortKey = termCols[0].key; sortDir = 'desc'; }
+      return finalizeRows(true);
     }
   }
 
@@ -1653,7 +1839,7 @@
         const hasMin = f.min != null && f.min !== '';
         const hasMax = f.max != null && f.max !== '';
         if (!hasMin && !hasMax) continue;
-        const isPct = key === 'pct';
+        const isPct = key === 'pct' || key.endsWith('_pct');
         const minVal = hasMin ? parseFloat(f.min) : -Infinity;
         const maxVal = hasMax ? parseFloat(f.max) : Infinity;
         const m = isPct && minVal > 1 ? minVal/100 : minVal;
@@ -1675,8 +1861,9 @@
   }
   function renderRows(rows){
     tbody.innerHTML='';
+    const colSpan = Math.max(1, theadRow.children.length || 8);
     if (!rows || rows.length===0){ 
-      tbody.innerHTML = '<tr><td colspan="8" class="muted">No results.</td></tr>'; 
+      tbody.innerHTML = `<tr><td colspan="${colSpan}" class="muted">No results.</td></tr>`; 
       document.getElementById('segmentsPagination').style.display = 'none';
       updateSegmentsFilterActions();
       return; 
@@ -1686,7 +1873,7 @@
     // Apply per-column filters
     rows = applySegmentsFilters(rows);
     if (rows.length === 0) { 
-      tbody.innerHTML = '<tr><td colspan="8" class="muted">No results match the filters.</td></tr>'; 
+      tbody.innerHTML = `<tr><td colspan="${colSpan}" class="muted">No results match the filters.</td></tr>`; 
       document.getElementById('segmentsPagination').style.display = 'none';
       updateSegmentsFilterActions();
       return; 
@@ -1705,7 +1892,8 @@
     if (!lastSegmentsBaseRows || lastSegmentsBaseRows.length === 0) return;
     let rows = applySegmentsFilters(lastSegmentsBaseRows);
     if (rows.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="8" class="muted">No results match the filters.</td></tr>';
+      const colSpan = Math.max(1, theadRow.children.length || 8);
+      tbody.innerHTML = `<tr><td colspan="${colSpan}" class="muted">No results match the filters.</td></tr>`;
       document.getElementById('segmentsPagination').style.display = 'none';
       updateSegmentsFilterActions();
       return;
@@ -1802,12 +1990,13 @@
       const tr = document.createElement('tr');
       cols.forEach((k, idx) => {
         const td = document.createElement('td');
-        if (k === 'pct') {
+        if (k === 'pct' || k.endsWith('_pct')) {
           td.textContent = fmtPct(r[k]||0);
         } else if (k === 'line' && r.line_html) {
           td.innerHTML = r.line_html;
         } else {
-          td.textContent = r[k] ?? '';
+          const v = r[k];
+          td.textContent = (v === undefined || v === null) ? '' : v;
         }
         tr.appendChild(td);
       });
@@ -1992,12 +2181,15 @@
       gran: gran.value,
       matchMode: matchMode.value
     };
+    const currentExtras = extraTerms.map(normalizeTerm).filter(Boolean).sort();
+    const lastExtras = (lastSegmentsState.extraTerms || []).map(normalizeTerm).filter(Boolean).sort();
     
     const hasChanges = 
       currentState.query !== lastSegmentsState.query ||
       currentState.ngramMode !== lastSegmentsState.ngramMode ||
       currentState.gran !== lastSegmentsState.gran ||
-      currentState.matchMode !== lastSegmentsState.matchMode;
+      currentState.matchMode !== lastSegmentsState.matchMode ||
+      currentExtras.join('|') !== lastExtras.join('|');
     
     segmentsPendingChanges = hasChanges;
     updateSegmentsRefreshButton();
@@ -2021,7 +2213,8 @@
       query: q.value.trim(),
       ngramMode: ngramMode.value,
       gran: gran.value,
-      matchMode: matchMode.value
+      matchMode: matchMode.value,
+      extraTerms: [...extraTerms]
     };
     segmentsPendingChanges = false;
     updateSegmentsRefreshButton();
@@ -2081,11 +2274,10 @@
   }
 
   function doSearch(){
-    const query = q.value.trim();
-    if (!query){ tbody.innerHTML = ''; ngramTableContainer.innerHTML=''; return; }
-    sortKey = 'count';
-    sortDir = 'desc';
-    const rows = buildRows(query);
+    pruneExtraTermsAgainstPrimary();
+    const terms = getActiveTerms();
+    if (terms.length === 0){ tbody.innerHTML = ''; ngramTableContainer.innerHTML=''; return; }
+    const rows = buildRowsForTerms(terms);
     if (rows) {
       renderRows(rows);
       saveSegmentsState();
@@ -2498,9 +2690,26 @@
     if (hasRegexChars && matchMode.value === 'exact') {
       matchMode.value = 'regex';
     }
+    pruneExtraTermsAgainstPrimary();
+    renderExtraTerms();
     checkSegmentsPendingChanges();
     debouncedDoSearch();
   });
+  if (addTermBtn) {
+    addTermBtn.addEventListener('click', () => {
+      addExtraTerm(addTermInput.value);
+      addTermInput.value = '';
+    });
+  }
+  if (addTermInput) {
+    addTermInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        addExtraTerm(addTermInput.value);
+        addTermInput.value = '';
+      }
+    });
+  }
   ngramMode.addEventListener('change', () => { checkSegmentsPendingChanges(); doSearch(); });
   gran.addEventListener('change', () => { checkSegmentsPendingChanges(); doSearch(); });
   matchMode.addEventListener('change', () => { checkSegmentsPendingChanges(); doSearch(); });
