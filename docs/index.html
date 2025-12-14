@@ -852,7 +852,14 @@
     p.set('gran', gran.value);
     p.set('mm', matchMode.value);
     const extras = extraTerms.map(t => t.trim()).filter(Boolean);
-    if (extras.length) p.set('qt', extras.join('|'));
+    if (extras.length) {
+      try {
+        p.set('qt', encodeURIComponent(JSON.stringify(extras)));
+      } catch (e) {
+        // fallback to legacy join if JSON stringify fails (shouldn't)
+        p.set('qt', extras.join('|'));
+      }
+    }
     if (sortKey) p.set('sk', sortKey);
     if (sortDir) p.set('sd', sortDir);
     // Segment column filters (only for current granularity)
@@ -890,6 +897,17 @@
       const b64 = (s || '').replace(/ /g, '+');
       return JSON.parse(decodeURIComponent(escape(atob(b64))));
     } catch(e) { return null; }
+  }
+  function decodeExtrasParam(raw) {
+    if (!raw) return [];
+    // New format: URL-encoded JSON array
+    try {
+      const decoded = decodeURIComponent(raw);
+      const arr = JSON.parse(decoded);
+      if (Array.isArray(arr)) return arr;
+    } catch(e) { /* fall through to legacy */ }
+    // Legacy: pipe-separated string
+    return raw.split('|').map(t => t.trim()).filter(Boolean);
   }
   function arrayToMap(arr) {
     const m = new Map();
@@ -1299,7 +1317,7 @@
           if (termDisplayModeSel) termDisplayModeSel.value = termDisplayMode;
         }
         if (sp.has('qt')) {
-          extraTerms = sp.get('qt').split('|').map(t => t.trim()).filter(Boolean);
+          extraTerms = decodeExtrasParam(sp.get('qt'));
           pruneExtraTermsAgainstPrimary();
           renderExtraTerms();
         }
