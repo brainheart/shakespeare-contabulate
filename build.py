@@ -368,7 +368,7 @@ if __name__ == '__main__':
     import sys
     base = Path(__file__).parent
     tei_dir = base / 'tei'
-    out_dir = base / 'public'
+    out_dir = base / 'docs'
     print(f"Building from {tei_dir} -> {out_dir}")
     res = build(tei_dir, out_dir)
     print(f"Done: {res['play_count']} plays, {res['scene_count']} scenes, {res['line_count']} lines written to {out_dir}/data and {out_dir}/lines")

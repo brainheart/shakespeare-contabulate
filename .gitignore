@@ -13,10 +13,10 @@ env/
 *~
 
 # Generated data
-public/data/*
-public/lines/
-!public/data/character_sex.json
-!public/data/characters.json
+docs/data/*
+docs/lines/
+!docs/data/character_sex.json
+!docs/data/characters.json
 
 # Logs
 *.log

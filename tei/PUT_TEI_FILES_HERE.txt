@@ -1,1 +1,1 @@
-Place Folger TEI XML files here, then run: python build.py --tei-dir tei --out-dir public
+Place Folger TEI XML files here, then run: python build.py --tei-dir tei --out-dir docs

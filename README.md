@@ -4,12 +4,12 @@ This repository builds word/phrase counts and character aggregates from TEI XML 
 
 Usage
 
-Generate the JSON outputs (reads TEI files under `tei/` and writes to `public/data` and `public/lines`):
+Generate the JSON outputs (reads TEI files under `tei/` and writes to `docs/data` and `docs/lines`):
 ```bash
 python3 build.py
 ```
 
-Outputs (in `public/data`):
+Outputs (in `docs/data`):
 
 - `plays.json` - metadata per play (id, title, genre, counts)
 - `chunks.json` - scenes/acts as "chunks" with counts
@@ -20,5 +20,5 @@ Outputs (in `public/data`):
 Notes
 
 - Requires Python 3.8+; `lxml` is optional (std lib parser is used now).
-- Generated directories `public/data/` and `public/lines/` are ignored by git; regenerate them with the command above.
+- Generated directories `docs/data/` and `docs/lines/` are ignored by git; regenerate them with the command above.
 - To run on a subset of TEIs, place only those files in `tei/` and rebuild.
