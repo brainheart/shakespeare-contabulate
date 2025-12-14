@@ -12,11 +12,5 @@ env/
 # Editor backups
 *~
 
-# Generated data
-docs/data/*
-docs/lines/
-!docs/data/character_sex.json
-!docs/data/characters.json
-
 # Logs
 *.log
