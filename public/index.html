@@ -395,6 +395,13 @@
       <div style="margin-bottom: 0.5rem; display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
         <label><input type="checkbox" class="color-scale-toggle" checked> Color scale numeric columns</label>
         <label><input type="checkbox" class="highlight-toggle" checked> Highlight matching line text</label>
+        <label>Term columns:
+          <select id="termDisplayMode" style="padding: 0.35rem 0.5rem; font-size: 0.95rem;">
+            <option value="both" selected>hits and % (default)</option>
+            <option value="counts">hits only</option>
+            <option value="pct">% only</option>
+          </select>
+        </label>
         <div class="color-scale-options">
           <label>Palette:
             <select class="color-scale-palette">
@@ -613,10 +620,12 @@
   const theadRow = document.getElementById('headRow');
   const tbody = document.querySelector('#results tbody');
   const ngramTableContainer = document.getElementById('ngramTableContainer');
+  const termDisplayModeSel = document.getElementById('termDisplayMode');
   const addTermInput = document.getElementById('additionalTermInput');
   const addTermBtn = document.getElementById('addTermBtn');
   const termsList = document.getElementById('termsList');
   let extraTerms = [];
+  let termDisplayMode = 'both';
   
   // Color scale toggle state (global across tabs)
   let colorScaleEnabled = true;
@@ -834,6 +843,7 @@
     // Only segments are supported for deep links currently
     // Display
     p.set('cs', colorScaleEnabled ? '1' : '0');
+    p.set('td', termDisplayMode);
     // palette and steps omitted for cleaner URLs
     p.set('hl', highlightEnabled ? '1' : '0');
     // Segments
@@ -960,6 +970,7 @@
     const pal = getPalette(colorScalePalette, colorScaleSteps);
     document.querySelectorAll('.color-scale-legend').forEach(el => renderLegend(el, pal));
   }
+  if (termDisplayModeSel) termDisplayModeSel.value = termDisplayMode;
 
   // Pending changes tracking
   let segmentsPendingChanges = false;
@@ -971,6 +982,7 @@
     ngramMode: '',
     gran: '',
     matchMode: '',
+    termDisplayMode: 'both',
     extraTerms: []
   };
   
@@ -1282,6 +1294,10 @@
         if (sp.has('nm')) ngramMode.value = sp.get('nm');
         if (sp.has('gran')) gran.value = sp.get('gran');
         if (sp.has('mm')) matchMode.value = sp.get('mm');
+        if (sp.has('td')) {
+          termDisplayMode = sp.get('td');
+          if (termDisplayModeSel) termDisplayModeSel.value = termDisplayMode;
+        }
         if (sp.has('qt')) {
           extraTerms = sp.get('qt').split('|').map(t => t.trim()).filter(Boolean);
           pruneExtraTermsAgainstPrimary();
@@ -1329,15 +1345,19 @@
       }
       // Segments
       if (st.segments) {
-        if (st.segments.q != null) q.value = st.segments.q;
-        if (st.segments.ngramMode) ngramMode.value = st.segments.ngramMode;
-        if (st.segments.gran) gran.value = st.segments.gran;
-        if (st.segments.matchMode) matchMode.value = st.segments.matchMode;
-        if (Array.isArray(st.segments.extraTerms)) {
-          extraTerms = st.segments.extraTerms.filter(Boolean);
-          pruneExtraTermsAgainstPrimary();
-          renderExtraTerms();
-        }
+      if (st.segments.q != null) q.value = st.segments.q;
+      if (st.segments.ngramMode) ngramMode.value = st.segments.ngramMode;
+      if (st.segments.gran) gran.value = st.segments.gran;
+      if (st.segments.matchMode) matchMode.value = st.segments.matchMode;
+      if (st.segments.termDisplayMode) {
+        termDisplayMode = st.segments.termDisplayMode;
+        if (termDisplayModeSel) termDisplayModeSel.value = termDisplayMode;
+      }
+      if (Array.isArray(st.segments.extraTerms)) {
+        extraTerms = st.segments.extraTerms.filter(Boolean);
+        pruneExtraTermsAgainstPrimary();
+        renderExtraTerms();
+      }
         if (st.segments.sortKey) sortKey = st.segments.sortKey;
         if (st.segments.sortDir) sortDir = st.segments.sortDir;
         // Clear and set filters only for current granularity
@@ -1532,6 +1552,8 @@
     if (activeTerms.length === 0) return null;
 
     const termKeys = activeTerms.map((_, i) => `t${i}`);
+    const includeCounts = termDisplayMode !== 'pct';
+    const includePct = termDisplayMode !== 'counts';
 
     // Character view limitation
     if (granVal === 'character' && n > 3) {
@@ -1561,12 +1583,12 @@
       if (!rowsMap.has(key)) rowsMap.set(key, buildFn());
       return rowsMap.get(key);
     }
-    function finalizeRows(includePct) {
+    function finalizeRows(includeCounts, includePct) {
       const arr = Array.from(rowsMap.values());
       arr.forEach(r => {
         termKeys.forEach((tk) => {
           const cKey = `${tk}_count`;
-          if (r[cKey] == null) r[cKey] = 0;
+          if (includeCounts && r[cKey] == null) r[cKey] = 0;
           if (includePct) {
             const pKey = `${tk}_pct`;
             if (r[pKey] == null) r[pKey] = 0;
@@ -1575,10 +1597,10 @@
       });
       return arr;
     }
-    function buildTermColumns(includePct = true) {
+    function buildTermColumns(includeCounts = true, includePct = true) {
       const cols = [];
       activeTerms.forEach((term, idx) => {
-        cols.push({ key: `${termKeys[idx]}_count`, label: `"${term}" hits`, type: 'number', defaultDir: 'desc' });
+        if (includeCounts) cols.push({ key: `${termKeys[idx]}_count`, label: `"${term}" hits`, type: 'number', defaultDir: 'desc' });
         if (includePct) cols.push({ key: `${termKeys[idx]}_pct`, label: `"${term}" %`, type: 'number', defaultDir: 'desc' });
       });
       return cols;
@@ -1661,12 +1683,12 @@
         { key: 'id', label: 'Location', defaultDir: 'asc', type: 'text' },
         { key: 'speaker', label: 'Speaker', defaultDir: 'asc', type: 'text' }
       ];
-      const termCols = buildTermColumns(false);
+      const termCols = buildTermColumns(true, false);
       baseCols.push(...termCols);
       baseCols.push({ key: 'line', label: 'Line', type: 'text' });
       setHeaders(baseCols);
       if (termCols.length) { sortKey = termCols[0].key; sortDir = 'desc'; }
-      return finalizeRows(false);
+      return finalizeRows(true, false);
     }
 
     if (granVal==='scene'){
@@ -1691,10 +1713,10 @@
           row[`${termKeys[termIdx]}_pct`] = d ? count/d : 0;
         }
       });
-      const termCols = buildTermColumns(true);
+      const termCols = buildTermColumns(includeCounts, includePct);
       setHeaders([...baseCols, ...termCols]);
       if (termCols.length) { sortKey = termCols[0].key; sortDir = 'desc'; }
-      return finalizeRows(true);
+      return finalizeRows(includeCounts, includePct);
     }
 
     if (granVal==='act'){
@@ -1728,10 +1750,10 @@
           row[`${termKeys[termIdx]}_pct`] = d ? count/d : 0;
         }
       });
-      const termCols = buildTermColumns(true);
+      const termCols = buildTermColumns(includeCounts, includePct);
       setHeaders([...baseCols, ...termCols]);
       if (termCols.length) { sortKey = termCols[0].key; sortDir = 'desc'; }
-      return finalizeRows(true);
+      return finalizeRows(includeCounts, includePct);
     }
 
     if (granVal==='play'){
@@ -1763,10 +1785,10 @@
           row[`${termKeys[termIdx]}_pct`] = d ? count/d : 0;
         }
       });
-      const termCols = buildTermColumns(true);
+      const termCols = buildTermColumns(includeCounts, includePct);
       setHeaders([...baseCols, ...termCols]);
       if (termCols.length) { sortKey = termCols[0].key; sortDir = 'desc'; }
-      return finalizeRows(true);
+      return finalizeRows(includeCounts, includePct);
     }
 
     if (granVal==='genre'){
@@ -1793,10 +1815,10 @@
           row[`${termKeys[termIdx]}_pct`] = denom ? count/denom : 0;
         }
       });
-      const termCols = buildTermColumns(true);
+      const termCols = buildTermColumns(includeCounts, includePct);
       setHeaders([...baseCols, ...termCols]);
       if (termCols.length) { sortKey = termCols[0].key; sortDir = 'desc'; }
-      return finalizeRows(true);
+      return finalizeRows(includeCounts, includePct);
     }
 
     if (granVal==='character'){
@@ -1822,10 +1844,10 @@
           row[`${termKeys[termIdx]}_pct`] = denom ? count/denom : 0;
         }
       });
-      const termCols = buildTermColumns(true);
+      const termCols = buildTermColumns(includeCounts, includePct);
       setHeaders([...baseCols, ...termCols]);
       if (termCols.length) { sortKey = termCols[0].key; sortDir = 'desc'; }
-      return finalizeRows(true);
+      return finalizeRows(includeCounts, includePct);
     }
   }
 
@@ -2179,7 +2201,8 @@
       query: q.value.trim(),
       ngramMode: ngramMode.value,
       gran: gran.value,
-      matchMode: matchMode.value
+      matchMode: matchMode.value,
+      termDisplayMode
     };
     const currentExtras = extraTerms.map(normalizeTerm).filter(Boolean).sort();
     const lastExtras = (lastSegmentsState.extraTerms || []).map(normalizeTerm).filter(Boolean).sort();
@@ -2189,6 +2212,7 @@
       currentState.ngramMode !== lastSegmentsState.ngramMode ||
       currentState.gran !== lastSegmentsState.gran ||
       currentState.matchMode !== lastSegmentsState.matchMode ||
+      currentState.termDisplayMode !== lastSegmentsState.termDisplayMode ||
       currentExtras.join('|') !== lastExtras.join('|');
     
     segmentsPendingChanges = hasChanges;
@@ -2214,6 +2238,7 @@
       ngramMode: ngramMode.value,
       gran: gran.value,
       matchMode: matchMode.value,
+      termDisplayMode,
       extraTerms: [...extraTerms]
     };
     segmentsPendingChanges = false;
@@ -2718,6 +2743,13 @@
   document.querySelectorAll('.color-scale-toggle').forEach(cb => {
     cb.addEventListener('change', (e) => setColorScaleEnabled(e.target.checked));
   });
+  if (termDisplayModeSel) {
+    termDisplayModeSel.addEventListener('change', (e) => {
+      termDisplayMode = e.target.value || 'both';
+      checkSegmentsPendingChanges();
+      doSearch();
+    });
+  }
   // Palette and steps options
   document.querySelectorAll('.color-scale-palette').forEach(sel => {
     sel.addEventListener('change', e => { colorScalePalette = e.target.value; syncColorScaleOptions(); applyColorScalesForVisibleTables(); updateDeepLink(); });
