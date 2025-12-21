@@ -1383,7 +1383,7 @@
     {
       "play_id": 6,
       "name": "LADIES",
-      "sex": "M",
+      "sex": "F",
       "abbr": "CYM"
     },
     {
@@ -2259,7 +2259,7 @@
     {
       "play_id": 10,
       "name": "ALICE",
-      "sex": "M",
+      "sex": "F",
       "abbr": "H5"
     },
     {
@@ -7479,7 +7479,7 @@
     {
       "play_id": 34,
       "name": "ALL LADIES",
-      "sex": "M",
+      "sex": "F",
       "abbr": "TIM"
     },
     {
@@ -7509,7 +7509,7 @@
     {
       "play_id": 34,
       "name": "BOTH WOMEN",
-      "sex": "M",
+      "sex": "F",
       "abbr": "TIM"
     },
     {
