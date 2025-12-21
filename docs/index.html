@@ -1460,27 +1460,47 @@
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   }
-  function downloadTableCsv(tableSelector, filename) {
-    const table = document.querySelector(tableSelector);
-    if (!table) return;
-    const rows = [];
-    const thead = table.querySelector('thead');
-    if (thead) {
-      const headRow = [];
-      thead.querySelectorAll('th').forEach(th => {
-        const label = th.childNodes[0]?.textContent || th.textContent || '';
-        headRow.push(label.replace('⚙','').trim());
-      });
-      if (headRow.length) rows.push(headRow);
+  function stripTags(text) {
+    return String(text || '').replace(/<[^>]*>/g, '').trim();
+  }
+  function downloadSegmentsCsvAll(filename) {
+    if (!segmentsAllRows || segmentsAllRows.length === 0) return;
+    const cols = Array.from(theadRow.children).map(th => ({
+      key: th.dataset.key,
+      label: (th.childNodes[0]?.textContent || th.textContent || '').replace('⚙','').trim()
+    }));
+    if (cols.length === 0) return;
+    const rows = [cols.map(c => c.label)];
+    for (const r of segmentsAllRows) {
+      rows.push(cols.map(c => {
+        const k = c.key;
+        if (k === 'act' && r.act_label) return r.act_label;
+        if (k === 'scene' && r.scene_label) return r.scene_label;
+        if (k === 'line' && r.line != null) return r.line;
+        if (k === 'pct' || k.endsWith('_pct')) return fmtPct(r[k] || 0);
+        return r[k] ?? '';
+      }));
     }
-    table.querySelectorAll('tbody tr').forEach(tr => {
-      const row = [];
-      tr.querySelectorAll('td').forEach(td => {
-        row.push(td.textContent.trim());
-      });
-      rows.push(row);
-    });
-    if (rows.length <= 1) return;
+    downloadCsv(filename, rows);
+  }
+  function downloadLinesCsvAll(filename) {
+    const thead = document.getElementById('linesHeadRow');
+    if (!thead || !linesAllRows || linesAllRows.length === 0) return;
+    const cols = Array.from(thead.children).map(th => ({
+      key: th.dataset.key,
+      label: (th.childNodes[0]?.textContent || th.textContent || '').replace('⚙','').trim()
+    }));
+    if (cols.length === 0) return;
+    const filtered = applyLinesFilters(linesAllRows);
+    const rows = [cols.map(c => c.label)];
+    for (const r of filtered) {
+      rows.push(cols.map(c => {
+        if (c.key === 'act') return r.act_label || r.act;
+        if (c.key === 'scene') return r.scene_label || r.scene;
+        if (c.key === 'text') return stripTags(r.text);
+        return r[c.key] ?? '';
+      }));
+    }
     downloadCsv(filename, rows);
   }
   function countRegexMatches(text, re) {
@@ -2859,7 +2879,7 @@
   if (downloadSegBtn) {
     downloadSegBtn.addEventListener('click', () => {
       const name = `segments-${gran.value}-${Date.now()}.csv`;
-      downloadTableCsv('#results', name);
+      downloadSegmentsCsvAll(name);
     });
   }
 
@@ -3178,7 +3198,7 @@
   if (downloadLinesBtn) {
     downloadLinesBtn.addEventListener('click', () => {
       const name = `lines-${Date.now()}.csv`;
-      downloadTableCsv('#linesResults', name);
+      downloadLinesCsvAll(name);
     });
   }
 
