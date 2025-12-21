@@ -1434,6 +1434,21 @@
     out += escapeHTML(s.slice(last));
     return out;
   }
+  function countRegexMatches(text, re) {
+    if (!re) return 0;
+    const flags = re.flags.includes('g') ? re.flags : re.flags + 'g';
+    const r = new RegExp(re.source, flags);
+    let count = 0;
+    let m;
+    while ((m = r.exec(text))) {
+      if (m[0].length === 0) {
+        r.lastIndex++;
+        continue;
+      }
+      count++;
+    }
+    return count;
+  }
 
   // Simple debounce helper for responsive UI without spamming renders
   function debounce(fn, wait = 250) {
@@ -1687,7 +1702,7 @@
         };
         lineRegexes.forEach((re, idx) => {
           if (!re) return;
-          const c = (clean.match(re) || []).length;
+          const c = countRegexMatches(clean, re);
           if (c > 0) {
             hasTerm = true;
             row[`${termKeys[idx]}_count`] = c;
