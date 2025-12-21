@@ -402,6 +402,7 @@
       <div style="margin-bottom: 0.5rem; display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
         <label><input type="checkbox" class="color-scale-toggle" checked> Color scale numeric columns</label>
         <label><input type="checkbox" class="highlight-toggle" checked> Highlight matching line text</label>
+        <label><input type="checkbox" id="showZeroRows"> Show zero-hit rows</label>
         <label>Term columns:
           <select id="termDisplayMode" style="padding: 0.35rem 0.5rem; font-size: 0.95rem;">
             <option value="both" selected>hits and % (default)</option>
@@ -630,11 +631,13 @@
   const tbody = document.querySelector('#results tbody');
   const ngramTableContainer = document.getElementById('ngramTableContainer');
   const termDisplayModeSel = document.getElementById('termDisplayMode');
+  const showZeroRowsToggle = document.getElementById('showZeroRows');
   const addTermInput = document.getElementById('additionalTermInput');
   const addTermBtn = document.getElementById('addTermBtn');
   const termsList = document.getElementById('termsList');
   let extraTerms = [];
   let termDisplayMode = 'both';
+  let showZeroRows = false;
   
   // Color scale toggle state (global across tabs)
   let colorScaleEnabled = true;
@@ -853,6 +856,7 @@
     // Display
     p.set('cs', colorScaleEnabled ? '1' : '0');
     p.set('td', termDisplayMode);
+    p.set('zr', showZeroRows ? '1' : '0');
     // palette and steps omitted for cleaner URLs
     p.set('hl', highlightEnabled ? '1' : '0');
     // Segments
@@ -1010,6 +1014,7 @@
     gran: '',
     matchMode: '',
     termDisplayMode: 'both',
+    showZeroRows: false,
     extraTerms: []
   };
   
@@ -1325,6 +1330,10 @@
           termDisplayMode = sp.get('td');
           if (termDisplayModeSel) termDisplayModeSel.value = termDisplayMode;
         }
+        if (sp.has('zr')) {
+          showZeroRows = sp.get('zr') === '1';
+          if (showZeroRowsToggle) showZeroRowsToggle.checked = showZeroRows;
+        }
         if (sp.has('qt')) {
           extraTerms = decodeExtrasParam(sp.get('qt'));
           pruneExtraTermsAgainstPrimary();
@@ -1379,6 +1388,10 @@
       if (st.segments.termDisplayMode) {
         termDisplayMode = st.segments.termDisplayMode;
         if (termDisplayModeSel) termDisplayModeSel.value = termDisplayMode;
+      }
+      if (typeof st.segments.showZeroRows === 'boolean') {
+        showZeroRows = st.segments.showZeroRows;
+        if (showZeroRowsToggle) showZeroRowsToggle.checked = showZeroRows;
       }
       if (Array.isArray(st.segments.extraTerms)) {
         extraTerms = st.segments.extraTerms.filter(Boolean);
@@ -1724,6 +1737,53 @@
         const g = play.genre || 'unknown';
         genreTotals.set(g, (genreTotals.get(g) || 0) + (play.total_words || 0));
       });
+    }
+    if (showZeroRows && granVal !== 'line') {
+      if (granVal === 'scene') {
+        chunks.forEach(m => {
+          ensureRow(m.scene_id, () => {
+            const totalWords = m.total_words || 0;
+            const ngramCount = Math.max(0, totalWords - (n - 1));
+            return { id: m.canonical_id, play_title: m.play_title, genre:m.genre, play_id:m.play_id, act:m.act, scene:m.scene, total_words:totalWords, ngram_count:ngramCount, scene_id: m.scene_id, act_label: m.act_label, scene_label: m.scene_label };
+          });
+        });
+      } else if (granVal === 'act') {
+        for (const [k, total_words] of actTotals.entries()) {
+          const [pidStr, actNumStr] = k.split(':');
+          const pid = parseInt(pidStr, 10);
+          const actNum = parseInt(actNumStr, 10);
+          const play = playsById.get(pid);
+          if (!play) continue;
+          ensureRow(k, () => {
+            const ngramCount = Math.max(0, total_words - (n - 1));
+            return { id: `${play.abbr}.${actNum}`, play_title: play.title, genre:play.genre, play_id:pid, act:actNum, total_words, ngram_count:ngramCount };
+          });
+        }
+      } else if (granVal === 'play') {
+        plays.forEach(p => {
+          ensureRow(p.play_id, () => {
+            const total_words = p.total_words ?? 0;
+            const ngramCount = Math.max(0, total_words - (n - 1));
+            return { id:p.abbr, play_id:p.play_id, title:p.title, genre:p.genre, first_year:p.first_performance_year||'', num_lines:p.total_lines ?? 0, total_words, ngram_count:ngramCount };
+          });
+        });
+      } else if (granVal === 'genre') {
+        for (const [genre, totalWords] of genreTotals.entries()) {
+          ensureRow(genre, () => {
+            const ngramCount = Math.max(0, totalWords - (n - 1));
+            return { genre, total_words: totalWords, ngram_count:ngramCount };
+          });
+        }
+      } else if (granVal === 'character') {
+        characters.forEach(c => {
+          ensureRow(c.character_id, () => {
+            const totalWords = c.total_words_spoken || 0;
+            const ngramCount = Math.max(0, totalWords - (n - 1));
+            const gender = (c.gender ?? c.sex ?? 'A').toString().toUpperCase();
+            return { play_title:c.play_title, name:c.name, gender, total_words_spoken:totalWords, ngram_count:ngramCount };
+          });
+        });
+      }
     }
 
     if (granVal === 'line') {
@@ -2310,7 +2370,8 @@
       ngramMode: ngramMode.value,
       gran: gran.value,
       matchMode: matchMode.value,
-      termDisplayMode
+      termDisplayMode,
+      showZeroRows
     };
     const currentExtras = extraTerms.map(normalizeTerm).filter(Boolean).sort();
     const lastExtras = (lastSegmentsState.extraTerms || []).map(normalizeTerm).filter(Boolean).sort();
@@ -2321,6 +2382,7 @@
       currentState.gran !== lastSegmentsState.gran ||
       currentState.matchMode !== lastSegmentsState.matchMode ||
       currentState.termDisplayMode !== lastSegmentsState.termDisplayMode ||
+      currentState.showZeroRows !== lastSegmentsState.showZeroRows ||
       currentExtras.join('|') !== lastExtras.join('|');
     
     segmentsPendingChanges = hasChanges;
@@ -2347,6 +2409,7 @@
       gran: gran.value,
       matchMode: matchMode.value,
       termDisplayMode,
+      showZeroRows,
       extraTerms: [...extraTerms]
     };
     segmentsPendingChanges = false;
@@ -2851,6 +2914,13 @@
   document.querySelectorAll('.color-scale-toggle').forEach(cb => {
     cb.addEventListener('change', (e) => setColorScaleEnabled(e.target.checked));
   });
+  if (showZeroRowsToggle) {
+    showZeroRowsToggle.addEventListener('change', (e) => {
+      showZeroRows = e.target.checked;
+      checkSegmentsPendingChanges();
+      doSearch();
+    });
+  }
   if (termDisplayModeSel) {
     termDisplayModeSel.addEventListener('change', (e) => {
       termDisplayMode = e.target.value || 'both';
@@ -2869,6 +2939,7 @@
   syncColorScaleToggles();
   syncColorScaleOptions();
   renderAllLegends();
+  if (showZeroRowsToggle) showZeroRowsToggle.checked = showZeroRows;
   // Highlight toggle handlers
   document.querySelectorAll('.highlight-toggle').forEach(cb => {
     cb.addEventListener('change', (e) => { setHighlightEnabled(e.target.checked); updateDeepLink(); });
