@@ -83,6 +83,13 @@
       background: #6d1028;
       box-shadow: 0 2px 4px var(--shadow);
     }
+    .download-btn {
+      background: #0f5b4d;
+      border-color: #0f5b4d;
+    }
+    .download-btn:hover {
+      background: #0b4a3e;
+    }
     select:hover {
       border-color: var(--burgundy);
     }
@@ -402,6 +409,7 @@
             <option value="pct">% only</option>
           </select>
         </label>
+        <button id="downloadSegmentsCsv" class="download-btn" type="button">Download CSV</button>
         <div class="color-scale-options">
           <label>Palette:
             <select class="color-scale-palette">
@@ -559,6 +567,7 @@
       <div style="margin-bottom: 0.5rem; display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
         <label><input type="checkbox" class="color-scale-toggle" checked> Color scale numeric columns</label>
         <label><input type="checkbox" class="highlight-toggle" checked> Highlight matching line text</label>
+        <button id="downloadLinesCsv" class="download-btn" type="button">Download CSV</button>
         <div class="color-scale-options">
           <label>Palette:
             <select class="color-scale-palette">
@@ -1433,6 +1442,46 @@
     }
     out += escapeHTML(s.slice(last));
     return out;
+  }
+  function toCsvValue(val) {
+    const s = String(val ?? '');
+    if (/[",\n]/.test(s)) return `"${s.replace(/"/g, '""')}"`;
+    return s;
+  }
+  function downloadCsv(filename, rows) {
+    const csv = rows.map(r => r.map(toCsvValue).join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+  function downloadTableCsv(tableSelector, filename) {
+    const table = document.querySelector(tableSelector);
+    if (!table) return;
+    const rows = [];
+    const thead = table.querySelector('thead');
+    if (thead) {
+      const headRow = [];
+      thead.querySelectorAll('th').forEach(th => {
+        const label = th.childNodes[0]?.textContent || th.textContent || '';
+        headRow.push(label.replace('⚙','').trim());
+      });
+      if (headRow.length) rows.push(headRow);
+    }
+    table.querySelectorAll('tbody tr').forEach(tr => {
+      const row = [];
+      tr.querySelectorAll('td').forEach(td => {
+        row.push(td.textContent.trim());
+      });
+      rows.push(row);
+    });
+    if (rows.length <= 1) return;
+    downloadCsv(filename, rows);
   }
   function countRegexMatches(text, re) {
     if (!re) return 0;
@@ -2806,6 +2855,14 @@
   });
   syncHighlightToggles();
 
+  const downloadSegBtn = document.getElementById('downloadSegmentsCsv');
+  if (downloadSegBtn) {
+    downloadSegBtn.addEventListener('click', () => {
+      const name = `segments-${gran.value}-${Date.now()}.csv`;
+      downloadTableCsv('#results', name);
+    });
+  }
+
   // Lines tab state
   let linesCurrentPage = 1;
   let linesPageSize = 50;
@@ -3117,6 +3174,13 @@
   document.getElementById('linesQuery').addEventListener('input', () => { checkLinesPendingChanges(); debouncedDoLinesSearch(); });
   document.getElementById('linesNgramMode').addEventListener('change', () => { checkLinesPendingChanges(); doLinesSearch(); });
   document.getElementById('linesMatchMode').addEventListener('change', () => { checkLinesPendingChanges(); doLinesSearch(); });
+  const downloadLinesBtn = document.getElementById('downloadLinesCsv');
+  if (downloadLinesBtn) {
+    downloadLinesBtn.addEventListener('click', () => {
+      const name = `lines-${Date.now()}.csv`;
+      downloadTableCsv('#linesResults', name);
+    });
+  }
 
   // Lines pagination controls
   document.getElementById('linesFirstPage').addEventListener('click', () => {
