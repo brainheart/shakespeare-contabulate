@@ -1679,6 +1679,8 @@
           play_title: (playsById.get(ln.play_id) || {}).title || '',
           act: ln.act,
           scene: ln.scene,
+          act_label: ln.act_label,
+          scene_label: ln.scene_label,
           line_num: ln.line_num,
           speaker: ln.speaker || '',
           line: clean
@@ -2030,7 +2032,11 @@
       const tr = document.createElement('tr');
       cols.forEach((k, idx) => {
         const td = document.createElement('td');
-        if (k === 'pct' || k.endsWith('_pct')) {
+        if (k === 'act' && r.act_label) {
+          td.textContent = r.act_label;
+        } else if (k === 'scene' && r.scene_label) {
+          td.textContent = r.scene_label;
+        } else if (k === 'pct' || k.endsWith('_pct')) {
           td.textContent = fmtPct(r[k]||0);
         } else if (k === 'line' && r.line_html) {
           td.innerHTML = r.line_html;
@@ -2991,10 +2997,12 @@
     tbody.innerHTML = '';
     for (const row of paginatedRows) {
       const tr = document.createElement('tr');
+      const actVal = row.act_label || row.act;
+      const sceneVal = row.scene_label || row.scene;
       tr.innerHTML = `
         <td>${row.play_title}</td>
-        <td>${row.act}</td>
-        <td>${row.scene}</td>
+        <td>${actVal}</td>
+        <td>${sceneVal}</td>
         <td>${row.line_num}</td>
         <td>${row.speaker}</td>
         <td class="line-text">${row.text}</td>

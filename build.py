@@ -55,28 +55,190 @@ def parse_play(path: Path, play_id: int, metadata: dict = None):
     tokens_char2_tmp = {}
     tokens_char3_tmp = {}
 
+    def div_type(e):
+        return (e.attrib.get("type","") or "").lower()
     def is_div_type(e, typ):
-        return localname(e.tag) == "div" and e.attrib.get("type","").lower()==typ
-    acts = [e for e in root.iter() if is_div_type(e,"act")]
-    if not acts: acts = [root]
+        return localname(e.tag) == "div" and div_type(e) == typ
+    special_types = {"prologue", "epilogue", "induction", "chorus"}
+    body = None
+    for e in root.iter():
+        if localname(e.tag) == "body":
+            body = e
+            break
+    top_divs = [e for e in list(body) if localname(e.tag) == "div"] if body is not None else []
+    sections = [e for e in top_divs if localname(e.tag) == "div" and (is_div_type(e, "act") or div_type(e) in special_types)]
+    used_root_fallback = False
+    if not sections:
+        acts = [e for e in root.iter() if is_div_type(e, "act")]
+        if acts:
+            sections = acts
+        else:
+            sections = [root]
+            used_root_fallback = True
 
     scene_seq = 0
     play_num_scenes = play_total_words = play_total_lines = play_num_speeches = 0
+    act_total = sum(1 for e in sections if is_div_type(e, "act")) or (1 if used_root_fallback else 0)
+    act_idx = 0
+    epilogue_idx = 0
+    special_scene_idx = 0
 
-    for act_idx, act in enumerate(acts, start=1):
-        scs = [e for e in act.iter() if is_div_type(e,"scene")]
-        if not scs: scs = [act]
-        for scene_idx, scene in enumerate(scs, start=1):
+    for section in sections:
+        section_type = div_type(section) if localname(section.tag) == "div" else "act"
+        if section_type == "act":
+            act_idx += 1
+            act_sort_act = act_idx
+            act_scene_idx = 0
+            act_label = None
+            child_divs = [e for e in list(section) if localname(e.tag) == "div"]
+            scs = [e for e in child_divs if is_div_type(e, "scene") or div_type(e) in special_types]
+            if not scs:
+                scs = [section]
+            for scene in scs:
+                scene_type = div_type(scene) if localname(scene.tag) == "div" else "scene"
+                if scene_type in special_types:
+                    act_label = scene_type.capitalize()
+                    if scene_type == "epilogue":
+                        epilogue_idx += 1
+                        act_sort = act_total + epilogue_idx
+                    else:
+                        act_sort = 0
+                    special_scene_idx += 1
+                    scene_idx = special_scene_idx
+                    scene_label = act_label
+                else:
+                    act_scene_idx += 1
+                    act_sort = act_sort_act
+                    act_label = None
+                    scene_label = None
+                    scene_idx = act_scene_idx
+                scene_seq += 1
+                scene_id = play_id * 1000 + scene_seq
+                scene_canonical_id = f"{play_abbr}.{act_sort}.{scene_idx}"
+                play_num_scenes += 1
+                heading = None
+                for h in scene:
+                    if localname(h.tag) in ("head","stage"):
+                        heading = (text_of(h) or "").strip()
+                        if heading: break
+                if not heading:
+                    if scene_label:
+                        heading = scene_label
+                    else:
+                        heading = f"Act {act_sort}, Scene {scene_idx}"
+                speeches = [e for e in scene.iter() if localname(e.tag) == "sp"]
+                num_speeches = len(speeches); play_num_speeches += num_speeches
+                num_lines = 0; char_set=set()
+                scene_unigrams={}; scene_bigrams={}; scene_trigrams={}; scene_lines=[]; line_idx=0
+                for sp in speeches:
+                    speaker_elems = [e for e in sp if localname(e.tag) == "speaker"]
+                    speakers = []
+                    for se in speaker_elems:
+                        nm = (text_of(se) or "").strip()
+                        if nm: speakers.append(nm); char_set.add(nm)
+                    # ensure character aggregates exist for the speakers before counting lines
+                    if not speakers:
+                        speakers = ["UNKNOWN"]
+                        char_set.add("UNKNOWN")
+                    for nm in speakers:
+                        key = (play_id, nm)
+                        if key not in characters:
+                            characters[key] = {"character_id": None, "play_id": play_id, "play_title": title, "name": nm,
+                                               "total_words_spoken": 0, "num_speeches": 0, "num_lines": 0, "scenes_appeared_in": set()}
+                        # count this speech for each named speaker
+                        characters[key]["num_speeches"] += 1
+
+                    lines = [e for e in sp if localname(e.tag) in ("l","p")]
+                    if not lines: lines = [sp]
+                    for ln in lines:
+                        t = (text_of(ln) or "").strip()
+                        if not t: continue
+                        line_idx += 1
+                        line_canonical_id = f"{play_abbr}.{act_sort}.{scene_idx}.{line_idx}"
+                        line_row = {"line_id": line_idx, "canonical_id": line_canonical_id, "speaker": (speakers[0] if speakers else "UNKNOWN") or "UNKNOWN", "text": t}
+                        if act_label: line_row["act_label"] = act_label
+                        if scene_label: line_row["scene_label"] = scene_label
+                        scene_lines.append(line_row)
+                        num_lines += 1
+                        toks = tokenize(t)
+                        for tok in toks:
+                            scene_unigrams[tok] = scene_unigrams.get(tok,0)+1
+                            for nm in speakers:
+                                d = tokens_char_tmp.setdefault((play_id,nm),{})
+                                d[tok] = d.get(tok,0)+1
+                                # update per-character line/word counts and scene membership
+                                agg = characters.get((play_id, nm))
+                                if agg is not None:
+                                    agg["total_words_spoken"] += 1
+                                    agg["num_lines"] += 1
+                                    agg["scenes_appeared_in"].add(scene_id)
+                        for i in range(len(toks)-1):
+                            bg = toks[i] + " " + toks[i+1]
+                            scene_bigrams[bg] = scene_bigrams.get(bg,0)+1
+                            for nm in speakers:
+                                d2 = tokens_char2_tmp.setdefault((play_id,nm), {})
+                                d2[bg] = d2.get(bg,0)+1
+                        for i in range(len(toks)-2):
+                            tg = toks[i] + " " + toks[i+1] + " " + toks[i+2]
+                            scene_trigrams[tg] = scene_trigrams.get(tg,0)+1
+                            for nm in speakers:
+                                d3 = tokens_char3_tmp.setdefault((play_id,nm), {})
+                                d3[tg] = d3.get(tg,0)+1
+                    for nm in speakers or ["UNKNOWN"]:
+                        key = (play_id, nm)
+                        agg = characters.get(key)
+                        if not agg:
+                            agg = {"character_id": None, "play_id": play_id, "play_title": title, "name": nm,
+                                   "total_words_spoken": 0, "num_speeches": 0, "num_lines": 0, "scenes_appeared_in": set()}
+                            characters[key] = agg
+                        # num_speeches already incremented above when speech began
+                total_words = sum(scene_unigrams.values())
+                unique_words = len(scene_unigrams)
+                play_total_words += total_words
+                play_total_lines += num_lines
+                scene_row = {"scene_id": scene_id, "canonical_id": scene_canonical_id, "play_id": play_id, "play_title": title, "genre": genre,
+                               "act": act_sort, "scene": scene_idx, "heading": heading, "total_words": total_words,
+                               "unique_words": unique_words, "num_speeches": num_speeches, "num_lines": num_lines,
+                               "characters_present_count": len(char_set)}
+                if act_label: scene_row["act_label"] = act_label
+                if scene_label: scene_row["scene_label"] = scene_label
+                scenes.append(scene_row)
+                lines_map[scene_id] = scene_lines
+                for tok, cnt in scene_unigrams.items():
+                    token_idx.setdefault(tok, []).append((scene_id, cnt))
+                for key, cnt in scene_bigrams.items():
+                    token2_idx.setdefault(key, []).append((scene_id, cnt))
+                for key, cnt in scene_trigrams.items():
+                    token3_idx.setdefault(key, []).append((scene_id, cnt))
+            continue
+        elif section_type in special_types:
+            act_label = section_type.capitalize()
+            if section_type == "epilogue":
+                epilogue_idx += 1
+                act_sort = act_total + epilogue_idx
+            else:
+                act_sort = 0
+            special_scene_idx += 1
+            scene_idx = special_scene_idx
+            scene_label = act_label
+            scs = [section]
+        else:
+            continue
+        for scene in scs:
             scene_seq += 1
             scene_id = play_id * 1000 + scene_seq
-            scene_canonical_id = f"{play_abbr}.{act_idx}.{scene_idx}"
+            scene_canonical_id = f"{play_abbr}.{act_sort}.{scene_idx}"
             play_num_scenes += 1
             heading = None
             for h in scene:
                 if localname(h.tag) in ("head","stage"):
                     heading = (text_of(h) or "").strip()
                     if heading: break
-            if not heading: heading = f"Act {act_idx}, Scene {scene_idx}"
+            if not heading:
+                if scene_label:
+                    heading = scene_label
+                else:
+                    heading = f"Act {act_sort}, Scene {scene_idx}"
             speeches = [e for e in scene.iter() if localname(e.tag) == "sp"]
             num_speeches = len(speeches); play_num_speeches += num_speeches
             num_lines = 0; char_set=set()
@@ -105,8 +267,11 @@ def parse_play(path: Path, play_id: int, metadata: dict = None):
                     t = (text_of(ln) or "").strip()
                     if not t: continue
                     line_idx += 1
-                    line_canonical_id = f"{play_abbr}.{act_idx}.{scene_idx}.{line_idx}"
-                    scene_lines.append({"line_id": line_idx, "canonical_id": line_canonical_id, "speaker": (speakers[0] if speakers else "UNKNOWN") or "UNKNOWN", "text": t})
+                    line_canonical_id = f"{play_abbr}.{act_sort}.{scene_idx}.{line_idx}"
+                    line_row = {"line_id": line_idx, "canonical_id": line_canonical_id, "speaker": (speakers[0] if speakers else "UNKNOWN") or "UNKNOWN", "text": t}
+                    if act_label: line_row["act_label"] = act_label
+                    if scene_label: line_row["scene_label"] = scene_label
+                    scene_lines.append(line_row)
                     num_lines += 1
                     toks = tokenize(t)
                     for tok in toks:
@@ -144,10 +309,13 @@ def parse_play(path: Path, play_id: int, metadata: dict = None):
             unique_words = len(scene_unigrams)
             play_total_words += total_words
             play_total_lines += num_lines
-            scenes.append({"scene_id": scene_id, "canonical_id": scene_canonical_id, "play_id": play_id, "play_title": title, "genre": genre,
-                           "act": act_idx, "scene": scene_idx, "heading": heading, "total_words": total_words,
+            scene_row = {"scene_id": scene_id, "canonical_id": scene_canonical_id, "play_id": play_id, "play_title": title, "genre": genre,
+                           "act": act_sort, "scene": scene_idx, "heading": heading, "total_words": total_words,
                            "unique_words": unique_words, "num_speeches": num_speeches, "num_lines": num_lines,
-                           "characters_present_count": len(char_set)})
+                           "characters_present_count": len(char_set)}
+            if act_label: scene_row["act_label"] = act_label
+            if scene_label: scene_row["scene_label"] = scene_label
+            scenes.append(scene_row)
             lines_map[scene_id] = scene_lines
             for tok, cnt in scene_unigrams.items():
                 token_idx.setdefault(tok, []).append((scene_id, cnt))
@@ -156,7 +324,7 @@ def parse_play(path: Path, play_id: int, metadata: dict = None):
             for key, cnt in scene_trigrams.items():
                 token3_idx.setdefault(key, []).append((scene_id, cnt))
     play_row = {"play_id": play_id, "title": title, "abbr": play_abbr, "genre": genre, "first_performance_year": first_year,
-                "num_acts": len(acts) if acts else 0, "num_scenes": play_num_scenes, "num_speeches": play_num_speeches,
+                "num_acts": act_total, "num_scenes": play_num_scenes, "num_speeches": play_num_speeches,
                 "total_words": play_total_words, "total_lines": play_total_lines}
     return scenes, lines_map, token_idx, token2_idx, token3_idx, characters, tokens_char_tmp, tokens_char2_tmp, tokens_char3_tmp, play_row
 
@@ -213,6 +381,8 @@ def build(tei_dir: Path, out_dir: Path):
             sid = scene["scene_id"]
             act = scene["act"]
             scene_num = scene["scene"]
+            act_label = scene.get("act_label")
+            scene_label = scene.get("scene_label")
             scene_lines = lines_map.get(sid, [])
             
             # Save per-scene file
@@ -230,6 +400,10 @@ def build(tei_dir: Path, out_dir: Path):
                     "speaker": line_data["speaker"],
                     "text": line_data["text"]
                 })
+                if act_label:
+                    all_lines[-1]["act_label"] = act_label
+                if scene_label:
+                    all_lines[-1]["scene_label"] = scene_label
         for dsrc, ddst in ((token_idx, token_idx_all),(token2_idx, token2_idx_all),(token3_idx, token3_idx_all)):
             for tok, lst in dsrc.items(): ddst.setdefault(tok, []).extend(lst)
         # finalize characters: assign ids and convert sets to lists
