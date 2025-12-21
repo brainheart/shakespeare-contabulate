@@ -55,6 +55,40 @@ def parse_play(path: Path, play_id: int, metadata: dict = None):
     tokens_char2_tmp = {}
     tokens_char3_tmp = {}
 
+    def split_p_by_lb(p_elem):
+        lines = []
+        cur = p_elem.text or ""
+        for child in p_elem:
+            if localname(child.tag) == "lb":
+                text = cur.strip()
+                if text:
+                    lines.append(text)
+                cur = child.tail or ""
+            else:
+                cur += text_of(child)
+        text = cur.strip()
+        if text:
+            lines.append(text)
+        return lines
+
+    def iter_sp_line_texts(sp_elem):
+        elems = [e for e in sp_elem if localname(e.tag) in ("l", "p")]
+        if not elems:
+            elems = [sp_elem]
+        for ln in elems:
+            if localname(ln.tag) == "p":
+                parts = split_p_by_lb(ln)
+                if not parts:
+                    t = (text_of(ln) or "").strip()
+                    if t:
+                        parts = [t]
+                for part in parts:
+                    yield part
+            else:
+                t = (text_of(ln) or "").strip()
+                if t:
+                    yield t
+
     def div_type(e):
         return (e.attrib.get("type","") or "").lower()
     def is_div_type(e, typ):
@@ -148,11 +182,7 @@ def parse_play(path: Path, play_id: int, metadata: dict = None):
                         # count this speech for each named speaker
                         characters[key]["num_speeches"] += 1
 
-                    lines = [e for e in sp if localname(e.tag) in ("l","p")]
-                    if not lines: lines = [sp]
-                    for ln in lines:
-                        t = (text_of(ln) or "").strip()
-                        if not t: continue
+                    for t in iter_sp_line_texts(sp):
                         line_idx += 1
                         line_canonical_id = f"{play_abbr}.{act_sort}.{scene_idx}.{line_idx}"
                         line_row = {"line_id": line_idx, "canonical_id": line_canonical_id, "speaker": (speakers[0] if speakers else "UNKNOWN") or "UNKNOWN", "text": t}
@@ -261,11 +291,7 @@ def parse_play(path: Path, play_id: int, metadata: dict = None):
                     # count this speech for each named speaker
                     characters[key]["num_speeches"] += 1
 
-                lines = [e for e in sp if localname(e.tag) in ("l","p")]
-                if not lines: lines = [sp]
-                for ln in lines:
-                    t = (text_of(ln) or "").strip()
-                    if not t: continue
+                for t in iter_sp_line_texts(sp):
                     line_idx += 1
                     line_canonical_id = f"{play_abbr}.{act_sort}.{scene_idx}.{line_idx}"
                     line_row = {"line_id": line_idx, "canonical_id": line_canonical_id, "speaker": (speakers[0] if speakers else "UNKNOWN") or "UNKNOWN", "text": t}

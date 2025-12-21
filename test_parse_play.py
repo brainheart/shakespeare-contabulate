@@ -1,4 +1,5 @@
 import unittest
+import tempfile
 from pathlib import Path
 import build
 
@@ -29,6 +30,23 @@ class ParsePlaySmokeTest(unittest.TestCase):
         scenes, lines_map, token_idx, token2_idx, token3_idx, characters, tokens_char_tmp, tokens_char2_tmp, tokens_char3_tmp, play_row = build.parse_play(tei, 1)
         labels = {s.get("act_label") for s in scenes if s.get("act_label")}
         self.assertIn("Epilogue", labels)
+
+    def test_prose_lb_counts_as_lines(self):
+        xml = '''<TEI><text><body><div type="act"><div type="scene"><sp><speaker>Test</speaker><p>One<lb/>Two<lb/>Three</p></sp></div></div></body></text></TEI>'''
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".xml", delete=False) as tmp:
+            tmp.write(xml)
+            tmp_path = Path(tmp.name)
+        try:
+            scenes, lines_map, token_idx, token2_idx, token3_idx, characters, tokens_char_tmp, tokens_char2_tmp, tokens_char3_tmp, play_row = build.parse_play(tmp_path, 1)
+            self.assertEqual(len(scenes), 1)
+            scene_id = scenes[0]["scene_id"]
+            scene_lines = lines_map.get(scene_id, [])
+            self.assertEqual(len(scene_lines), 3)
+            self.assertEqual(scene_lines[0]["text"], "One")
+            self.assertEqual(scene_lines[1]["text"], "Two")
+            self.assertEqual(scene_lines[2]["text"], "Three")
+        finally:
+            tmp_path.unlink(missing_ok=True)
 
 if __name__ == '__main__':
     unittest.main()
