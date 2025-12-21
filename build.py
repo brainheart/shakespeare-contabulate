@@ -372,7 +372,7 @@ def build(tei_dir: Path, out_dir: Path):
     # Load optional character metadata (e.g., gender) keyed by (play_id, name)
     char_meta_path = Path(__file__).parent / "character_metadata.json"
     def _norm_name(s: str) -> str:
-        return (s or "").upper().strip().replace("\n", " ").replace("\r", " ")
+        return re.sub(r"\s+", " ", (s or "").upper().strip())
     character_meta_map = {}
     if char_meta_path.exists():
         try:
