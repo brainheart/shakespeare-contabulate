@@ -1531,6 +1531,47 @@
     }
     return count;
   }
+  function tokenizeLineText(text) {
+    return String(text || '')
+      .toLowerCase()
+      .replace(/[.,;:!?()[\]{}"']/g, ' ')
+      .split(/\s+/)
+      .filter(Boolean);
+  }
+  function getLineTokens(line) {
+    if (!line) return [];
+    if (!line._tokensCache) {
+      line._tokensCache = tokenizeLineText(line.text);
+    }
+    return line._tokensCache;
+  }
+  function getLineNgrams(line, n) {
+    if (!line) return [];
+    if (!line._ngramsCache) line._ngramsCache = {};
+    if (!line._ngramsCache[n]) {
+      const toks = getLineTokens(line);
+      const out = [];
+      for (let i = 0; i <= toks.length - n; i++) {
+        out.push(toks.slice(i, i + n).join(' '));
+      }
+      line._ngramsCache[n] = out;
+    }
+    return line._ngramsCache[n];
+  }
+  function escapeRegexText(s) {
+    return String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+  function buildHighlightRegexFromNgrams(ngrams) {
+    if (!Array.isArray(ngrams) || ngrams.length === 0) return null;
+    const parts = [];
+    for (const ng of ngrams) {
+      const tokens = ng.split(' ').filter(Boolean).map(escapeRegexText);
+      if (tokens.length === 0) continue;
+      parts.push('\\b' + tokens.join('\\s+') + '\\b');
+    }
+    if (parts.length === 0) return null;
+    return new RegExp(parts.join('|'), 'gi');
+  }
 
   // Simple debounce helper for responsive UI without spamming renders
   function debounce(fn, wait = 250) {
@@ -2977,51 +3018,49 @@
 
     const rows = [];
     
-    // Build search pattern
-    let searchPattern;
+    let searchPattern = null;
     if (isRegex) {
       try {
         searchPattern = new RegExp(query, 'i');
       } catch (e) {
         return null;
       }
-    } else {
-      // For exact term matching, create tokens from the line and check for n-gram match
-      const queryTokens = query.trim().toLowerCase().split(/\s+/).filter(Boolean).slice(0, n);
-      const queryNgram = queryTokens.join(' ');
-      searchPattern = { type: 'exact', ngram: queryNgram, n };
     }
+    const queryTokens = query.trim().toLowerCase().split(/\s+/).filter(Boolean).slice(0, n);
+    const queryNgram = queryTokens.join(' ');
 
     // Search through lines
     for (const line of allLines) {
       
       let matches = false;
       let highlightedText = line.text;
+      const ngrams = getLineNgrams(line, n);
 
       if (isRegex) {
-        matches = searchPattern.test(line.text);
+        const re = new RegExp(searchPattern.source, searchPattern.flags.replace('g',''));
+        let count = 0;
+        const matchedNgrams = [];
+        for (const ng of ngrams) {
+          if (re.test(ng)) {
+            count++;
+            if (matchedNgrams.length <= 60) matchedNgrams.push(ng);
+          }
+        }
+        matches = count > 0;
         if (matches && highlightEnabled) {
-          highlightedText = line.text.replace(searchPattern, match => `<span class="hit">${match}</span>`);
+          const hl = matchedNgrams.length > 50 ? null : buildHighlightRegexFromNgrams(matchedNgrams);
+          highlightedText = hl ? highlightHTML(line.text, hl) : line.text;
         }
       } else {
-        // Tokenize the line
-        const lineTokens = line.text.toLowerCase()
-          .replace(/[.,;:!?()[\]{}"']/g, ' ')
-          .split(/\s+/)
-          .filter(Boolean);
-        
-        // Check for n-gram match
-        for (let i = 0; i <= lineTokens.length - n; i++) {
-          const ngram = lineTokens.slice(i, i + n).join(' ');
-          if (ngram === searchPattern.ngram) {
-            matches = true;
-            // Highlight the match in the original text
-            const matchWords = lineTokens.slice(i, i + n);
-            let tempText = line.text;
-            const regex = new RegExp(matchWords.map(w => '\\b' + w + '\\b').join('\\s+'), 'gi');
-            highlightedText = highlightEnabled ? tempText.replace(regex, match => `<span class="hit">${match}</span>`) : tempText;
-            break;
-          }
+        if (!queryNgram) return null;
+        let count = 0;
+        for (const ng of ngrams) {
+          if (ng === queryNgram) count++;
+        }
+        matches = count > 0;
+        if (matches && highlightEnabled) {
+          const hl = buildHighlightRegexFromNgrams([queryNgram]);
+          highlightedText = hl ? highlightHTML(line.text, hl) : line.text;
         }
       }
 
