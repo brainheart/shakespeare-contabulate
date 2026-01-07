@@ -222,8 +222,8 @@
     }
     .hit { 
       background: rgba(212, 175, 55, 0.3);
-      padding: 0 0.2rem;
       border-radius: 2px;
+      box-shadow: 0 0 0 0.12em rgba(212, 175, 55, 0.3);
     }
     .sr { 
       font-size: 0.95rem;
@@ -1532,11 +1532,8 @@
     return count;
   }
   function tokenizeLineText(text) {
-    return String(text || '')
-      .toLowerCase()
-      .replace(/[.,;:!?()[\]{}"']/g, ' ')
-      .split(/\s+/)
-      .filter(Boolean);
+    const m = String(text || '').toLowerCase().match(/[a-z]+/g);
+    return m ? m : [];
   }
   function getLineTokens(line) {
     if (!line) return [];
@@ -1833,11 +1830,13 @@
         tbody.innerHTML = '<tr><td class="muted">Lines data not available.</td></tr>';
         return null;
       }
-      const lineRegexes = [];
+      const lineMatchers = [];
       if (isRegex) {
         for (const term of activeTerms) {
-          try { lineRegexes.push(new RegExp(term.trim(), 'gi')); }
-          catch (e) {
+          try {
+            const re = new RegExp(term.trim(), 'i');
+            lineMatchers.push({ type: 'regex', re });
+          } catch (e) {
             theadRow.innerHTML = '';
             tbody.innerHTML = `<tr><td class="warning">Invalid regex: ${e.message}</td></tr>`;
             return null;
@@ -1846,14 +1845,10 @@
       } else {
         activeTerms.forEach(term => {
           const terms = term.trim().toLowerCase().split(/\s+/).filter(Boolean).slice(0, n);
-          if (terms.length === 0) { lineRegexes.push(null); return; }
-          const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-          const pat = '\\b' + terms.map(esc).join('\\s+') + '\\b';
-          lineRegexes.push(new RegExp(pat, 'gi'));
+          if (terms.length === 0) { lineMatchers.push({ type: 'exact', ngram: null }); return; }
+          lineMatchers.push({ type: 'exact', ngram: terms.join(' ') });
         });
       }
-      const highlightParts = lineRegexes.filter(Boolean).map(r => r.source);
-      const highlightRe = (!highlightEnabled || highlightParts.length === 0) ? null : new RegExp(highlightParts.join('|'), 'gi');
 
       for (const ln of allLines) {
         const clean = (ln.text || '').toString().replace(/\s+/g, ' ').trim();
@@ -1870,16 +1865,33 @@
           speaker: ln.speaker || '',
           line: clean
         };
-        lineRegexes.forEach((re, idx) => {
-          if (!re) return;
-          const c = countRegexMatches(clean, re);
+        const ngrams = getLineNgrams(ln, n);
+        const matchedNgrams = [];
+        lineMatchers.forEach((m, idx) => {
+          if (!m) return;
+          let c = 0;
+          if (m.type === 'regex' && m.re) {
+            const re = new RegExp(m.re.source, m.re.flags.replace('g', ''));
+            for (const ng of ngrams) {
+              if (re.test(ng)) {
+                c++;
+                if (matchedNgrams.length <= 80) matchedNgrams.push(ng);
+              }
+            }
+          } else if (m.type === 'exact' && m.ngram) {
+            for (const ng of ngrams) if (ng === m.ngram) c++;
+            if (c > 0 && matchedNgrams.length <= 80) matchedNgrams.push(m.ngram);
+          }
           if (c > 0) {
             hasTerm = true;
             row[`${termKeys[idx]}_count`] = c;
           }
         });
         if (hasTerm) {
-          row.line_html = highlightRe ? highlightHTML(clean, highlightRe) : escapeHTML(clean);
+          const hl = (!highlightEnabled || matchedNgrams.length === 0 || matchedNgrams.length > 60)
+            ? null
+            : buildHighlightRegexFromNgrams(matchedNgrams);
+          row.line_html = hl ? highlightHTML(clean, hl) : escapeHTML(clean);
           rowsMap.set(row.id, row);
         }
       }
