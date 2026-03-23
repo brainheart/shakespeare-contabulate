@@ -700,12 +700,14 @@
 
   renderExtraTerms();
 
-  // Precompute act/play totals (must be before applyStateFromURL which may call doSearch→denomFor)
+  // Precompute act/play totals and act scene counts (must be before applyStateFromURL which may call doSearch→denomFor)
   const actTotals = new Map();
+  const actSceneCounts = new Map();
   const playTotals = new Map();
   for (const r of chunks) {
     const k = `${r.play_id}:${r.act}`;
     actTotals.set(k, (actTotals.get(k)||0) + (r.total_words||0));
+    actSceneCounts.set(k, (actSceneCounts.get(k)||0) + 1);
     playTotals.set(r.play_id, (playTotals.get(r.play_id)||0) + (r.total_words||0));
   }
 
@@ -1202,7 +1204,7 @@
           if (!play) continue;
           ensureRow(k, () => {
             const ngramCount = Math.max(0, total_words - (n - 1));
-            return { id: `${play.abbr}.${actNum}`, play_title: play.title, genre:play.genre, play_id:pid, act:actNum, total_words, ngram_count:ngramCount };
+            return { id: `${play.abbr}.${actNum}`, play_title: play.title, genre:play.genre, play_id:pid, act:actNum, num_scenes: actSceneCounts.get(k) || 0, total_words, ngram_count:ngramCount };
           });
         }
       } else if (granVal === 'play') {
@@ -1347,6 +1349,7 @@
         {key:'id', label:'Location', defaultDir:'asc', type:'text'},
         {key:'play_title', label:'Play', defaultDir:'asc', type:'text'},
         {key:'act', label:'Act', type:'number'},
+        {key:'num_scenes', label:'# scenes', type:'number'},
         {key:'ngram_count', label: n===1 ? 'Word count' : n===2 ? 'Bigram count' : 'Trigram count', type:'number'}
       ];
       activeTerms.forEach((term, termIdx) => {
@@ -1366,7 +1369,7 @@
           const row = ensureRow(k, () => {
             const total_words = actTotals.get(k) || 0;
             const ngramCount = Math.max(0, total_words - (n - 1));
-            return { id: `${play.abbr}.${actNum}`, play_title: play.title, genre:play.genre, play_id:pid, act:actNum, total_words, ngram_count:ngramCount };
+            return { id: `${play.abbr}.${actNum}`, play_title: play.title, genre:play.genre, play_id:pid, act:actNum, num_scenes: actSceneCounts.get(k) || 0, total_words, ngram_count:ngramCount };
           });
           const d = denomFor(n,'act',{play_id:pid,act:actNum});
           row[`${termKeys[termIdx]}_count`] = count;

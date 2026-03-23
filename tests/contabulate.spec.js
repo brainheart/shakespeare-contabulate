@@ -1,5 +1,12 @@
 // @ts-check
 const { test, expect } = require('@playwright/test');
+const chunks = require('../docs/data/chunks.json');
+
+const actSceneCounts = chunks.reduce((map, chunk) => {
+  const key = `${chunk.play_abbr}.${chunk.act}`;
+  map.set(key, (map.get(key) || 0) + 1);
+  return map;
+}, new Map());
 
 // Helper: wait for data to load (tokens are fetched async)
 async function waitForDataLoaded(page) {
@@ -96,6 +103,21 @@ test.describe('Segments Search', () => {
     const rows = page.locator('#results tbody tr');
     const count = await rows.count();
     expect(count).toBeGreaterThan(0);
+  });
+
+  test('act granularity shows scene count column and act totals', async ({ page }) => {
+    await search(page, 'the', { gran: 'act' });
+    const headers = page.locator('#results thead th');
+    const texts = await headers.allTextContents();
+    const sceneCountColIdx = texts.findIndex((t) => /scenes/i.test(t));
+    expect(sceneCountColIdx).toBeGreaterThan(-1);
+
+    const rows = await page.locator('#results tbody tr').evaluateAll((trs) =>
+      trs.map((tr) => Array.from(tr.querySelectorAll('td')).map((td) => (td.textContent || '').trim()))
+    );
+    const firstActRow = rows.find((cells) => cells[0] && actSceneCounts.has(cells[0]));
+    expect(firstActRow).toBeTruthy();
+    expect(Number(firstActRow[sceneCountColIdx])).toBe(actSceneCounts.get(firstActRow[0]));
   });
 
   test('character granularity returns results', async ({ page }) => {
