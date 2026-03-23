@@ -27,12 +27,14 @@
     <div class="controls">
       <div class="controls-row">
         <button id="addColumnBtn" class="add-column-btn" type="button">Add Column</button>
-        <span class="label-strong">for</span>
-        <select id="ngramMode" class="control-select">
-          <option value="1" selected>single word</option>
-          <option value="2">bigram</option>
-          <option value="3">trigram</option>
-        </select>
+        <span id="ngramModeGroup">
+          <span class="label-strong">for</span>
+          <select id="ngramMode" class="control-select">
+            <option value="1" selected>single word</option>
+            <option value="2">bigram</option>
+            <option value="3">trigram</option>
+          </select>
+        </span>
         <select id="termDisplayMode" class="control-select">
           <option value="counts" selected>hits</option>
           <option value="both">hits + %</option>
@@ -54,6 +56,7 @@
         </select>
         <input id="q" class="query-input" type="text" placeholder="Type a search term here, then hit &quot;Add Column&quot;">
       </div>
+      <div id="termWarning" class="warning is-hidden" role="status" aria-live="polite"></div>
       <div id="termsList" class="term-chips term-chips-row muted">
         No search term columns yet.
       </div>
@@ -206,12 +209,14 @@
   const gran = document.getElementById('gran');
   const matchMode = document.getElementById('matchMode');
   const ngramMode = document.getElementById('ngramMode');
+  const ngramModeGroup = document.getElementById('ngramModeGroup');
   const theadRow = document.getElementById('headRow');
   const tbody = document.querySelector('#results tbody');
   const termDisplayModeSel = document.getElementById('termDisplayMode');
   const showZeroRowsToggle = document.getElementById('showZeroRows');
   const addColumnBtn = document.getElementById('addColumnBtn');
   const termsList = document.getElementById('termsList');
+  const termWarning = document.getElementById('termWarning');
   const qPlaceholderText = 'Type a search term here, then hit "Add Column"';
   const addColumnPromptScheduleMs = [3000, 5000, 10000];
   const allowAddColumnPromptMotion = !(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
@@ -344,34 +349,74 @@
     if (!el || !el.classList) return;
     el.classList.toggle('is-hidden', !!hidden);
   });
+  function normalizeTermN(value) {
+    const n = parseInt(value, 10);
+    return (n === 1 || n === 2 || n === 3) ? n : null;
+  }
+  function getSelectedNgramModeValue() {
+    return normalizeTermN(ngramMode && ngramMode.value) || 1;
+  }
+  function countTermWords(text) {
+    return String(text || '').trim().split(/\s+/).filter(Boolean).length;
+  }
+  function inferExactTermN(text) {
+    const count = countTermWords(text);
+    return (count >= 1 && count <= 3) ? count : null;
+  }
+  function getBaseNgramLabel(n) {
+    if (n === 1) return '# words';
+    if (n === 2) return '# bigrams';
+    if (n === 3) return '# trigrams';
+    return '# ngrams';
+  }
+  function showTermWarning(message) {
+    if (!termWarning) return;
+    termWarning.textContent = message || '';
+    setElementHidden(termWarning, !message);
+  }
+  function clearTermWarning() {
+    showTermWarning('');
+  }
+  function updateSegmentsMatchModeUI() {
+    const isRegex = matchMode && matchMode.value === 'regex';
+    setElementHidden(ngramModeGroup, !isRegex);
+  }
   function normalizeTermMode(mode) {
     return mode === 'regex' ? 'regex' : 'exact';
   }
-  function toTermSpec(value, fallbackMode = 'exact') {
+  function toTermSpec(value, fallbackMode = 'exact', fallbackN = getSelectedNgramModeValue()) {
     if (value == null) return null;
     if (typeof value === 'string') {
       const text = value.trim();
       if (!text) return null;
-      return { text, mode: normalizeTermMode(fallbackMode) };
+      const mode = normalizeTermMode(fallbackMode);
+      const n = mode === 'regex' ? fallbackN : inferExactTermN(text);
+      return { text, mode, n };
     }
     if (typeof value === 'object') {
       const text = String(value.text ?? value.t ?? '').trim();
       if (!text) return null;
-      return { text, mode: normalizeTermMode(value.mode ?? value.m ?? fallbackMode) };
+      const mode = normalizeTermMode(value.mode ?? value.m ?? fallbackMode);
+      const explicitN = normalizeTermN(value.n ?? value.ngram ?? value.nm);
+      const inferredN = inferExactTermN(text);
+      return { text, mode, n: mode === 'regex' ? (explicitN || fallbackN) : inferredN };
     }
     const text = String(value).trim();
     if (!text) return null;
-    return { text, mode: normalizeTermMode(fallbackMode) };
+    const mode = normalizeTermMode(fallbackMode);
+    const n = mode === 'regex' ? fallbackN : inferExactTermN(text);
+    return { text, mode, n };
   }
-  function cloneTermSpec(value, fallbackMode = 'exact') {
-    const spec = toTermSpec(value, fallbackMode);
-    return spec ? { text: spec.text, mode: spec.mode } : null;
+  function cloneTermSpec(value, fallbackMode = 'exact', fallbackN = getSelectedNgramModeValue()) {
+    const spec = toTermSpec(value, fallbackMode, fallbackN);
+    return spec ? { text: spec.text, mode: spec.mode, n: spec.n } : null;
   }
-  function termSpecKey(value, fallbackMode = 'exact') {
-    const spec = toTermSpec(value, fallbackMode);
+  function termSpecKey(value, fallbackMode = 'exact', fallbackN = getSelectedNgramModeValue()) {
+    const spec = toTermSpec(value, fallbackMode, fallbackN);
     if (!spec) return '';
-    if (spec.mode === 'regex') return `regex:${spec.text.trim()}`;
-    return `exact:${normalizeTerm(spec.text)}`;
+    const keyN = normalizeTermN(spec.n) || 0;
+    if (spec.mode === 'regex') return `regex:${keyN}:${spec.text.trim()}`;
+    return `exact:${keyN}:${normalizeTerm(spec.text)}`;
   }
   function formatTermSpecForChip(value) {
     const spec = toTermSpec(value, 'exact');
@@ -390,7 +435,7 @@
     extraTerms.forEach((t) => {
       const spec = toTermSpec(t, matchMode.value);
       const key = termSpecKey(spec);
-      if (!spec || !key || seen.has(key)) return;
+      if (!spec || !spec.n || !key || seen.has(key)) return;
       seen.add(key);
       filtered.push(spec);
     });
@@ -400,7 +445,7 @@
     }
   }
   function getActiveTerms() {
-    return extraTerms.map(t => cloneTermSpec(t, matchMode.value)).filter(Boolean);
+    return extraTerms.map(t => cloneTermSpec(t, matchMode.value)).filter(spec => spec && spec.n);
   }
   function getActiveTermsStateParts() {
     const terms = getActiveTerms();
@@ -415,7 +460,7 @@
     const add = (term) => {
       const spec = toTermSpec(term, matchMode.value);
       const key = termSpecKey(spec);
-      if (!spec || !key || seen.has(key)) return;
+      if (!spec || !spec.n || !key || seen.has(key)) return;
       seen.add(key);
       merged.push(spec);
     };
@@ -456,7 +501,12 @@
   }
   function addExtraTerm(term) {
     const spec = toTermSpec(term, matchMode.value);
+    if (spec && spec.mode === 'exact' && !spec.n) {
+      showTermWarning('Exact term columns are limited to 3 words. Use regex mode for longer patterns.');
+      return false;
+    }
     if (!spec) return false;
+    clearTermWarning();
     const key = termSpecKey(spec);
     const existing = extraTerms.map(t => termSpecKey(t, matchMode.value));
     if (!key || existing.includes(key)) return false;
@@ -550,7 +600,7 @@
     const compact = (termSpecs || [])
       .map(t => toTermSpec(t, 'exact'))
       .filter(Boolean)
-      .map(t => ({ t: t.text, m: t.mode }));
+      .map(t => ({ t: t.text, m: t.mode, n: t.n }));
     if (!compact.length) return '';
     try {
       return encodeURIComponent(JSON.stringify(compact));
@@ -1102,25 +1152,26 @@
 
   function buildRowsForTerms(terms, preferredSortTermIndex = null){
     const granVal = gran.value;
-    const ngramModeVal = ngramMode.value;
-    const n = parseInt(ngramModeVal, 10);
     const activeTerms = (terms || []).map(t => toTermSpec(t, matchMode.value)).filter(Boolean);
     const hasTerms = activeTerms.length > 0;
+    const baseN = normalizeTermN(activeTerms[0] && activeTerms[0].n) || getSelectedNgramModeValue();
+    const sharedBaseN = !hasTerms || activeTerms.every(term => normalizeTermN(term.n) === baseN);
 
     const termKeys = activeTerms.map((_, i) => `t${i}`);
     const includeCounts = termDisplayMode !== 'pct';
     const includePct = termDisplayMode !== 'counts';
-
-    // Character view limitation
-    if (granVal === 'character' && n > 3) {
-      theadRow.innerHTML = '';
-      tbody.innerHTML = '<tr><td class="muted">Character view supports up to trigrams.</td></tr>';
-      return null;
+    function getIndexForN(n) {
+      const termN = normalizeTermN(n) || 1;
+      return (granVal === 'character')
+        ? (termN === 1 ? tokensChar : termN === 2 ? tokensChar2 : tokensChar3)
+        : (termN === 1 ? tokens : termN === 2 ? tokens2 : tokens3);
     }
-
-    const idx = (granVal === 'character') 
-      ? (n === 1 ? tokensChar : n === 2 ? tokensChar2 : tokensChar3)
-      : (n === 1 ? tokens : n === 2 ? tokens2 : tokens3);
+    function getRowNgramCount(totalWords) {
+      return Math.max(0, (totalWords || 0) - (baseN - 1));
+    }
+    function getBaseCountLabel() {
+      return sharedBaseN ? getBaseNgramLabel(baseN) : '# ngrams';
+    }
 
     const compiledRegexes = new Array(activeTerms.length).fill(null);
     if (hasTerms) {
@@ -1167,13 +1218,15 @@
     function getPostingsForTerm(termIdx) {
       const termSpec = activeTerms[termIdx];
       if (!termSpec) return [];
+      const termN = normalizeTermN(termSpec.n) || 1;
+      const idx = getIndexForN(termN);
       if (termSpec.mode === 'regex') {
         const pattern = compiledRegexes[termIdx];
         if (!pattern) return [];
-        return aggregatePostings(Object.keys(idx).filter(k => pattern.test(k)).map(k => idx[k]), n);
+        return aggregatePostings(Object.keys(idx).filter(k => pattern.test(k)).map(k => idx[k]), termN);
       }
       const parts = termSpec.text.toLowerCase().split(/\s+/).filter(Boolean);
-      const key = parts.slice(0, n).join(' ');
+      const key = parts.slice(0, termN).join(' ');
       return idx[key] || [];
     }
 
@@ -1191,7 +1244,7 @@
         chunks.forEach(m => {
           ensureRow(m.scene_id, () => {
             const totalWords = m.total_words || 0;
-            const ngramCount = Math.max(0, totalWords - (n - 1));
+            const ngramCount = getRowNgramCount(totalWords);
             return { id: m.canonical_id, play_title: m.play_title, genre:m.genre, play_id:m.play_id, act:m.act, scene:m.scene, total_words:totalWords, ngram_count:ngramCount, scene_id: m.scene_id, act_label: m.act_label, scene_label: m.scene_label };
           });
         });
@@ -1203,7 +1256,7 @@
           const play = playsById.get(pid);
           if (!play) continue;
           ensureRow(k, () => {
-            const ngramCount = Math.max(0, total_words - (n - 1));
+            const ngramCount = getRowNgramCount(total_words);
             return { id: `${play.abbr}.${actNum}`, play_title: play.title, genre:play.genre, play_id:pid, act:actNum, num_scenes: actSceneCounts.get(k) || 0, total_words, ngram_count:ngramCount };
           });
         }
@@ -1211,14 +1264,14 @@
         plays.forEach(p => {
           ensureRow(p.play_id, () => {
             const total_words = p.total_words ?? 0;
-            const ngramCount = Math.max(0, total_words - (n - 1));
+            const ngramCount = getRowNgramCount(total_words);
             return { play_id:p.play_id, title:p.title, genre:p.genre, first_year:p.first_performance_year||'', num_lines:p.total_lines ?? 0, total_words, ngram_count:ngramCount };
           });
         });
       } else if (granVal === 'genre') {
         for (const [genre, totalWords] of genreTotals.entries()) {
           ensureRow(genre, () => {
-            const ngramCount = Math.max(0, totalWords - (n - 1));
+            const ngramCount = getRowNgramCount(totalWords);
             return { genre, num_plays: genrePlayCounts.get(genre) || 0, total_words: totalWords, ngram_count:ngramCount };
           });
         }
@@ -1226,7 +1279,7 @@
         characters.forEach(c => {
           ensureRow(c.character_id, () => {
             const totalWords = c.total_words_spoken || 0;
-            const ngramCount = Math.max(0, totalWords - (n - 1));
+            const ngramCount = getRowNgramCount(totalWords);
             const numSpeeches = c.num_speeches || 0;
             const gender = (c.gender ?? c.sex ?? 'A').toString().toUpperCase();
             return { character_id:c.character_id, play_id:c.play_id, play_title:c.play_title, name:c.name, gender, num_speeches:numSpeeches, total_words_spoken:totalWords, ngram_count:ngramCount };
@@ -1244,15 +1297,16 @@
       const lineMatchers = [];
       activeTerms.forEach((termSpec, termIdx) => {
         if (!termSpec) { lineMatchers.push(null); return; }
+        const termN = normalizeTermN(termSpec.n) || 1;
         if (termSpec.mode === 'regex') {
           const re = compiledRegexes[termIdx];
           if (!re) { lineMatchers.push(null); return; }
-          lineMatchers.push({ type: 'regex', re });
+          lineMatchers.push({ type: 'regex', re, n: termN });
           return;
         }
-        const parts = termSpec.text.trim().toLowerCase().split(/\s+/).filter(Boolean).slice(0, n);
+        const parts = termSpec.text.trim().toLowerCase().split(/\s+/).filter(Boolean).slice(0, termN);
         if (parts.length === 0) { lineMatchers.push({ type: 'exact', ngram: null }); return; }
-        lineMatchers.push({ type: 'exact', ngram: parts.join(' ') });
+        lineMatchers.push({ type: 'exact', ngram: parts.join(' '), n: termN });
       });
 
       for (const ln of allLines) {
@@ -1270,10 +1324,10 @@
           speaker: ln.speaker || '',
           line: clean
         };
-        const ngrams = getLineNgrams(ln, n);
         const matchedNgrams = [];
         lineMatchers.forEach((m, idx) => {
           if (!m) return;
+          const ngrams = getLineNgrams(ln, normalizeTermN(m.n) || 1);
           let c = 0;
           if (m.type === 'regex' && m.re) {
             const re = new RegExp(m.re.source, m.re.flags.replace('g', ''));
@@ -1320,7 +1374,7 @@
         {key:'play_title', label:'Play', defaultDir:'asc', type:'text'},
         {key:'act', label:'Act', type:'number'},
         {key:'scene', label:'Scene', type:'number'},
-        {key:'ngram_count', label: n===1 ? '# words' : n===2 ? '# bigrams' : '# trigrams', type:'number'}
+        {key:'ngram_count', label: getBaseCountLabel(), type:'number'}
       ];
       activeTerms.forEach((term, termIdx) => {
         const postings = getPostingsForTerm(termIdx);
@@ -1328,10 +1382,10 @@
           const m = chunkById.get(scene_id); if (!m) continue;
           const row = ensureRow(scene_id, () => {
             const totalWords = m.total_words || 0;
-            const ngramCount = Math.max(0, totalWords - (n - 1));
+            const ngramCount = getRowNgramCount(totalWords);
             return { id: m.canonical_id, play_title: m.play_title, genre:m.genre, play_id:m.play_id, act:m.act, scene:m.scene, total_words:totalWords, ngram_count:ngramCount, scene_id };
           });
-          const d = denomFor(n,'scene',m);
+          const d = denomFor(normalizeTermN(term.n) || 1,'scene',m);
           row[`${termKeys[termIdx]}_count`] = count;
           row[`${termKeys[termIdx]}_pct`] = d ? count/d : 0;
         }
@@ -1350,7 +1404,7 @@
         {key:'play_title', label:'Play', defaultDir:'asc', type:'text'},
         {key:'act', label:'Act', type:'number'},
         {key:'num_scenes', label:'# scenes', type:'number'},
-        {key:'ngram_count', label: n===1 ? '# words' : n===2 ? '# bigrams' : '# trigrams', type:'number'}
+        {key:'ngram_count', label: getBaseCountLabel(), type:'number'}
       ];
       activeTerms.forEach((term, termIdx) => {
         const postings = getPostingsForTerm(termIdx);
@@ -1368,10 +1422,10 @@
           if (!play) continue;
           const row = ensureRow(k, () => {
             const total_words = actTotals.get(k) || 0;
-            const ngramCount = Math.max(0, total_words - (n - 1));
+            const ngramCount = getRowNgramCount(total_words);
             return { id: `${play.abbr}.${actNum}`, play_title: play.title, genre:play.genre, play_id:pid, act:actNum, num_scenes: actSceneCounts.get(k) || 0, total_words, ngram_count:ngramCount };
           });
-          const d = denomFor(n,'act',{play_id:pid,act:actNum});
+          const d = denomFor(normalizeTermN(term.n) || 1,'act',{play_id:pid,act:actNum});
           row[`${termKeys[termIdx]}_count`] = count;
           row[`${termKeys[termIdx]}_pct`] = d ? count/d : 0;
         }
@@ -1390,7 +1444,7 @@
         {key:'genre', label:'Genre', defaultDir:'asc', type:'text'},
         {key:'first_year', label:'Year', type:'number'},
         {key:'num_lines', label:'# lines', type:'number'},
-        {key:'ngram_count', label: n===1 ? '# words' : n===2 ? '# bigrams' : '# trigrams', type:'number'}
+        {key:'ngram_count', label: getBaseCountLabel(), type:'number'}
       ];
       activeTerms.forEach((term, termIdx) => {
         const postings = getPostingsForTerm(termIdx);
@@ -1404,10 +1458,10 @@
           if (!p) continue;
           const row = ensureRow(pid, () => {
             const total_words = p.total_words ?? 0;
-            const ngramCount = Math.max(0, total_words - (n - 1));
+            const ngramCount = getRowNgramCount(total_words);
             return { play_id:pid, title:p.title, genre:p.genre, first_year:p.first_performance_year||'', num_lines:p.total_lines ?? 0, total_words, ngram_count:ngramCount };
           });
-          const d = denomFor(n,'play',{play_id:pid});
+          const d = denomFor(normalizeTermN(term.n) || 1,'play',{play_id:pid});
           row[`${termKeys[termIdx]}_count`] = count;
           row[`${termKeys[termIdx]}_pct`] = d ? count/d : 0;
         }
@@ -1424,7 +1478,7 @@
       const baseCols = [
         {key:'genre', label:'Genre', defaultDir:'asc', type:'text'},
         {key:'num_plays', label:'# plays', type:'number'},
-        {key:'ngram_count', label: n===1 ? '# words' : n===2 ? '# bigrams' : '# trigrams', type:'number'}
+        {key:'ngram_count', label: getBaseCountLabel(), type:'number'}
       ];
       activeTerms.forEach((term, termIdx) => {
         const postings = getPostingsForTerm(termIdx);
@@ -1437,10 +1491,10 @@
         for (const [genre,count] of countsByGenre.entries()){
           const totalWords = genreTotals.get(genre) || 0;
           const row = ensureRow(genre, () => {
-            const ngramCount = Math.max(0, totalWords - (n - 1));
+            const ngramCount = getRowNgramCount(totalWords);
             return { genre, num_plays: genrePlayCounts.get(genre) || 0, total_words: totalWords, ngram_count:ngramCount };
           });
-          const denom = denomFor(n, 'genre', { total_words: totalWords });
+          const denom = denomFor(normalizeTermN(term.n) || 1, 'genre', { total_words: totalWords });
           row[`${termKeys[termIdx]}_count`] = count;
           row[`${termKeys[termIdx]}_pct`] = denom ? count/denom : 0;
         }
@@ -1459,7 +1513,7 @@
         {key:'gender', label:'Gender', defaultDir:'asc', type:'text'},
         {key:'play_title', label:'Play', defaultDir:'asc', type:'text'},
         {key:'num_speeches', label:'# speeches', type:'number'},
-        {key:'ngram_count', label: n===1 ? '# words' : n===2 ? '# bigrams' : '# trigrams', type:'number'}
+        {key:'ngram_count', label: getBaseCountLabel(), type:'number'}
       ];
       activeTerms.forEach((term, termIdx) => {
         const postings = getPostingsForTerm(termIdx);
@@ -1468,12 +1522,12 @@
           if (!c) continue;
           const row = ensureRow(char_id, () => {
             const totalWords = c.total_words_spoken || 0;
-            const ngramCount = Math.max(0, totalWords - (n - 1));
+            const ngramCount = getRowNgramCount(totalWords);
             const numSpeeches = c.num_speeches || 0;
             const gender = (c.gender ?? c.sex ?? 'A').toString().toUpperCase();
             return { character_id:c.character_id, play_id:c.play_id, play_title:c.play_title, name:c.name, gender, num_speeches:numSpeeches, total_words_spoken:totalWords, ngram_count:ngramCount };
           });
-          const denom = denomFor(n,'character',c);
+          const denom = denomFor(normalizeTermN(term.n) || 1,'character',c);
           row[`${termKeys[termIdx]}_count`] = count;
           row[`${termKeys[termIdx]}_pct`] = denom ? count/denom : 0;
         }
@@ -1746,7 +1800,9 @@
     const hasRegexChars = /[.*+?^${}()|[\]\\]/.test(val);
     if (hasRegexChars && matchMode.value === 'exact') {
       matchMode.value = 'regex';
+      updateSegmentsMatchModeUI();
     }
+    clearTermWarning();
     if (val.trim()) scheduleAddColumnPrompt();
     else clearAddColumnPrompt(true);
   });
@@ -1762,7 +1818,11 @@
   }
   ngramMode.addEventListener('change', doSearch);
   gran.addEventListener('change', doSearch);
-  matchMode.addEventListener('change', doSearch);
+  matchMode.addEventListener('change', () => {
+    clearTermWarning();
+    updateSegmentsMatchModeUI();
+    doSearch();
+  });
 
   // Color scale toggles
   document.querySelectorAll('.color-scale-toggle').forEach(cb => {
@@ -1796,6 +1856,7 @@
   syncColorScaleOptions();
   renderAllLegends();
   if (showZeroRowsToggle) showZeroRowsToggle.checked = showZeroRows;
+  updateSegmentsMatchModeUI();
   // Highlight toggle handlers
   document.querySelectorAll('.highlight-toggle').forEach(cb => {
     cb.addEventListener('change', (e) => {
