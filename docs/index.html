@@ -1320,7 +1320,7 @@
         {key:'play_title', label:'Play', defaultDir:'asc', type:'text'},
         {key:'act', label:'Act', type:'number'},
         {key:'scene', label:'Scene', type:'number'},
-        {key:'ngram_count', label: n===1 ? 'Word count' : n===2 ? 'Bigram count' : 'Trigram count', type:'number'}
+        {key:'ngram_count', label: n===1 ? '# words' : n===2 ? '# bigrams' : '# trigrams', type:'number'}
       ];
       activeTerms.forEach((term, termIdx) => {
         const postings = getPostingsForTerm(termIdx);
@@ -1350,7 +1350,7 @@
         {key:'play_title', label:'Play', defaultDir:'asc', type:'text'},
         {key:'act', label:'Act', type:'number'},
         {key:'num_scenes', label:'# scenes', type:'number'},
-        {key:'ngram_count', label: n===1 ? 'Word count' : n===2 ? 'Bigram count' : 'Trigram count', type:'number'}
+        {key:'ngram_count', label: n===1 ? '# words' : n===2 ? '# bigrams' : '# trigrams', type:'number'}
       ];
       activeTerms.forEach((term, termIdx) => {
         const postings = getPostingsForTerm(termIdx);
@@ -1390,7 +1390,7 @@
         {key:'genre', label:'Genre', defaultDir:'asc', type:'text'},
         {key:'first_year', label:'Year', type:'number'},
         {key:'num_lines', label:'# lines', type:'number'},
-        {key:'ngram_count', label: n===1 ? 'Word count' : n===2 ? 'Bigram count' : 'Trigram count', type:'number'}
+        {key:'ngram_count', label: n===1 ? '# words' : n===2 ? '# bigrams' : '# trigrams', type:'number'}
       ];
       activeTerms.forEach((term, termIdx) => {
         const postings = getPostingsForTerm(termIdx);
@@ -1424,7 +1424,7 @@
       const baseCols = [
         {key:'genre', label:'Genre', defaultDir:'asc', type:'text'},
         {key:'num_plays', label:'# plays', type:'number'},
-        {key:'ngram_count', label: n===1 ? 'Word count' : n===2 ? 'Bigram count' : 'Trigram count', type:'number'}
+        {key:'ngram_count', label: n===1 ? '# words' : n===2 ? '# bigrams' : '# trigrams', type:'number'}
       ];
       activeTerms.forEach((term, termIdx) => {
         const postings = getPostingsForTerm(termIdx);
@@ -1459,7 +1459,7 @@
         {key:'gender', label:'Gender', defaultDir:'asc', type:'text'},
         {key:'play_title', label:'Play', defaultDir:'asc', type:'text'},
         {key:'num_speeches', label:'# speeches', type:'number'},
-        {key:'ngram_count', label: n===1 ? 'Word count' : n===2 ? 'Bigram count' : 'Trigram count', type:'number'}
+        {key:'ngram_count', label: n===1 ? '# words' : n===2 ? '# bigrams' : '# trigrams', type:'number'}
       ];
       activeTerms.forEach((term, termIdx) => {
         const postings = getPostingsForTerm(termIdx);
