@@ -1159,8 +1159,8 @@
       const cols = [];
       activeTerms.forEach((termSpec, idx) => {
         const label = formatTermSpecForHeader(termSpec);
-        if (includeCounts) cols.push({ key: `${termKeys[idx]}_count`, label, type: 'number', defaultDir: 'desc' });
-        if (includePct) cols.push({ key: `${termKeys[idx]}_pct`, label: `${label} %`, type: 'number', defaultDir: 'desc' });
+        if (includeCounts) cols.push({ key: `${termKeys[idx]}_count`, label: `# ${label}`, type: 'number', defaultDir: 'desc' });
+        if (includePct) cols.push({ key: `${termKeys[idx]}_pct`, label: `% ${label}`, type: 'number', defaultDir: 'desc' });
       });
       return cols;
     }
