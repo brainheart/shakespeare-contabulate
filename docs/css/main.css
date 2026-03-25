@@ -246,9 +246,6 @@ td.ranked-cell {
 .control-select {
   font-size: 1rem;
 }
-.term-display-mode-hint {
-  font-size: 0.9rem;
-}
 .query-input {
   flex: 1;
   min-width: 20rem;
@@ -259,10 +256,6 @@ td.ranked-cell {
   min-width: 20rem;
   font-size: 1rem;
   padding: 0.5rem;
-}
-.term-chips-row {
-  margin-top: 0.35rem;
-  font-size: 0.95rem;
 }
 .options-row {
   margin-bottom: 0.5rem;
@@ -301,35 +294,6 @@ td.ranked-cell {
   border-radius: 1rem;
   font-size: 0.9rem;
   color: var(--ink);
-}
-.term-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-  align-items: center;
-}
-.term-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.25rem 0.6rem;
-  background: rgba(139, 21, 56, 0.08);
-  border: 1px solid rgba(139, 21, 56, 0.2);
-  border-radius: 999px;
-  font-size: 0.95rem;
-  color: var(--ink);
-}
-.term-pill button {
-  border: none;
-  background: transparent;
-  color: #5c1228;
-  cursor: pointer;
-  font-size: 1rem;
-  padding: 0 0.2rem;
-  line-height: 1;
-}
-.term-pill button:hover {
-  color: #000;
 }
 #playsFilter { 
   max-height: 8rem;
@@ -524,6 +488,21 @@ input[type="checkbox"] {
 .legend-labels { display: flex; justify-content: space-between; gap: 2rem; font-size: 0.85rem; color: #665544; margin-top: 2px; max-width: 220px; }
 /* Column filter UI */
 th { position: sticky; }
+.th-label { display: inline; }
+.term-col-remove {
+  margin-left: 0.35rem;
+  border: none;
+  background: transparent;
+  color: #8a8a8a;
+  cursor: pointer;
+  font-size: 0.95rem;
+  line-height: 1;
+  padding: 0 0.12rem;
+  vertical-align: middle;
+}
+.term-col-remove:hover {
+  color: var(--burgundy);
+}
 .filter-icon { font-size: 0.9rem; margin-left: 0.4rem; color: #8a8a8a; cursor: pointer; }
 .filter-icon:hover { color: var(--burgundy); }
 .filter-popover {

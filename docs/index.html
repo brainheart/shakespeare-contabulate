@@ -14,34 +14,6 @@
   <title>Shakespeare Tabular Search</title>
   <link rel="stylesheet" href="css/main.css">
   <style>
-    .term-pill-label {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.3rem;
-    }
-    .term-pill-display {
-      border: 1px solid rgba(139, 21, 56, 0.28);
-      background: rgba(255, 255, 255, 0.8);
-      color: #5c1228;
-      border-radius: 999px;
-      font-size: 0.78rem;
-      font-weight: 700;
-      line-height: 1;
-      padding: 0.18rem 0.42rem;
-      min-width: 1.7rem;
-      text-align: center;
-    }
-    .term-pill-display:hover {
-      background: rgba(139, 21, 56, 0.12);
-      box-shadow: none;
-    }
-    .term-pill-display.is-pct {
-      background: rgba(139, 21, 56, 0.12);
-      border-color: rgba(139, 21, 56, 0.36);
-    }
-    .term-pill-display.is-forced {
-      opacity: 0.72;
-    }
   </style>
 </head>
 <body>
@@ -57,6 +29,10 @@
     <div class="controls">
       <div class="controls-row">
         <button id="addColumnBtn" class="add-column-btn" type="button">Add Column</button>
+        <select id="newTermDisplay" class="control-select">
+          <option value="count" selected># hits</option>
+          <option value="pct">% share</option>
+        </select>
         <span id="ngramModeGroup">
           <span class="label-strong">for</span>
           <select id="ngramMode" class="control-select">
@@ -82,9 +58,6 @@
         <input id="q" class="query-input" type="text" placeholder="Type a search term here, then hit &quot;Add Column&quot;">
       </div>
       <div id="termWarning" class="warning is-hidden" role="status" aria-live="polite"></div>
-      <div id="termsList" class="term-chips term-chips-row muted">
-        No search term columns yet.
-      </div>
     </div>
 
     <details>
@@ -234,12 +207,12 @@
   const gran = document.getElementById('gran');
   const matchMode = document.getElementById('matchMode');
   const ngramMode = document.getElementById('ngramMode');
+  const newTermDisplay = document.getElementById('newTermDisplay');
   const ngramModeGroup = document.getElementById('ngramModeGroup');
   const theadRow = document.getElementById('headRow');
   const tbody = document.querySelector('#results tbody');
   const showZeroRowsToggle = document.getElementById('showZeroRows');
   const addColumnBtn = document.getElementById('addColumnBtn');
-  const termsList = document.getElementById('termsList');
   const termWarning = document.getElementById('termWarning');
   const qPlaceholderText = 'Type a search term here, then hit "Add Column"';
   const addColumnPromptScheduleMs = [3000, 5000, 10000];
@@ -448,13 +421,9 @@
     const spec = toTermSpec(value, fallbackMode, fallbackN);
     if (!spec) return '';
     const keyN = normalizeTermN(spec.n) || 0;
-    if (spec.mode === 'regex') return `regex:${keyN}:${spec.text.trim()}`;
-    return `exact:${keyN}:${normalizeTerm(spec.text)}`;
-  }
-  function formatTermSpecForChip(value) {
-    const spec = toTermSpec(value, 'exact');
-    if (!spec) return '';
-    return spec.mode === 'regex' ? `/${spec.text}/` : spec.text;
+    const display = normalizeTermDisplay(spec.display);
+    if (spec.mode === 'regex') return `regex:${keyN}:${spec.text.trim()}:${display}`;
+    return `exact:${keyN}:${normalizeTerm(spec.text)}:${display}`;
   }
   function formatTermSpecForHeader(value) {
     const spec = toTermSpec(value, 'exact');
@@ -504,53 +473,13 @@
     if (!preserveInputValue) q.value = '';
   }
   function renderExtraTerms() {
-    if (!termsList) return;
-    const terms = extraTerms.map(t => cloneTermSpec(t, matchMode.value)).filter(Boolean);
-    if (terms.length === 0) {
-      termsList.classList.add('muted');
-      termsList.textContent = 'No search term columns yet.';
-      return;
-    }
-    termsList.classList.remove('muted');
-    termsList.innerHTML = '';
-    terms.forEach((termSpec, idx) => {
-      const chipText = formatTermSpecForChip(termSpec);
-      const typeLabel = termSpec.mode === 'regex' ? 'regex' : 'term';
-      const effectiveDisplay = getEffectiveTermDisplay(termSpec);
-      const displayText = effectiveDisplay === 'pct' ? '%' : '#';
-      const displayClasses = ['term-pill-display'];
-      if (effectiveDisplay === 'pct') displayClasses.push('is-pct');
-      if (gran && gran.value === 'line' && termSpec.display === 'pct') displayClasses.push('is-forced');
-      const displayTitle = (gran && gran.value === 'line' && termSpec.display === 'pct')
-        ? 'Line rows show counts only.'
-        : `Show ${effectiveDisplay === 'pct' ? 'percentages' : 'counts'} for this term`;
-      const pill = document.createElement('span');
-      pill.className = 'term-pill';
-      pill.innerHTML = `<span class="term-pill-label">${escapeHTML(chipText)}</span><button type="button" class="${displayClasses.join(' ')}" data-idx="${idx}" aria-label="Toggle ${typeLabel} ${escapeHTML(termSpec.text)} between count and percentage display" title="${escapeHTML(displayTitle)}">${displayText}</button><button type="button" class="remove-term" data-idx="${idx}" aria-label="Remove ${typeLabel} ${escapeHTML(termSpec.text)}">×</button>`;
-      termsList.appendChild(pill);
-    });
-    termsList.querySelectorAll('.term-pill-display').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const i = parseInt(btn.dataset.idx, 10);
-        if (Number.isNaN(i) || !extraTerms[i]) return;
-        const spec = cloneTermSpec(extraTerms[i], matchMode.value);
-        if (!spec) return;
-        spec.display = spec.display === 'pct' ? 'count' : 'pct';
-        extraTerms[i] = spec;
-        renderExtraTerms();
-        doSearch(i);
-      });
-    });
-    termsList.querySelectorAll('.remove-term').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const i = parseInt(btn.dataset.idx, 10);
-        if (!Number.isNaN(i)) {
-          extraTerms.splice(i, 1);
-          renderExtraTerms();
-          doSearch();
-        }
-      });
-    });
+    updateDeepLink();
+  }
+  function removeExtraTerm(idx) {
+    if (!Number.isInteger(idx) || idx < 0 || idx >= extraTerms.length) return;
+    extraTerms.splice(idx, 1);
+    renderExtraTerms();
+    doSearch();
   }
   function addExtraTerm(term) {
     const spec = toTermSpec(term, matchMode.value);
@@ -559,6 +488,7 @@
       return false;
     }
     if (!spec) return false;
+    spec.display = normalizeTermDisplay(newTermDisplay && newTermDisplay.value);
     clearTermWarning();
     const key = termSpecKey(spec);
     const existing = extraTerms.map(t => termSpecKey(t, matchMode.value));
@@ -942,10 +872,14 @@
     theadRow.innerHTML='';
     orderedCols.forEach(c => {
       const th = document.createElement('th');
-      th.textContent = c.label;
+      th.dataset.label = c.label;
       th.dataset.key = c.key;
       th.dataset.type = c.type || 'text';
       th.title = 'Click to sort';
+      const labelSpan = document.createElement('span');
+      labelSpan.className = 'th-label';
+      labelSpan.textContent = c.label;
+      th.appendChild(labelSpan);
       th.addEventListener('click', () => {
         if (Date.now() < getSortClickSuppressedUntil()) return;
         if (sortKey === c.key) sortDir = (sortDir === 'asc' ? 'desc' : 'asc');
@@ -954,6 +888,19 @@
         segmentsCurrentPage = 1;
         renderSegmentsPage();
       });
+      if (Number.isInteger(c.termIdx)) {
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.className = 'term-col-remove';
+        removeBtn.textContent = '×';
+        removeBtn.title = `Remove ${c.label}`;
+        removeBtn.setAttribute('aria-label', `Remove ${c.label}`);
+        removeBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          removeExtraTerm(c.termIdx);
+        });
+        th.appendChild(removeBtn);
+      }
       // Add filter icon
       const icon = document.createElement('span');
       icon.className = 'filter-icon';
@@ -1018,10 +965,7 @@
 
   function getHeaderLabelText(th) {
     if (!th) return '';
-    const raw = (th.childNodes[0] && th.childNodes[0].textContent)
-      ? th.childNodes[0].textContent
-      : (th.textContent || '');
-    return raw.replace('⚙', '').trim();
+    return (th.dataset.label || th.textContent || '').trim();
   }
 
   function buildNumericRankIndex(rows, colDefs) {
@@ -1218,8 +1162,8 @@
       const cols = [];
       activeTerms.forEach((termSpec, idx) => {
         const label = formatTermSpecForHeader(termSpec);
-        if (getEffectiveTermDisplay(termSpec) === 'pct') cols.push({ key: `${termKeys[idx]}_pct`, label: `% ${label}`, type: 'number', defaultDir: 'desc' });
-        else cols.push({ key: `${termKeys[idx]}_count`, label: `# ${label}`, type: 'number', defaultDir: 'desc' });
+        if (getEffectiveTermDisplay(termSpec) === 'pct') cols.push({ key: `${termKeys[idx]}_pct`, label: `% ${label}`, type: 'number', defaultDir: 'desc', termIdx: idx });
+        else cols.push({ key: `${termKeys[idx]}_count`, label: `# ${label}`, type: 'number', defaultDir: 'desc', termIdx: idx });
       });
       return cols;
     }
@@ -1608,6 +1552,16 @@
     
     renderSegmentsPage();
   }
+  function renderEmptySegmentsState(message = 'Add a search term above to see results.') {
+    theadRow.innerHTML = '';
+    segmentsColumnDefs = [];
+    segmentsAllRows = [];
+    lastSegmentsBaseRows = [];
+    tbody.innerHTML = `<tr><td colspan="1" class="muted">${escapeHTML(message)}</td></tr>`;
+    setElementHidden(document.getElementById('segmentsPagination'), true);
+    updateSegmentsFilterActions();
+    updateDeepLink();
+  }
   function refreshSegmentsFromFilters() {
     if (!lastSegmentsBaseRows || lastSegmentsBaseRows.length === 0) return;
     let rows = applySegmentsFilters(lastSegmentsBaseRows);
@@ -1756,6 +1710,10 @@
     pruneExtraTermsAgainstPrimary();
     renderExtraTerms();
     const terms = getActiveTerms();
+    if (terms.length === 0) {
+      renderEmptySegmentsState();
+      return;
+    }
     const rows = buildRowsForTerms(terms, preferredSortTermIndex);
     if (rows !== null) {
       renderRows(rows);
