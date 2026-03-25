@@ -758,7 +758,7 @@
         }
       } catch(e) { /* continue to finally */ }
         // Trigger render for segments regardless
-        const terms = getActiveTerms(); if (terms.length) doSearch();
+        doSearch();
         applyColorScalesForVisibleTables();
         updateDeepLink();
       return;
@@ -823,7 +823,7 @@
         }
       }
       // Trigger renders
-      const terms = getActiveTerms(); if (terms.length) doSearch();
+      doSearch();
       const lqv = document.getElementById('linesQuery').value.trim(); if (lqv) doLinesSearch();
       applyColorScalesForVisibleTables();
       appliedDeepLinkState = true;
@@ -1710,10 +1710,6 @@
     pruneExtraTermsAgainstPrimary();
     renderExtraTerms();
     const terms = getActiveTerms();
-    if (terms.length === 0) {
-      renderEmptySegmentsState();
-      return;
-    }
     const rows = buildRowsForTerms(terms, preferredSortTermIndex);
     if (rows !== null) {
       renderRows(rows);
