@@ -1121,7 +1121,7 @@
       return Math.max(0, (totalWords || 0) - (baseN - 1));
     }
     function getBaseCountLabel() {
-      return sharedBaseN ? getBaseNgramLabel(baseN) : '# ngrams';
+      return '# words';
     }
 
     const compiledRegexes = new Array(activeTerms.length).fill(null);
