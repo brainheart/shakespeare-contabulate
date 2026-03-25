@@ -33,14 +33,6 @@
           <option value="count" selected># hits</option>
           <option value="pct">% share</option>
         </select>
-        <span id="ngramModeGroup">
-          <span class="label-strong">for</span>
-          <select id="ngramMode" class="control-select">
-            <option value="1" selected>single word</option>
-            <option value="2">bigram</option>
-            <option value="3">trigram</option>
-          </select>
-        </span>
         <span class="label-strong">by</span>
         <select id="gran" class="control-select">
           <option value="genre">Genre</option>
@@ -50,11 +42,19 @@
           <option value="line">Line</option>
           <option value="character">Character</option>
         </select>
-        <span class="label-strong">matching the</span>
+        <span class="label-strong">matching</span>
         <select id="matchMode" class="control-select">
           <option value="exact">exact term</option>
           <option value="regex">regex pattern</option>
         </select>
+        <span id="ngramModeGroup">
+          <span class="label-strong">in</span>
+          <select id="ngramMode" class="control-select">
+            <option value="1" selected>single words</option>
+            <option value="2">bigrams</option>
+            <option value="3">trigrams</option>
+          </select>
+        </span>
         <input id="q" class="query-input" type="text" placeholder="Type a search term here, then hit &quot;Add Column&quot;">
       </div>
       <div id="termWarning" class="warning is-hidden" role="status" aria-live="polite"></div>
