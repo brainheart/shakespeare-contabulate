@@ -240,6 +240,26 @@
       : (data.maxByN[n] || 0);
   }
 
+  function getPlayFilterDisplayData(playId) {
+    const filter = characterNameFiltersByPlay && characterNameFiltersByPlay.get(playId);
+    if (!filter) {
+      return { tokens: [], phrases: [], total: 0 };
+    }
+
+    const tokensSorted = Array.from(filter.tokens || []).sort((a, b) => a.localeCompare(b));
+    const phraseSet = new Set();
+    for (const n of [2, 3]) {
+      const phrases = filter.phrasesByN && filter.phrasesByN[n];
+      for (const phrase of phrases || []) phraseSet.add(phrase);
+    }
+    const phrasesSorted = Array.from(phraseSet).sort((a, b) => a.localeCompare(b));
+    return {
+      tokens: tokensSorted,
+      phrases: phrasesSorted,
+      total: tokensSorted.length + phrasesSorted.length
+    };
+  }
+
   function getCachedCharacterDetailData(key) {
     if (!characterDetailCache.has(key)) return null;
     const value = characterDetailCache.get(key);
@@ -283,6 +303,7 @@
               <input id="characterDetailFilterNames" type="checkbox" checked>
               Exclude character names
             </label>
+            <div id="characterDetailFilterDisclosure" class="play-detail-filter-disclosure is-hidden"></div>
             <label for="characterDetailScope">TF-IDF scope</label>
             <select id="characterDetailScope">
               <option value="global" selected>Global (all characters)</option>
@@ -315,6 +336,7 @@
     const titleEl = overlay.querySelector('#characterDetailTitle');
     const metaEl = overlay.querySelector('#characterDetailMeta');
     const filterNamesToggle = overlay.querySelector('#characterDetailFilterNames');
+    const filterDisclosureEl = overlay.querySelector('#characterDetailFilterDisclosure');
     const scopeSel = overlay.querySelector('#characterDetailScope');
     const tabBtns = Array.from(overlay.querySelectorAll('.play-detail-tab-btn'));
     const sortableHeaders = Array.from(overlay.querySelectorAll('th[data-key]'));
@@ -358,6 +380,44 @@
         if (!key || key !== characterDetailState.sortKey) return;
         th.classList.add(characterDetailState.sortDir === 'asc' ? 'sorted-asc' : 'sorted-desc');
       });
+    }
+
+    function renderFilterDisclosure() {
+      if (!filterDisclosureEl) return;
+
+      const character = charactersById && charactersById.get(characterDetailState.characterId);
+      const playId = character ? Number(character.play_id) : null;
+      const play = Number.isInteger(playId) && playsById ? playsById.get(playId) : null;
+      const playLabel = (play && (play.title || play.abbr)) || 'this play';
+      const display = getPlayFilterDisplayData(playId);
+
+      if (!characterDetailState.excludeCharacterNames) {
+        filterDisclosureEl.innerHTML = '';
+        setElementHidden(filterDisclosureEl, true);
+        return;
+      }
+
+      const tokenList = display.tokens.length
+        ? escapeHTML(display.tokens.join(', '))
+        : '<span class="muted">None</span>';
+      const phraseList = display.phrases.length
+        ? display.phrases.map(phrase => `&quot;${escapeHTML(phrase)}&quot;`).join(', ')
+        : '<span class="muted">None</span>';
+
+      filterDisclosureEl.innerHTML = `
+        <details class="excluded-terms-details">
+          <summary>Filtering ${display.total} terms for ${escapeHTML(playLabel)}</summary>
+          <div class="excluded-terms-group">
+            <span class="excluded-terms-label">Single tokens</span>
+            <span class="excluded-terms-list">${tokenList}</span>
+          </div>
+          <div class="excluded-terms-group">
+            <span class="excluded-terms-label">Phrases</span>
+            <span class="excluded-terms-list">${phraseList}</span>
+          </div>
+        </details>
+      `;
+      setElementHidden(filterDisclosureEl, false);
     }
 
     function renderRows() {
@@ -439,6 +499,7 @@
       filterNamesToggle.addEventListener('change', () => {
         characterDetailState.excludeCharacterNames = !!filterNamesToggle.checked;
         updateSliderUi();
+        renderFilterDisclosure();
         renderRows();
       });
     }
@@ -500,6 +561,7 @@
       setTab,
       updateSliderUi,
       renderRows,
+      renderFilterDisclosure,
       ensureScopeDataLoaded
     };
     return characterDetailEls;
@@ -632,6 +694,7 @@
     modal.overlay.classList.add('open');
     modal.setLoading('Computing global TF-IDF...');
     modal.updateSliderUi();
+    modal.renderFilterDisclosure();
 
     await modal.ensureScopeDataLoaded('global');
     if (characterDetailState.characterId !== characterId) return;
