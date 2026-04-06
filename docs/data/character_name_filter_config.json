@@ -13,7 +13,8 @@
     "Henry V": ["Chorus"],
     "Romeo and Juliet": ["Nurse"],
     "Macbeth": ["Porter"],
-    "Twelfth Night": ["Cesario", "Topas"]
+    "Twelfth Night": ["Cesario", "Topas"],
+    "The Taming of the Shrew": ["Kate"]
   },
   "play_removals": {}
 }
