@@ -147,7 +147,6 @@
             act: line.act,
             scene: line.scene,
             line_num: line.line_num,
-            speaker: line.speaker || '',
             text: rawText,
             highlightRegex
           });
@@ -253,12 +252,6 @@
         const tdScene = document.createElement('td');
         tdScene.textContent = sceneVal;
 
-        const tdLineNum = document.createElement('td');
-        tdLineNum.textContent = row.line_num;
-
-        const tdSpeaker = document.createElement('td');
-        tdSpeaker.textContent = row.speaker;
-
         const tdText = document.createElement('td');
         tdText.className = 'line-text';
         tdText.innerHTML = (getColorScaleState().highlightEnabled && row.highlightRegex)
@@ -268,8 +261,6 @@
         tr.appendChild(tdPlay);
         tr.appendChild(tdAct);
         tr.appendChild(tdScene);
-        tr.appendChild(tdLineNum);
-        tr.appendChild(tdSpeaker);
         tr.appendChild(tdText);
         els.tableBody.appendChild(tr);
       }
@@ -280,7 +271,7 @@
         setElementHidden(els.pagination, filtered.length <= 25);
       }
       if (els.pageInfo) els.pageInfo.textContent = `Page ${state.currentPage} of ${totalPages}`;
-      if (els.totalInfo) els.totalInfo.textContent = `(${filtered.length} total lines)`;
+      if (els.totalInfo) els.totalInfo.textContent = `(${filtered.length} total paragraphs)`;
       if (els.firstPage) els.firstPage.disabled = state.currentPage === 1;
       if (els.prevPage) els.prevPage.disabled = state.currentPage === 1;
       if (els.nextPage) els.nextPage.disabled = state.currentPage === totalPages;
@@ -294,12 +285,10 @@
     function setHeaders() {
       if (!els.headRow) return;
       const cols = [
-        { key: 'play_title', label: 'Play', defaultDir: 'asc', type: 'text' },
-        { key: 'act', label: 'Act', type: 'number' },
-        { key: 'scene', label: 'Scene', type: 'number' },
-        { key: 'line_num', label: 'Line #', type: 'number' },
-        { key: 'speaker', label: 'Speaker', defaultDir: 'asc', type: 'text' },
-        { key: 'text', label: 'Text', defaultDir: 'asc', type: 'text' }
+        { key: 'play_title', label: 'Work', defaultDir: 'asc', type: 'text' },
+        { key: 'act', label: 'Chapter', type: 'number' },
+        { key: 'scene', label: 'Paragraph', type: 'number' },
+        { key: 'text', label: 'Paragraph Text', defaultDir: 'asc', type: 'text' }
       ];
 
       els.headRow.innerHTML = '';
@@ -353,14 +342,14 @@
 
       const rows = buildLinesRows(query);
       if (!rows) {
-        els.tableBody.innerHTML = '<tr><td colspan="6" class="warning">Invalid search or no data available.</td></tr>';
+        els.tableBody.innerHTML = '<tr><td colspan="4" class="warning">Invalid search or no paragraph data available.</td></tr>';
         setElementHidden(els.pagination, true);
         updateFilterActions();
         return;
       }
 
       if (rows.length === 0) {
-        els.tableBody.innerHTML = '<tr><td colspan="6" class="muted">No lines matched.</td></tr>';
+        els.tableBody.innerHTML = '<tr><td colspan="4" class="muted">No paragraphs matched.</td></tr>';
         setElementHidden(els.pagination, true);
         updateFilterActions();
         return;
@@ -489,9 +478,9 @@
         });
       }
 
-      if (els.downloadCsv) {
+        if (els.downloadCsv) {
         els.downloadCsv.addEventListener('click', () => {
-          const name = `lines-${Date.now()}.csv`;
+          const name = `paragraphs-${Date.now()}.csv`;
           downloadCsvAll(name);
         });
       }

@@ -57,7 +57,7 @@
         <h4>Filter: ${th.textContent.replace('⚙','').trim()}</h4>
         <div class="row"><input type="text" class="f-pattern" value="${existing.pattern ?? ''}" placeholder="Regex pattern (case-insensitive)"></div>
         <div class="actions"><button class="link-btn f-clear">Clear</button><button class="link-btn f-close">Close</button></div>
-        <div class="hint">Examples: ^Act, Juliet$ , love|death</div>
+        <div class="hint">Examples: ^Gen, John$, faith|hope</div>
       `;
     }
 
