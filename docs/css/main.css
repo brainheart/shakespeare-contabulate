@@ -724,7 +724,7 @@ th { position: sticky; }
   text-decoration: underline;
 }
 .is-hidden {
-  display: none;
+  display: none !important;
 }
 
 /* Loading indicator */
