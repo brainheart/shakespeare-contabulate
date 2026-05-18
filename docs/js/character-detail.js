@@ -29,7 +29,7 @@
     characterId: null,
     currentN: 1,
     scope: 'global',
-    sortKey: 'count',
+    sortKey: 'tfidf',
     sortDir: 'desc',
     excludeCharacterNames: true,
     threshold: 0,
@@ -456,7 +456,7 @@
       characterDetailState.currentN = n;
       tabBtns.forEach(btn => btn.classList.toggle('active', Number(btn.dataset.n) === n));
       characterDetailState.threshold = 0;
-      characterDetailState.sortKey = 'count';
+      characterDetailState.sortKey = 'tfidf';
       characterDetailState.sortDir = 'desc';
       updateSliderUi();
       renderRows();
@@ -488,7 +488,7 @@
     slider.addEventListener('input', () => {
       characterDetailState.threshold = Number(slider.value) || 0;
       if (characterDetailState.threshold === 0) {
-        characterDetailState.sortKey = 'count';
+        characterDetailState.sortKey = 'tfidf';
         characterDetailState.sortDir = 'desc';
       }
       sliderValue.textContent = characterDetailState.threshold.toFixed(4);
@@ -510,7 +510,7 @@
         if (nextScope === characterDetailState.scope) return;
         characterDetailState.scope = nextScope;
         characterDetailState.threshold = 0;
-        characterDetailState.sortKey = 'count';
+        characterDetailState.sortKey = 'tfidf';
         characterDetailState.sortDir = 'desc';
 
         if (characterDetailState.dataByScope[nextScope]) {

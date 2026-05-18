@@ -105,6 +105,7 @@
       }
       const queryTokens = window.normalizeTerm(query).split(/\s+/).filter(Boolean).slice(0, n);
       const queryNgram = queryTokens.join(' ');
+      const showAllLines = !queryNgram && !isRegex;
 
       for (const line of allLines) {
         let matches = false;
@@ -127,13 +128,16 @@
             highlightRegex = matchedNgrams.length > 50 ? null : window.buildHighlightRegexFromNgrams(matchedNgrams);
           }
         } else {
-          if (!queryNgram) return null;
-          let count = 0;
-          for (const ng of ngrams) {
-            if (ng === queryNgram) count++;
+          if (showAllLines) {
+            matches = true;
+          } else {
+            let count = 0;
+            for (const ng of ngrams) {
+              if (ng === queryNgram) count++;
+            }
+            matches = count > 0;
+            if (matches) highlightRegex = window.buildHighlightRegexFromNgrams([queryNgram]);
           }
-          matches = count > 0;
-          if (matches) highlightRegex = window.buildHighlightRegexFromNgrams([queryNgram]);
         }
 
         if (matches) {
@@ -333,12 +337,6 @@
     function doSearch() {
       if (!els.query || !els.tableBody || !els.pagination) return;
       const query = els.query.value.trim();
-      if (!query) {
-        els.tableBody.innerHTML = '';
-        setElementHidden(els.pagination, true);
-        updateFilterActions();
-        return;
-      }
 
       const rows = buildLinesRows(query);
       if (!rows) {

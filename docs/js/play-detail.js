@@ -27,7 +27,7 @@
   const playDetailState = {
     playId: null,
     currentN: 1,
-    sortKey: 'count',
+    sortKey: 'tfidf',
     sortDir: 'desc',
     excludeCharacterNames: true,
     threshold: 0,
@@ -433,7 +433,7 @@
       playDetailState.currentPage = 1;
       tabBtns.forEach(btn => btn.classList.toggle('active', Number(btn.dataset.n) === n));
       playDetailState.threshold = 0;
-      playDetailState.sortKey = 'count';
+      playDetailState.sortKey = 'tfidf';
       playDetailState.sortDir = 'desc';
       updateSliderUi();
       renderRows();
@@ -447,7 +447,7 @@
       playDetailState.threshold = Number(slider.value) || 0;
       playDetailState.currentPage = 1;
       if (playDetailState.threshold === 0) {
-        playDetailState.sortKey = 'count';
+        playDetailState.sortKey = 'tfidf';
         playDetailState.sortDir = 'desc';
       }
       sliderValue.textContent = playDetailState.threshold.toFixed(4);
