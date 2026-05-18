@@ -648,6 +648,7 @@
       
       setElementHidden(segmentsTab, targetTab !== 'segments');
       setElementHidden(linesTab, targetTab !== 'lines');
+      if (targetTab === 'lines') doLinesSearch();
       updateDeepLink();
     });
   });
@@ -852,7 +853,7 @@
       }
       // Trigger renders
       doSearch();
-      const lqv = document.getElementById('linesQuery').value.trim(); if (lqv) doLinesSearch();
+      doLinesSearch();
       applyColorScalesForVisibleTables();
       appliedDeepLinkState = true;
     } catch(e) { /* ignore */ }
