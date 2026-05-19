@@ -150,6 +150,8 @@
             play_id: line.play_id,
             act: line.act,
             scene: line.scene,
+            act_label: line.act_label,
+            scene_label: line.scene_label,
             line_num: line.line_num,
             text: rawText,
             highlightRegex
@@ -275,7 +277,7 @@
         setElementHidden(els.pagination, filtered.length <= 25);
       }
       if (els.pageInfo) els.pageInfo.textContent = `Page ${state.currentPage} of ${totalPages}`;
-      if (els.totalInfo) els.totalInfo.textContent = `(${filtered.length} total paragraphs)`;
+      if (els.totalInfo) els.totalInfo.textContent = `(${filtered.length} total lines)`;
       if (els.firstPage) els.firstPage.disabled = state.currentPage === 1;
       if (els.prevPage) els.prevPage.disabled = state.currentPage === 1;
       if (els.nextPage) els.nextPage.disabled = state.currentPage === totalPages;
@@ -289,10 +291,10 @@
     function setHeaders() {
       if (!els.headRow) return;
       const cols = [
-        { key: 'play_title', label: 'Work', defaultDir: 'asc', type: 'text' },
-        { key: 'act', label: 'Chapter', type: 'number' },
-        { key: 'scene', label: 'Paragraph', type: 'number' },
-        { key: 'text', label: 'Paragraph Text', defaultDir: 'asc', type: 'text' }
+        { key: 'play_title', label: 'Play', defaultDir: 'asc', type: 'text' },
+        { key: 'act', label: 'Act', type: 'number' },
+        { key: 'scene', label: 'Scene', type: 'number' },
+        { key: 'text', label: 'Line', defaultDir: 'asc', type: 'text' }
       ];
 
       els.headRow.innerHTML = '';
@@ -340,14 +342,14 @@
 
       const rows = buildLinesRows(query);
       if (!rows) {
-        els.tableBody.innerHTML = '<tr><td colspan="4" class="warning">Invalid search or no paragraph data available.</td></tr>';
+        els.tableBody.innerHTML = '<tr><td colspan="4" class="warning">Invalid search or no line data available.</td></tr>';
         setElementHidden(els.pagination, true);
         updateFilterActions();
         return;
       }
 
       if (rows.length === 0) {
-        els.tableBody.innerHTML = '<tr><td colspan="4" class="muted">No paragraphs matched.</td></tr>';
+        els.tableBody.innerHTML = '<tr><td colspan="4" class="muted">No lines matched.</td></tr>';
         setElementHidden(els.pagination, true);
         updateFilterActions();
         return;
@@ -478,7 +480,7 @@
 
         if (els.downloadCsv) {
         els.downloadCsv.addEventListener('click', () => {
-          const name = `paragraphs-${Date.now()}.csv`;
+          const name = `lines-${Date.now()}.csv`;
           downloadCsvAll(name);
         });
       }

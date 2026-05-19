@@ -43,7 +43,7 @@
   function isPlayDetailCell(granVal, key, row) {
     if (!row || row.play_id == null) return false;
     if (granVal === 'play' && (key === 'title' || key === 'id')) return true;
-    if ((granVal === 'scene' || granVal === 'act' || granVal === 'character') && key === 'play_title') return true;
+    if ((granVal === 'scene' || granVal === 'act' || granVal === 'line' || granVal === 'character') && key === 'play_title') return true;
     return false;
   }
 
