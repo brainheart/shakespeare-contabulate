@@ -1327,7 +1327,7 @@
             row[`${termKeys[idx]}_count`] = c;
           }
         });
-        if (hasTerm) {
+        if (hasTerm || lineMatchers.length === 0) {
           row.line_highlight_regex = (matchedNgrams.length === 0 || matchedNgrams.length > 60)
             ? null
             : buildHighlightRegexFromNgrams(matchedNgrams);
