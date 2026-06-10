@@ -1,12 +1,23 @@
 
-import re, json
+import re, json, math
 from pathlib import Path
 import xml.etree.ElementTree as ET
 
 TOKEN_RE = re.compile(r"[A-Za-z]+")
+SENT_RE = re.compile(r"[.!?]+")
 def localname(tag): return tag.rsplit('}',1)[1] if '}' in tag else tag
 def text_of(elem): return ''.join(elem.itertext())
 def tokenize(text): return TOKEN_RE.findall((text or "").lower())
+def count_sentences(text): return len(SENT_RE.findall(text or ""))
+
+def mattr(tokens, window=50):
+    """Moving-average type-token ratio: lexical diversity comparable across lengths."""
+    if not tokens: return 0.0
+    if len(tokens) < window:
+        return len(set(tokens)) / len(tokens)
+    ratios = [len(set(tokens[i:i + window])) / window
+              for i in range(len(tokens) - window + 1)]
+    return sum(ratios) / len(ratios)
 
 def find_first_performance_year(root):
     for d in root.iter():
@@ -49,6 +60,7 @@ def parse_play(path: Path, play_id: int, metadata: dict = None):
         first_year = find_first_performance_year(root)
 
     scenes = []; lines_map = {}
+    play_tokens = []  # ordered token stream for play-level MATTR
     token_idx = {}; token2_idx={}; token3_idx={}
     characters = {}; tokens_char_tmp = {}
     # character-level bigrams & trigrams temporary stores
@@ -173,7 +185,7 @@ def parse_play(path: Path, play_id: int, metadata: dict = None):
                 speeches = [e for e in scene.iter() if localname(e.tag) == "sp"]
                 num_speeches = len(speeches); play_num_speeches += num_speeches
                 num_lines = 0; char_set=set()
-                scene_unigrams={}; scene_bigrams={}; scene_trigrams={}; scene_lines=[]; line_idx=0
+                scene_unigrams={}; scene_bigrams={}; scene_trigrams={}; scene_lines=[]; line_idx=0; scene_sentences=0
                 for sp in speeches:
                     speaker_elems = [e for e in sp if localname(e.tag) == "speaker"]
                     speakers = []
@@ -201,6 +213,14 @@ def parse_play(path: Path, play_id: int, metadata: dict = None):
                         scene_lines.append(line_row)
                         num_lines += 1
                         toks = tokenize(t)
+                        play_tokens.extend(toks)
+                        n_sent = count_sentences(t)
+                        scene_sentences += n_sent
+                        if n_sent:
+                            for nm in speakers:
+                                agg = characters.get((play_id, nm))
+                                if agg is not None:
+                                    agg["sentence_count"] = agg.get("sentence_count", 0) + n_sent
                         for tok in toks:
                             scene_unigrams[tok] = scene_unigrams.get(tok,0)+1
                             for nm in speakers:
@@ -239,7 +259,7 @@ def parse_play(path: Path, play_id: int, metadata: dict = None):
                 scene_row = {"scene_id": scene_id, "canonical_id": scene_canonical_id, "play_id": play_id, "play_title": title, "genre": genre,
                                "act": act_sort, "scene": scene_idx, "heading": heading, "total_words": total_words,
                                "unique_words": unique_words, "num_speeches": num_speeches, "num_lines": num_lines,
-                               "characters_present_count": len(char_set)}
+                               "characters_present_count": len(char_set), "sentence_count": scene_sentences}
                 if act_label: scene_row["act_label"] = act_label
                 if scene_label: scene_row["scene_label"] = scene_label
                 scenes.append(scene_row)
@@ -282,7 +302,7 @@ def parse_play(path: Path, play_id: int, metadata: dict = None):
             speeches = [e for e in scene.iter() if localname(e.tag) == "sp"]
             num_speeches = len(speeches); play_num_speeches += num_speeches
             num_lines = 0; char_set=set()
-            scene_unigrams={}; scene_bigrams={}; scene_trigrams={}; scene_lines=[]; line_idx=0
+            scene_unigrams={}; scene_bigrams={}; scene_trigrams={}; scene_lines=[]; line_idx=0; scene_sentences=0
             for sp in speeches:
                 speaker_elems = [e for e in sp if localname(e.tag) == "speaker"]
                 speakers = []
@@ -310,6 +330,14 @@ def parse_play(path: Path, play_id: int, metadata: dict = None):
                     scene_lines.append(line_row)
                     num_lines += 1
                     toks = tokenize(t)
+                    play_tokens.extend(toks)
+                    n_sent = count_sentences(t)
+                    scene_sentences += n_sent
+                    if n_sent:
+                        for nm in speakers:
+                            agg = characters.get((play_id, nm))
+                            if agg is not None:
+                                agg["sentence_count"] = agg.get("sentence_count", 0) + n_sent
                     for tok in toks:
                         scene_unigrams[tok] = scene_unigrams.get(tok,0)+1
                         for nm in speakers:
@@ -348,7 +376,7 @@ def parse_play(path: Path, play_id: int, metadata: dict = None):
             scene_row = {"scene_id": scene_id, "canonical_id": scene_canonical_id, "play_id": play_id, "play_title": title, "genre": genre,
                            "act": act_sort, "scene": scene_idx, "heading": heading, "total_words": total_words,
                            "unique_words": unique_words, "num_speeches": num_speeches, "num_lines": num_lines,
-                           "characters_present_count": len(char_set)}
+                           "characters_present_count": len(char_set), "sentence_count": scene_sentences}
             if act_label: scene_row["act_label"] = act_label
             if scene_label: scene_row["scene_label"] = scene_label
             scenes.append(scene_row)
@@ -361,7 +389,8 @@ def parse_play(path: Path, play_id: int, metadata: dict = None):
                 token3_idx.setdefault(key, []).append((scene_id, cnt))
     play_row = {"play_id": play_id, "title": title, "abbr": play_abbr, "genre": genre, "first_performance_year": first_year,
                 "num_acts": act_total, "num_scenes": play_num_scenes, "num_speeches": play_num_speeches,
-                "total_words": play_total_words, "total_lines": play_total_lines}
+                "total_words": play_total_words, "total_lines": play_total_lines,
+                "mattr_50": round(mattr(play_tokens), 3)}
     return scenes, lines_map, token_idx, token2_idx, token3_idx, characters, tokens_char_tmp, tokens_char2_tmp, tokens_char3_tmp, play_row
 
 def build(tei_dir: Path, out_dir: Path):
@@ -557,6 +586,34 @@ def build(tei_dir: Path, out_dir: Path):
             if gender == 'M' and h == 'F':
                 gender = 'F'
         ch["gender"] = gender
+
+    # Additive metric fields (char_count, rarity_sum) per scene and character.
+    # The UI derives ratio metrics (mean word length, lexical rarity) at any
+    # aggregation level by summing these and dividing by total words.
+    corpus_freq = {tok: sum(c for _, c in postings) for tok, postings in token_idx_all.items()}
+    corpus_total = sum(corpus_freq.values()) or 1
+    tok_rarity = {tok: -math.log10(f / corpus_total) for tok, f in corpus_freq.items()}
+    scene_chars = {}; scene_rarity = {}
+    for tok, postings in token_idx_all.items():
+        L = len(tok); r = tok_rarity[tok]
+        for sid, c in postings:
+            scene_chars[sid] = scene_chars.get(sid, 0) + L * c
+            scene_rarity[sid] = scene_rarity.get(sid, 0.0) + r * c
+    for sc in scenes_all:
+        sid = sc["scene_id"]
+        sc["char_count"] = scene_chars.get(sid, 0)
+        sc["rarity_sum"] = round(scene_rarity.get(sid, 0.0), 3)
+    char_chars = {}; char_rarity = {}
+    for tok, postings in tokens_char_idx.items():
+        L = len(tok); r = tok_rarity[tok]
+        for cid, c in postings:
+            char_chars[cid] = char_chars.get(cid, 0) + L * c
+            char_rarity[cid] = char_rarity.get(cid, 0.0) + r * c
+    for ch in characters_rows:
+        cid = ch["character_id"]
+        ch.setdefault("sentence_count", 0)
+        ch["char_count"] = char_chars.get(cid, 0)
+        ch["rarity_sum"] = round(char_rarity.get(cid, 0.0), 3)
 
     (data_dir / "plays.json").write_text(json.dumps(plays, ensure_ascii=False), encoding="utf-8")
     (data_dir / "chunks.json").write_text(json.dumps(scenes_all, ensure_ascii=False), encoding="utf-8")
