@@ -497,13 +497,30 @@
   }
   let vocabExcludeNames = false;
   let nameEditorOpen = false;
+  // Word/bigram/trigram share one filter map, so switching the n-gram size
+  // keeps the location/genre scope (and the n-gram text filter) in place.
+  function segmentsFilterMapKey(value) {
+    const g = normalizeGranularity(value);
+    return isVocabGranularity(g) ? 'vocab' : g;
+  }
   function getSegmentsFiltersMap() {
-    const g = normalizeGranularity(typeof gran !== 'undefined' && gran ? gran.value : 'scene');
-    // Word/bigram/trigram share one scope: switching the n-gram size keeps
-    // the location/genre filters (and the n-gram text filter) in place.
-    const key = isVocabGranularity(g) ? 'vocab' : g;
+    const key = segmentsFilterMapKey(typeof gran !== 'undefined' && gran ? gran.value : 'scene');
     if (!segmentsFiltersByGran.has(key)) segmentsFiltersByGran.set(key, new Map());
     return segmentsFiltersByGran.get(key);
+  }
+  // The location/genre scope follows manual granularity switches: what you
+  // are looking at stays what you are looking at, one level up or down.
+  let lastGranValue = null;
+  function carryScopeFilters(fromGranValue) {
+    if (fromGranValue == null) return;
+    const fromMap = segmentsFiltersByGran.get(segmentsFilterMapKey(fromGranValue));
+    const toMap = getSegmentsFiltersMap();
+    if (!fromMap || fromMap === toMap) return;
+    for (const k of ['location', 'genre']) {
+      const v = fromMap.get(k);
+      if (v) toMap.set(k, { ...v });
+      else toMap.delete(k);
+    }
   }
   // Drill-down constants (declared early: deep links render before the
   // drill helpers further down are reached in source order)
@@ -1597,7 +1614,8 @@
             const ngramCount = getRowNgramCount(totalWords);
             const numSpeeches = c.num_speeches || 0;
             const gender = (c.gender ?? c.sex ?? 'A').toString().toUpperCase();
-            return { character_id:c.character_id, play_id:c.play_id, play_title:c.play_title, name:c.name, gender, num_speeches:numSpeeches, line_count:c.line_count ?? 0, total_words_spoken:totalWords, ngram_count:ngramCount };
+            const playMeta = playsById.get(c.play_id);
+            return { character_id:c.character_id, play_id:c.play_id, play_title:c.play_title, location: playMeta ? playMeta.location : '', genre: playMeta ? playMeta.genre : '', name:c.name, gender, num_speeches:numSpeeches, line_count:c.line_count ?? 0, total_words_spoken:totalWords, ngram_count:ngramCount };
           });
         });
       }
@@ -1877,7 +1895,8 @@
             const ngramCount = getRowNgramCount(totalWords);
             const numSpeeches = c.num_speeches || 0;
             const gender = (c.gender ?? c.sex ?? 'A').toString().toUpperCase();
-            return { character_id:c.character_id, play_id:c.play_id, play_title:c.play_title, name:c.name, gender, num_speeches:numSpeeches, line_count:c.line_count ?? 0, total_words_spoken:totalWords, ngram_count:ngramCount };
+            const playMeta = playsById.get(c.play_id);
+            return { character_id:c.character_id, play_id:c.play_id, play_title:c.play_title, location: playMeta ? playMeta.location : '', genre: playMeta ? playMeta.genre : '', name:c.name, gender, num_speeches:numSpeeches, line_count:c.line_count ?? 0, total_words_spoken:totalWords, ngram_count:ngramCount };
           });
           const denom = denomFor(normalizeTermN(term.n) || 1,'character',c);
           row[`${termKeys[termIdx]}_count`] = count;
@@ -1901,6 +1920,7 @@
       // At vocabulary granularities the location filter is a scope applied
       // while building rows (they have no location field of their own)
       if ((key === 'location' || key === 'genre') && isVocabGranularity(gran.value)) continue;
+      if (key === 'location' && gran.value === 'genre') continue;
       const type = f.type || 'text';
       if (type === 'number') {
         const hasMin = f.min != null && f.min !== '';
@@ -1918,6 +1938,19 @@
         });
       } else {
         if (!f.pattern) continue;
+        // Anchored location prefixes are subtree scopes: finer views show
+        // the scope's descendants, coarser views its containing rows (so
+        // zooming out never comes up empty).
+        if (key === 'location' && f.pattern.startsWith('^') && !f.pattern.endsWith('$')) {
+          const literal = f.pattern.slice(1).replace(/\\(.)/g, '$1');
+          if ('^' + escapeRegexText(literal) === f.pattern) {
+            out = out.filter(r => {
+              const loc = String(r[key] ?? '') + '.';
+              return loc.startsWith(literal) || literal.startsWith(loc);
+            });
+            continue;
+          }
+        }
         let re = null;
         try { re = new RegExp(f.pattern, 'i'); } catch(e) { re = null; }
         if (!re) continue;
@@ -2120,12 +2153,12 @@
         title: `Show the lines of ${row.play_title || ''} ${row.act ?? ''}.${row.scene}`.trim()
       };
     }
-    // Characters sit outside the location hierarchy, so their Play cell
-    // filters by the play title column instead of a location prefix.
-    if (granVal === 'character' && key === 'play_title' && row.play_title) {
+    // The Play cell in the Character view scopes to the play's location
+    // subtree, so the scope carries into other granularities too.
+    if (granVal === 'character' && key === 'play_title' && row.play_title && row.location) {
       return {
         target: 'character',
-        columnScope: { key: 'play_title', value: String(row.play_title) },
+        prefix: `${String(row.location)}.`,
         termKey: '',
         text: String(row.play_title),
         title: `Show the characters of ${row.play_title}`
@@ -2603,6 +2636,7 @@
 
   async function doSearch(preferredSortTermIndex = null){
     const requestId = ++segmentsSearchRequestId;
+    lastGranValue = gran.value;
     pruneExtraTermsAgainstPrimary();
     renderExtraTerms();
     if (gran.value === 'line' && (!Array.isArray(allLines) || allLines.length === 0)) {
@@ -2708,7 +2742,10 @@
     });
   }
   ngramMode.addEventListener('change', doSearch);
-  gran.addEventListener('change', doSearch);
+  gran.addEventListener('change', () => {
+    carryScopeFilters(lastGranValue);
+    doSearch();
+  });
   matchMode.addEventListener('change', () => {
     clearTermWarning();
     updateSegmentsMatchModeUI();
