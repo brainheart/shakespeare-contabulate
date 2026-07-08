@@ -13,11 +13,8 @@
 
     let deps = {
       getSegmentsQueryValue: () => '',
-      getLinesQueryValue: () => '',
       hasActiveSegmentsSearch: null,
-      hasActiveLinesSearch: null,
-      doSearch: null,
-      doLinesSearch: null
+      doSearch: null
     };
 
   function syncColorScaleToggles() {
@@ -55,11 +52,6 @@
         ? !!deps.hasActiveSegmentsSearch()
         : !!(typeof deps.getSegmentsQueryValue === 'function' ? deps.getSegmentsQueryValue() : '');
       if (hasSegmentsSearch && typeof deps.doSearch === 'function') deps.doSearch();
-
-      const hasLinesSearch = (typeof deps.hasActiveLinesSearch === 'function')
-        ? !!deps.hasActiveLinesSearch()
-        : !!(typeof deps.getLinesQueryValue === 'function' ? deps.getLinesQueryValue() : '');
-      if (hasLinesSearch && typeof deps.doLinesSearch === 'function') deps.doLinesSearch();
     }
 
   function clearColorScale(table) {
@@ -117,7 +109,6 @@
 
   function applyColorScalesForVisibleTables() {
     applyOrClear('#results');
-    applyOrClear('#linesResults');
     renderAllLegends();
   }
 
@@ -170,6 +161,9 @@
   function renderAllLegends() {
     const pal = getPalette(state.colorScalePalette, state.colorScaleSteps);
     document.querySelectorAll('.color-scale-legend').forEach(el => renderLegend(el, pal));
+    document.querySelectorAll('.color-scale-legend-inline').forEach(el => {
+      el.classList.toggle('is-hidden', !state.colorScaleEnabled);
+    });
   }
 
   function initColorScaleModule(initDeps) {

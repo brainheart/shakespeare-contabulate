@@ -139,5 +139,29 @@ class TestCharacters(unittest.TestCase):
         self.assertGreater(len(hamlets), 0, 'Hamlet should exist as a character')
 
 
+class TestPublishedMetadata(unittest.TestCase):
+    def test_no_commentary_data_ships(self):
+        self.assertFalse((DATA_DIR / 'commentary_interest.json').exists())
+
+    def test_hapax_counts(self):
+        chunks = json.loads((DATA_DIR / 'chunks.json').read_text())
+        self.assertIn('hapax_count', chunks[0])
+        self.assertGreater(sum(c['hapax_count'] for c in chunks), 5000)
+        chars = json.loads((DATA_DIR / 'characters.json').read_text())
+        self.assertIn('hapax_count', chars[0])
+        # Every corpus hapax spoken by a character is attributed to one
+        total_char_hapax = sum(c['hapax_count'] for c in chars)
+        total_scene_hapax = sum(c['hapax_count'] for c in chunks)
+        self.assertLessEqual(total_char_hapax, total_scene_hapax)
+
+    def test_instance_json_published(self):
+        instance = json.loads((DATA_DIR.parent / 'instance.json').read_text())
+        self.assertEqual(instance['id'], 'shakespeare')
+        self.assertEqual(instance['stats']['texts'], 37)
+        self.assertEqual(instance['stats']['segments'], 109124)
+        self.assertEqual(instance['stats']['segment_label'], 'lines')
+        self.assertEqual(len(instance['sample_queries']), 1)
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -46,6 +46,12 @@ function normName(s){ return String(s||'').toUpperCase().replace(/\s+/g,' ').tri
 
 function fmtPct(num) { return (num*100).toFixed(3) + '%'; }
 
+function formatCellNumber(value) {
+  const num = Number(value);
+  if (!Number.isFinite(num)) return value == null ? '' : String(value);
+  return num.toLocaleString('en-US', { maximumFractionDigits: 4 });
+}
+
 function escapeHTML(s) {
   return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]));
 }
@@ -190,6 +196,7 @@ function hideElement(el) {
   window.quantiles = quantiles;
   window.normName = normName;
   window.fmtPct = fmtPct;
+  window.formatCellNumber = formatCellNumber;
   window.escapeHTML = escapeHTML;
   window.highlightHTML = highlightHTML;
   window.toCsvValue = toCsvValue;

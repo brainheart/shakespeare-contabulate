@@ -1,4 +1,5 @@
 
+import datetime
 import re, json, math
 from pathlib import Path
 import xml.etree.ElementTree as ET
@@ -614,6 +615,46 @@ def build(tei_dir: Path, out_dir: Path):
         ch.setdefault("sentence_count", 0)
         ch["char_count"] = char_chars.get(cid, 0)
         ch["rarity_sum"] = round(char_rarity.get(cid, 0.0), 3)
+
+    # Hapax legomena (words appearing exactly once in the corpus), counted
+    # per scene and per character so % Hapax works at every granularity.
+    hapax_words = {tok for tok, f in corpus_freq.items() if f == 1}
+    scene_hapax = {}
+    for tok in hapax_words:
+        sid = token_idx_all[tok][0][0]
+        scene_hapax[sid] = scene_hapax.get(sid, 0) + 1
+    for sc in scenes_all:
+        sc["hapax_count"] = scene_hapax.get(sc["scene_id"], 0)
+    char_hapax = {}
+    for tok, postings in tokens_char_idx.items():
+        if tok in hapax_words:
+            for cid, c in postings:
+                char_hapax[cid] = char_hapax.get(cid, 0) + 1
+    for ch in characters_rows:
+        ch["hapax_count"] = char_hapax.get(ch["character_id"], 0)
+
+    # Publish instance metadata for the contabulate.org hub: curated fields
+    # from instance-meta.json merged with computed corpus stats.
+    instance_meta_path = Path(__file__).parent / "instance-meta.json"
+    instance_meta = json.loads(instance_meta_path.read_text(encoding="utf-8")) if instance_meta_path.exists() else {}
+    instance_payload = {
+        "schema": 1,
+        **instance_meta,
+        "updated": datetime.date.today().isoformat(),
+        "stats": {
+            "texts": len(plays),
+            "text_label": instance_meta.get("text_label", "plays"),
+            "segments": len(all_lines),
+            "segment_label": instance_meta.get("segment_label", "lines"),
+            "words": sum(p.get("total_words", 0) for p in plays),
+            "distinct_words": len(token_idx_all),
+        },
+    }
+    instance_payload.pop("text_label", None)
+    instance_payload.pop("segment_label", None)
+    (out_dir / "instance.json").write_text(
+        json.dumps(instance_payload, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
 
     (data_dir / "plays.json").write_text(json.dumps(plays, ensure_ascii=False), encoding="utf-8")
     (data_dir / "chunks.json").write_text(json.dumps(scenes_all, ensure_ascii=False), encoding="utf-8")
