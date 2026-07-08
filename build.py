@@ -633,6 +633,15 @@ def build(tei_dir: Path, out_dir: Path):
     for ch in characters_rows:
         ch["hapax_count"] = char_hapax.get(ch["character_id"], 0)
 
+    # Lines actually spoken by each character (num_lines counts the lines of
+    # the scenes a character appears in, which is a different thing).
+    spoken_lines = {}
+    for ln in all_lines:
+        k = (ln["play_id"], ln["speaker"])
+        spoken_lines[k] = spoken_lines.get(k, 0) + 1
+    for ch in characters_rows:
+        ch["line_count"] = spoken_lines.get((ch["play_id"], ch["name"]), 0)
+
     # Publish instance metadata for the contabulate.org hub: curated fields
     # from instance-meta.json merged with computed corpus stats.
     instance_meta_path = Path(__file__).parent / "instance-meta.json"

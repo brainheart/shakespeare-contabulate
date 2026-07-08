@@ -499,8 +499,11 @@
   let nameEditorOpen = false;
   function getSegmentsFiltersMap() {
     const g = normalizeGranularity(typeof gran !== 'undefined' && gran ? gran.value : 'scene');
-    if (!segmentsFiltersByGran.has(g)) segmentsFiltersByGran.set(g, new Map());
-    return segmentsFiltersByGran.get(g);
+    // Word/bigram/trigram share one scope: switching the n-gram size keeps
+    // the location/genre filters (and the n-gram text filter) in place.
+    const key = isVocabGranularity(g) ? 'vocab' : g;
+    if (!segmentsFiltersByGran.has(key)) segmentsFiltersByGran.set(key, new Map());
+    return segmentsFiltersByGran.get(key);
   }
   // Drill-down constants (declared early: deep links render before the
   // drill helpers further down are reached in source order)
@@ -1594,7 +1597,7 @@
             const ngramCount = getRowNgramCount(totalWords);
             const numSpeeches = c.num_speeches || 0;
             const gender = (c.gender ?? c.sex ?? 'A').toString().toUpperCase();
-            return { character_id:c.character_id, play_id:c.play_id, play_title:c.play_title, name:c.name, gender, num_speeches:numSpeeches, total_words_spoken:totalWords, ngram_count:ngramCount };
+            return { character_id:c.character_id, play_id:c.play_id, play_title:c.play_title, name:c.name, gender, num_speeches:numSpeeches, line_count:c.line_count ?? 0, total_words_spoken:totalWords, ngram_count:ngramCount };
           });
         });
       }
@@ -1860,6 +1863,7 @@
         {key:'gender', label:'Gender', defaultDir:'asc', type:'text'},
         {key:'play_title', label:'Play', defaultDir:'asc', type:'text'},
         {key:'num_speeches', label:'# speeches', type:'number'},
+        {key:'line_count', label:'# lines', type:'number'},
         {key:'ngram_count', label: getBaseCountLabel(), type:'number'}
       ];
       baseCols.push(...metricColsFor(granVal));
@@ -1873,7 +1877,7 @@
             const ngramCount = getRowNgramCount(totalWords);
             const numSpeeches = c.num_speeches || 0;
             const gender = (c.gender ?? c.sex ?? 'A').toString().toUpperCase();
-            return { character_id:c.character_id, play_id:c.play_id, play_title:c.play_title, name:c.name, gender, num_speeches:numSpeeches, total_words_spoken:totalWords, ngram_count:ngramCount };
+            return { character_id:c.character_id, play_id:c.play_id, play_title:c.play_title, name:c.name, gender, num_speeches:numSpeeches, line_count:c.line_count ?? 0, total_words_spoken:totalWords, ngram_count:ngramCount };
           });
           const denom = denomFor(normalizeTermN(term.n) || 1,'character',c);
           row[`${termKeys[termIdx]}_count`] = count;
@@ -2003,6 +2007,7 @@
   function drillRowLabel(granVal, row) {
     if (granVal === 'act') return `${row.play_title || ''} act ${row.act ?? ''}`.trim();
     if (granVal === 'scene') return `${row.play_title || ''} ${row.act ?? ''}.${row.scene ?? ''}`.trim();
+    if (granVal === 'character') return String(row.name || '').replace(/\s+/g, ' ').trim();
     return row.title || row.play_title || row.genre || '';
   }
 
@@ -2016,6 +2021,26 @@
       }
       if (key === 'verse_count') {
         return { vocabNgram: row.ngram, target: 'scene', keepScope: true, count, title: `Show the ${formatCellNumber(count)} scenes containing this ${DRILL_NOUNS[granVal].replace(/s$/, '')}` };
+      }
+      return null;
+    }
+    // Character rows sit outside the location hierarchy: their doors open
+    // the Line view scoped to the character's play plus a Speaker filter.
+    if (granVal === 'character') {
+      const play = playsById.get(row.play_id);
+      if (!play || !play.location || row.name == null) return null;
+      const prefix = `${play.location}.`;
+      const speakerScope = String(row.name);
+      const label = drillRowLabel(granVal, row);
+      if (TERM_COUNT_KEY_RE.test(key)) {
+        const count = Number(row[key]);
+        if (!Number.isFinite(count) || count <= 0) return null;
+        return { target: 'line', prefix, speakerScope, termKey: key, count, title: `Show the matching lines spoken by ${label}` };
+      }
+      if (key === 'line_count') {
+        const count = Number(row[key]);
+        if (!Number.isFinite(count) || count <= 0) return null;
+        return { target: 'line', prefix, speakerScope, termKey: '', count, title: `Show the ${formatCellNumber(count)} lines spoken by ${label}` };
       }
       return null;
     }
@@ -2095,6 +2120,29 @@
         title: `Show the lines of ${row.play_title || ''} ${row.act ?? ''}.${row.scene}`.trim()
       };
     }
+    // Characters sit outside the location hierarchy, so their Play cell
+    // filters by the play title column instead of a location prefix.
+    if (granVal === 'character' && key === 'play_title' && row.play_title) {
+      return {
+        target: 'character',
+        columnScope: { key: 'play_title', value: String(row.play_title) },
+        termKey: '',
+        text: String(row.play_title),
+        title: `Show the characters of ${row.play_title}`
+      };
+    }
+    // Speaker cells narrow the Line view to that speaker, keeping the
+    // current location scope in place.
+    if (granVal === 'line' && key === 'speaker' && row.speaker) {
+      return {
+        target: 'line',
+        columnScope: { key: 'speaker', value: String(row.speaker) },
+        preserveScope: true,
+        termKey: '',
+        text: String(row.speaker),
+        title: `Show the lines spoken by ${String(row.speaker).replace(/\s+/g, ' ').trim()}`
+      };
+    }
     return null;
   }
 
@@ -2105,12 +2153,23 @@
   function drillTo(spec) {
     gran.value = spec.target;
     const filters = getSegmentsFiltersMap();
-    if (spec.genreScope) {
+    if (spec.columnScope) {
+      if (!spec.preserveScope) {
+        filters.delete('location');
+        filters.delete('genre');
+      }
+      filters.set(spec.columnScope.key, { type: 'text', pattern: '^' + escapeRegexText(spec.columnScope.value) + '$' });
+    } else if (spec.genreScope) {
       filters.delete('location');
       filters.set('genre', { type: 'text', pattern: '^' + escapeRegexText(spec.genreScope) + '$' });
     } else {
       filters.delete('genre');
       filters.set('location', { type: 'text', pattern: '^' + escapeRegexText(spec.prefix) });
+    }
+    if (spec.speakerScope != null) {
+      filters.set('speaker', { type: 'text', pattern: '^' + escapeRegexText(spec.speakerScope) + '$' });
+    } else if (!(spec.columnScope && spec.columnScope.key === 'speaker')) {
+      filters.delete('speaker');
     }
     if (spec.termKey) {
       for (const key of Array.from(filters.keys())) {
@@ -2124,7 +2183,9 @@
   // From a vocabulary row into the location dimension: add the n-gram as a
   // term column and require at least one hit of it in the target view.
   function drillVocabNgram(spec) {
-    const scopeFilter = getSegmentsFiltersMap().get('location');
+    const vocabFilters = getSegmentsFiltersMap();
+    const scopeFilter = vocabFilters.get('location');
+    const genreFilter = vocabFilters.get('genre');
     const termSpec = toTermSpec(spec.vocabNgram, 'exact');
     if (!termSpec || !termSpec.n) return;
     termSpec.display = 'count';
@@ -2137,7 +2198,13 @@
     if (termIdx < 0) return;
     gran.value = spec.target;
     const filters = getSegmentsFiltersMap();
+    // The target view shows exactly what the count promised: carry the
+    // vocabulary scope when asked to, and clear any stale scope otherwise.
     if (spec.keepScope && scopeFilter) filters.set('location', { ...scopeFilter });
+    else filters.delete('location');
+    if (spec.keepScope && genreFilter) filters.set('genre', { ...genreFilter });
+    else filters.delete('genre');
+    filters.delete('speaker');
     for (const key of Array.from(filters.keys())) {
       if (TERM_COUNT_KEY_RE.test(key)) filters.delete(key);
     }
@@ -2392,7 +2459,9 @@
         } else if (typeof isCharacterDetailCell === 'function' && isCharacterDetailCell(granVal, k, r)) {
           const v = r[k];
           if (v !== undefined && v !== null && r.character_id != null) {
-            td.appendChild(buildCharacterDetailLink(v, r.character_id));
+            const isNumeric = colTypeByKey.get(k) === 'number' && Number.isFinite(Number(v));
+            td.appendChild(buildCharacterDetailLink(isNumeric ? formatCellNumber(v) : v, r.character_id));
+            if (isNumeric) td.dataset.value = String(v);
           } else {
             td.textContent = (v === undefined || v === null) ? '' : v;
           }

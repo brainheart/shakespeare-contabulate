@@ -162,3 +162,40 @@ test.describe('Lines View', () => {
     await expect(page.locator('#results tbody tr').first()).toBeVisible();
   });
 });
+
+test('vocabulary scope survives switching the n-gram size', async ({ page }) => {
+  await page.goto('/?gran=word&s_ft_location=%5E06%5C.MAC%5C.');
+  await waitForDataLoaded(page);
+  await page.waitForSelector('#results tbody tr', { timeout: 10000 });
+  await expect(page.locator('#segmentsActiveFilters .active-filter-chip')).toContainText('starts with 06.MAC.');
+  // Switching word -> bigram keeps the same scope in place
+  await page.selectOption('#gran', 'bigram');
+  await page.waitForSelector('#results tbody tr', { timeout: 10000 });
+  await expect(page.locator('#segmentsActiveFilters .active-filter-chip')).toContainText('starts with 06.MAC.');
+  await page.selectOption('#gran', 'trigram');
+  await expect(page.locator('#segmentsActiveFilters .active-filter-chip')).toContainText('starts with 06.MAC.');
+});
+
+test('character counts are doors: lines drill and word counts open the vocabulary modal', async ({ page }) => {
+  await page.goto('/?gran=character&sk=line_count&sd=desc');
+  await waitForDataLoaded(page);
+  await page.waitForSelector('#results tbody tr', { timeout: 15000 });
+  const texts = await page.locator('#results thead th').allTextContents();
+  expect(texts.some(t => t.includes('# lines'))).toBeTruthy();
+  const firstRow = page.locator('#results tbody tr').first();
+  const name = (await firstRow.locator('td:first-child').innerText()).replace(/\s+/g, ' ').trim();
+  expect(name).toBe('HAMLET');
+  const lineCount = parseInt((await firstRow.locator('td:nth-child(5)').innerText()).replace(/,/g, ''), 10);
+  // # lines → the Line view scoped to the character's play and speaker
+  await firstRow.locator('td:nth-child(5) button.drill-link').click();
+  await expect(page.locator('#gran')).toHaveValue('line');
+  const chips = await page.locator('#segmentsActiveFilters .active-filter-chip').allTextContents();
+  expect(chips.some(c => c.includes('starts with'))).toBeTruthy();
+  expect(chips.some(c => c.includes('Speaker') && c.includes('HAMLET'))).toBeTruthy();
+  await expect(page.locator('#segmentsTotalInfo')).toContainText(`(${lineCount} total rows)`);
+  // Back returns to the character view, where # words opens the character modal
+  await page.goBack();
+  await expect(page.locator('#gran')).toHaveValue('character');
+  await page.locator('#results tbody tr').first().locator('td:nth-child(6) .character-detail-link').click();
+  await expect(page.locator('.character-detail-modal')).toBeVisible();
+});

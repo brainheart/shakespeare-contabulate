@@ -39,7 +39,9 @@
   let characterDetailEls = null;
 
   function isCharacterDetailCell(granVal, key, row) {
-    return granVal === 'character' && key === 'name' && row && row.character_id != null;
+    // Both the name and the word count open the character's vocabulary:
+    // the count is a door into the words it counts.
+    return granVal === 'character' && (key === 'name' || key === 'ngram_count') && row && row.character_id != null;
   }
 
   function buildCharacterDetailLink(text, characterId) {
@@ -296,7 +298,7 @@
             <button type="button" class="play-detail-tab-btn" data-n="3">Trigrams</button>
           </div>
           <div class="play-detail-controls">
-            <label for="characterDetailSlider">Unusualness</label>
+            <label for="characterDetailSlider">Distinctiveness</label>
             <input id="characterDetailSlider" type="range" min="0" max="0" value="0" step="0.0001">
             <span class="play-detail-value" id="characterDetailValue">0</span>
             <label class="play-detail-toggle" for="characterDetailFilterNames">
@@ -429,7 +431,7 @@
 
       if (!sorted.length) {
         const emptyMsg = (threshold > 0)
-          ? 'No n-grams at this unusualness threshold.'
+          ? 'No n-grams at this distinctiveness threshold.'
           : (characterDetailState.excludeCharacterNames
             ? 'No n-grams remain after excluding character names.'
             : 'No n-grams available.');
@@ -680,9 +682,12 @@
     const play = playsById.get(character.play_id);
     const playTitle = (play && play.title) || character.play_title || 'Unknown play';
     const totalWords = character.total_words_spoken || 0;
-    const totalLines = characterLineCountById && characterLineCountById.has(characterId)
+    const computedLines = characterLineCountById && characterLineCountById.has(characterId)
       ? (characterLineCountById.get(characterId) || 0)
-      : (character.num_lines || 0);
+      : 0;
+    const totalLines = Number.isFinite(Number(character.line_count)) && Number(character.line_count) > 0
+      ? Number(character.line_count)
+      : (computedLines || character.num_lines || 0);
     const totalSpeeches = character.num_speeches || 0;
     const genderCode = (character.gender ?? character.sex ?? 'A').toString().toUpperCase();
     const genderLabel = formatGenderLabel(genderCode);
