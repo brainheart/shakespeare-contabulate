@@ -4,6 +4,7 @@
   "title": "Shakespeare",
   "tagline": "Shakespeare Tabular Explorer",
   "language": "English",
+  "created": "2025-09-09",
   "url": "https://shakespeare.contabulate.org/",
   "source": "https://github.com/brainheart/shakespeare-contabulate",
   "text_label": "plays",

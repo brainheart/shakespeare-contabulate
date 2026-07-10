@@ -657,6 +657,8 @@ def build(tei_dir: Path, out_dir: Path):
             "segment_label": instance_meta.get("segment_label", "lines"),
             "words": sum(p.get("total_words", 0) for p in plays),
             "distinct_words": len(token_idx_all),
+            "commentaries": 0,
+            "comments": 0,
         },
     }
     instance_payload.pop("text_label", None)

@@ -157,9 +157,12 @@ class TestPublishedMetadata(unittest.TestCase):
     def test_instance_json_published(self):
         instance = json.loads((DATA_DIR.parent / 'instance.json').read_text())
         self.assertEqual(instance['id'], 'shakespeare')
+        self.assertEqual(instance['created'], '2025-09-09')
         self.assertEqual(instance['stats']['texts'], 37)
         self.assertEqual(instance['stats']['segments'], 109124)
         self.assertEqual(instance['stats']['segment_label'], 'lines')
+        self.assertEqual(instance['stats']['commentaries'], 0)
+        self.assertEqual(instance['stats']['comments'], 0)
         self.assertEqual(len(instance['sample_queries']), 1)
 
 
