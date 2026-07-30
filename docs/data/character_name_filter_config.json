@@ -1,4 +1,6 @@
 {
+  "enabled": true,
+  "source": "Speaker names parsed from the Folger Shakespeare TEI files, plus the manual overrides below.",
   "notes": [
     "This file contains only manual overrides; the base per-play character names still come from docs/data/characters.json.",
     "Single-word additions/removals act as exact unigram and token overrides.",

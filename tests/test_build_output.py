@@ -17,6 +17,7 @@ class TestBuildOutputExists(unittest.TestCase):
         'plays.json', 'chunks.json', 'characters.json',
         'tokens.json', 'tokens2.json', 'tokens3.json',
         'tokens_char.json', 'tokens_char2.json', 'tokens_char3.json',
+        'character_name_filter_config.json',
     ]
 
     def test_all_data_files_exist(self):
@@ -25,6 +26,11 @@ class TestBuildOutputExists(unittest.TestCase):
 
     def test_lines_file_exists(self):
         self.assertTrue((LINES_DIR / 'all_lines.json').exists(), 'all_lines.json must exist')
+
+    def test_name_filter_is_explicitly_enabled(self):
+        config = json.loads((DATA_DIR / 'character_name_filter_config.json').read_text())
+        self.assertIs(config.get('enabled'), True)
+        self.assertTrue(config.get('source'))
 
 
 class TestPlays(unittest.TestCase):

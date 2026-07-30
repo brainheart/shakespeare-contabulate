@@ -102,6 +102,13 @@ test.describe('Segments Search', () => {
     await expect(page.locator('#results thead th[data-key="unusualness"]')).toHaveCount(1);
     // Speaker-derived proper-name data exists, so the toggle is visible
     await expect(page.locator('#vocabNamesToggle')).toBeVisible();
+    await expect(page.locator('#vocabNamesUnavailable')).toBeHidden();
+    const totalBeforeNames = await page.locator('#segmentsTotalInfo').textContent();
+    await page.setChecked('#vocabNamesCheckbox', true);
+    await expect(page.locator('#segmentsTotalInfo')).not.toHaveText(totalBeforeNames);
+    const totalAfterNames = await page.locator('#segmentsTotalInfo').textContent();
+    expect(Number(totalAfterNames.match(/\d+/)[0])).toBeLessThan(Number(totalBeforeNames.match(/\d+/)[0]));
+    await page.setChecked('#vocabNamesCheckbox', false);
     // The search box filters the Word column here
     await page.fill('#q', 'love');
     await page.locator('#addColumnBtn').click();

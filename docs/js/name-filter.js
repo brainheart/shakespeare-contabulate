@@ -1,13 +1,14 @@
 // Proper-name exclusion lists for the vocabulary views.
-// Seeded from morphhb proper-noun tagging at build time (via
-// character_name_filter_config.json); user edits are stored per book in
+// Built-in terms come from corpus-specific annotations and
+// character_name_filter_config.json. User edits are stored per text in
 // localStorage. Initialized via initNameFilter().
 
 (function () {
   'use strict';
 
-  const NAME_TOKEN_RE = /[a-zא-ת]+/g;
-  const NAME_FILTER_OVERRIDES_KEY = 'tanakhNameFilterOverrides';
+  const NAME_TOKEN_RE = /[\p{L}\p{M}]+/gu;
+  const NAME_FILTER_OVERRIDES_KEY = 'contabulateNameFilterOverrides';
+  const LEGACY_NAME_FILTER_OVERRIDES_KEY = 'tanakhNameFilterOverrides';
   // Speaker-list noise words for corpora with auto-detected character names
   const GENERIC_CHARACTER_NAME_TOKENS = new Set([
     'all', 'and', 'both', 'boy', 'captain', 'chorus', 'citizen', 'citizens', 'clown',
@@ -25,6 +26,7 @@
   let nameFilterConfigRef = null;
   let onChange = null;
   let characterNameFiltersByPlay = new Map();
+  let builtInNameDataAvailable = false;
 
   function tokenizeName(name) {
     return String(name || '').toLowerCase().match(NAME_TOKEN_RE) || [];
@@ -132,7 +134,10 @@
 
   function loadNameFilterOverrides() {
     try {
-      const parsed = JSON.parse(localStorage.getItem(NAME_FILTER_OVERRIDES_KEY) || '{}');
+      const stored = localStorage.getItem(NAME_FILTER_OVERRIDES_KEY)
+        || localStorage.getItem(LEGACY_NAME_FILTER_OVERRIDES_KEY)
+        || '{}';
+      const parsed = JSON.parse(stored);
       return parsed && typeof parsed === 'object' ? parsed : {};
     } catch (_) {
       return {};
@@ -172,11 +177,20 @@
 
   function rebuildNameFilters() {
     characterNameFiltersByPlay = buildCharacterNameTokensByPlay(charactersRef, playsById, nameFilterConfigRef);
-    for (const playId of playsById.keys()) {
-      const filter = ensureCharacterNameFilter(characterNameFiltersByPlay, playId);
-      const o = getPlayOverrides(playId);
-      o.added.forEach(term => addConfigName(filter, term));
-      o.removed.forEach(term => removeConfigName(filter, term));
+    builtInNameDataAvailable = !!(nameFilterConfigRef && nameFilterConfigRef.enabled !== false)
+      && Array.from(characterNameFiltersByPlay.values()).some(filter => (
+        filter.tokens.size > 0
+        || [1, 2, 3].some(n => filter.phrasesByN[n].size > 0)
+      ));
+    if (builtInNameDataAvailable) {
+      for (const playId of playsById.keys()) {
+        const filter = ensureCharacterNameFilter(characterNameFiltersByPlay, playId);
+        const o = getPlayOverrides(playId);
+        o.added.forEach(term => addConfigName(filter, term));
+        o.removed.forEach(term => removeConfigName(filter, term));
+      }
+    } else {
+      characterNameFiltersByPlay = new Map();
     }
     // Version stamp lets the vocabulary views invalidate their caches
     window.__nameFilterVersion = (window.__nameFilterVersion || 0) + 1;
@@ -248,9 +262,9 @@
     const filter = characterNameFiltersByPlay && characterNameFiltersByPlay.get(playId);
     if (!filter) return false;
 
-    const phrase = String(ngram || '').toLowerCase().trim();
-    if (!phrase) return false;
-    const toks = phrase.split(' ');
+    const toks = tokenizeName(ngram);
+    if (!toks.length) return false;
+    const phrase = toks.join(' ');
     const phraseSet = filter.phrasesByN[toks.length];
     if (phraseSet && phraseSet.has(phrase)) return true;
     for (const tok of toks) {
@@ -283,6 +297,7 @@
 
   window.ngramContainsConfiguredName = ngramContainsCharacterName;
   window.nameFilterEditor = {
+    isAvailable() { return builtInNameDataAvailable; },
     listForPlay(playId) {
       const display = getPlayFilterDisplayData(playId);
       return { terms: display.terms, total: display.total, hasOverrides: hasPlayOverrides(playId) };
