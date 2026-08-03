@@ -125,6 +125,18 @@ class TestTokens(unittest.TestCase):
                 self.assertIsInstance(p[0], int)  # scene_id
                 self.assertIsInstance(p[1], int)  # count
 
+    def test_scene_unigram_postings_sum_to_scene_word_total(self):
+        """The scene vocabulary door can be backed exactly by scene postings."""
+        chunks = json.loads((DATA_DIR / 'chunks.json').read_text())
+        scene = next(c for c in chunks if c['scene_id'] == 7002)
+        posting_total = sum(
+            count
+            for postings in self.tokens.values()
+            for scene_id, count in postings
+            if scene_id == scene['scene_id']
+        )
+        self.assertEqual(posting_total, scene['total_words'])
+
 
 class TestCharacters(unittest.TestCase):
     @classmethod
@@ -143,6 +155,21 @@ class TestCharacters(unittest.TestCase):
     def test_hamlet_exists(self):
         hamlets = [c for c in self.chars if c['name'].upper() == 'HAMLET']
         self.assertGreater(len(hamlets), 0, 'Hamlet should exist as a character')
+
+    def test_character_unigram_postings_sum_to_spoken_word_total(self):
+        """The main-table character vocabulary uses a complete token index."""
+        hamlet = next(
+            c for c in self.chars
+            if c['name'].upper() == 'HAMLET' and c['play_title'] == 'Hamlet'
+        )
+        tokens_char = json.loads((DATA_DIR / 'tokens_char.json').read_text())
+        posting_total = sum(
+            count
+            for postings in tokens_char.values()
+            for character_id, count in postings
+            if character_id == hamlet['character_id']
+        )
+        self.assertEqual(posting_total, hamlet['total_words_spoken'])
 
 
 class TestPublishedMetadata(unittest.TestCase):
