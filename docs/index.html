@@ -137,7 +137,6 @@
 <script src="js/table-ui.js"></script>
 <script src="js/filter-popover.js"></script>
 <script src="js/color-scale.js"></script>
-<script src="js/character-detail.js"></script>
 <script src="js/name-filter.js"></script>
 <script src="js/add-column-popover.js"></script>
 <script>
@@ -493,13 +492,11 @@
   function vocabNFor(value) {
     return VOCAB_GRANULARITIES[value] || 1;
   }
-  function vocabGranForN(n) {
-    return n === 2 ? 'bigram' : n === 3 ? 'trigram' : 'word';
-  }
   let vocabExcludeNames = false;
   let nameEditorOpen = false;
   // Word/bigram/trigram share one filter map, so switching the n-gram size
-  // keeps the location/genre scope (and the n-gram text filter) in place.
+  // keeps the location/genre/character scope (and the n-gram text filter)
+  // in place.
   function segmentsFilterMapKey(value) {
     const g = normalizeGranularity(value);
     return isVocabGranularity(g) ? 'vocab' : g;
@@ -654,25 +651,23 @@
   // Armed only after startup: early drawer refreshes must not write the URL,
   // or applyStateFromURL would read back its own echo as a deep link.
   let historySyncEnabled = false;
-  let historyReplaceOnlyUntil = 0;
   function syncHistoryUrl(search) {
     if (!historySyncEnabled) return;
     if (typeof history === 'undefined' || typeof history.replaceState !== 'function') return;
     if (search === location.search) return;
     let mode = 'replaceState';
-    if (Date.now() > historyReplaceOnlyUntil) {
-      const oldSp = new URLSearchParams(location.search);
-      const newSp = new URLSearchParams(search);
-      // A pristine URL means the default view (plays), so a first action that
-      // keeps that granularity replaces rather than pushes.
-      const oldGran = oldSp.has('gran') ? oldSp.get('gran') : granularityToURL('play');
-      const granChanged = oldGran !== newSp.get('gran');
-      const modalOpened = !oldSp.get('cm') && !!newSp.get('cm');
-      // Scope changes at the same granularity (ancestor-cell filters) are
-      // navigations too — Back should undo them.
-      const scopeChanged = oldSp.get('s_ft_location') !== newSp.get('s_ft_location');
-      if (granChanged || modalOpened || scopeChanged) mode = 'pushState';
-    }
+    const oldSp = new URLSearchParams(location.search);
+    const newSp = new URLSearchParams(search);
+    // A pristine URL means the default view (plays), so a first action that
+    // keeps that granularity replaces rather than pushes.
+    const oldGran = oldSp.has('gran') ? oldSp.get('gran') : granularityToURL('play');
+    const granChanged = oldGran !== newSp.get('gran');
+    const modalOpened = !oldSp.get('cm') && !!newSp.get('cm');
+    // Scope changes at the same granularity (ancestor-cell filters) are
+    // navigations too — Back should undo them.
+    const scopeChanged = oldSp.get('s_ft_location') !== newSp.get('s_ft_location')
+      || oldSp.get('s_ft_character_id') !== newSp.get('s_ft_character_id');
+    if (granChanged || modalOpened || scopeChanged) mode = 'pushState';
     try { history[mode](null, '', location.pathname + search); } catch (_) { /* ignore */ }
   }
   function updateDeepLink() {
@@ -685,19 +680,29 @@
     if (def && def.label) return def.label;
     if (key === 'location') return 'Location';
     if (key === 'genre') return 'Genre';
+    if (key === 'character_id') return 'Character';
     return key;
   }
-  function describeSegmentsFilterValue(v) {
+  function parseLiteralTextFilter(v) {
+    if (!v || v.type !== 'text') return null;
+    const pattern = String(v.pattern || '');
+    if (!pattern.startsWith('^')) return null;
+    const exact = pattern.endsWith('$');
+    const body = pattern.slice(1, exact ? -1 : undefined);
+    const literal = body.replace(/\\(.)/g, '$1');
+    if (`^${escapeRegexText(literal)}${exact ? '$' : ''}` !== pattern) return null;
+    return { literal, exact };
+  }
+  function describeSegmentsFilterValue(v, key) {
     if (v.type === 'text') {
       const pattern = String(v.pattern || '');
-      if (pattern.startsWith('^') && pattern.endsWith('$')) {
-        const literal = pattern.slice(1, -1).replace(/\\(.)/g, '$1');
-        if ('^' + escapeRegexText(literal) + '$' === pattern) return `is ${literal}`;
-      }
-      if (pattern.startsWith('^')) {
-        // Drill filters are anchored escaped literals; show them plainly
-        const literal = pattern.slice(1).replace(/\\(.)/g, '$1');
-        if ('^' + escapeRegexText(literal) === pattern) return `starts with ${literal}`;
+      const parsed = parseLiteralTextFilter(v);
+      if (parsed) {
+        if (key === 'character_id') {
+          const character = charactersById.get(Number(parsed.literal));
+          if (character) return `is ${String(character.name || parsed.literal).replace(/\s+/g, ' ').trim()}`;
+        }
+        return parsed.exact ? `is ${parsed.literal}` : `starts with ${parsed.literal}`;
       }
       return `matches ${pattern}`;
     }
@@ -725,7 +730,7 @@
         const label = document.createElement('strong');
         label.textContent = segmentsFilterColumnLabel(key);
         chip.appendChild(label);
-        chip.appendChild(document.createTextNode(` ${describeSegmentsFilterValue(v)}`));
+        chip.appendChild(document.createTextNode(` ${describeSegmentsFilterValue(v, key)}`));
         const x = document.createElement('span');
         x.className = 'chip-x';
         x.setAttribute('aria-hidden', 'true');
@@ -1101,8 +1106,6 @@
   }
 
   window.addEventListener('popstate', () => {
-    // Re-applying popped state must not create new history entries
-    historyReplaceOnlyUntil = Date.now() + 1500;
     const sp = new URLSearchParams(location.search);
     // The pristine entry (no params) is the default plays view
     if (!sp.has('gran')) sp.set('gran', granularityToURL('play'));
@@ -1462,8 +1465,6 @@
     }
     const activeTerms = (terms || []).map(t => toTermSpec(t, matchMode.value)).filter(Boolean);
     const hasTerms = activeTerms.length > 0;
-    const baseN = normalizeTermN(activeTerms[0] && activeTerms[0].n) || getSelectedNgramModeValue();
-    const sharedBaseN = !hasTerms || activeTerms.every(term => normalizeTermN(term.n) === baseN);
 
     const termKeys = activeTerms.map((_, i) => `t${i}`);
     function getIndexForN(n) {
@@ -1473,7 +1474,9 @@
         : (termN === 1 ? tokens : termN === 2 ? tokens2 : tokens3);
     }
     function getRowNgramCount(totalWords) {
-      return Math.max(0, (totalWords || 0) - (baseN - 1));
+      // This column is explicitly "# words", independent of the n-gram size
+      // selected for search-term columns.
+      return Math.max(0, totalWords || 0);
     }
     function getBaseCountLabel() {
       return '# words';
@@ -1918,9 +1921,10 @@
     const segFilters = getSegmentsFiltersMap();
     for (const [key, f] of segFilters.entries()) {
       if (!f) continue;
-      // At vocabulary granularities the location filter is a scope applied
-      // while building rows (they have no location field of their own)
-      if ((key === 'location' || key === 'genre') && isVocabGranularity(gran.value)) continue;
+      // Vocabulary scope filters are applied while building rows; vocabulary
+      // rows have no location, genre, or character-id field of their own.
+      if ((key === 'location' || key === 'genre' || key === 'character_id')
+        && isVocabGranularity(gran.value)) continue;
       if (key === 'location' && gran.value === 'genre') continue;
       const type = f.type || 'text';
       if (type === 'number') {
@@ -2054,12 +2058,16 @@
         return { vocabNgram: row.ngram, target: 'play', keepScope: false, count, title: `Show the ${formatCellNumber(count)} plays containing this ${DRILL_NOUNS[granVal].replace(/s$/, '')}` };
       }
       if (key === 'verse_count') {
-        return { vocabNgram: row.ngram, target: 'scene', keepScope: true, count, title: `Show the ${formatCellNumber(count)} scenes containing this ${DRILL_NOUNS[granVal].replace(/s$/, '')}` };
+        return { vocabNgram: row.ngram, target: 'scene', keepScope: false, count, title: `Show the ${formatCellNumber(count)} scenes containing this ${DRILL_NOUNS[granVal].replace(/s$/, '')}` };
+      }
+      if (key === 'character_count') {
+        return { vocabNgram: row.ngram, target: 'character', keepScope: false, count, title: `Show the ${formatCellNumber(count)} characters using this ${DRILL_NOUNS[granVal].replace(/s$/, '')}` };
       }
       return null;
     }
-    // Character rows sit outside the location hierarchy: their doors open
-    // the Line view scoped to the character's play plus a Speaker filter.
+    // Character rows sit outside the location hierarchy. Line counts open
+    // lines scoped to the play and speaker; word counts open the shared
+    // vocabulary table using the character-token index.
     if (granVal === 'character') {
       const play = playsById.get(row.play_id);
       if (!play || !play.location || row.name == null) return null;
@@ -2076,6 +2084,17 @@
         if (!Number.isFinite(count) || count <= 0) return null;
         return { target: 'line', prefix, speakerScope, termKey: '', count, title: `Show the ${formatCellNumber(count)} lines spoken by ${label}` };
       }
+      if (key === 'ngram_count' && row.character_id != null) {
+        const count = Number(row[key]);
+        if (!Number.isFinite(count) || count <= 0) return null;
+        return {
+          target: 'word',
+          characterScope: Number(row.character_id),
+          termKey: '',
+          count,
+          title: `Show the words spoken by ${label}`
+        };
+      }
       return null;
     }
     const prefix = drillLocationPrefix(granVal, row);
@@ -2087,14 +2106,19 @@
       if (!Number.isFinite(count) || count <= 0) return null;
       return { target: 'line', prefix, genreScope, termKey: key, count, title: `Show the matching lines in ${label}` };
     }
-    // Word/bigram/trigram counts open the scoped vocabulary view
+    // The # words column always opens unigrams. A scene is itself the posting
+    // unit, so its vocabulary scope must match that location exactly rather
+    // than looking for nonexistent descendants below it.
     if (key === 'ngram_count' && (granVal === 'genre' || granVal === 'play' || granVal === 'act' || granVal === 'scene')) {
       const count = Number(row[key]);
       if (!Number.isFinite(count) || count <= 0) return null;
-      const target = vocabGranForN(getSelectedNgramModeValue());
+      const target = 'word';
       return {
         target,
         prefix,
+        locationPattern: granVal === 'scene' && row.location
+          ? `^${escapeRegexText(String(row.location))}$`
+          : '',
         genreScope,
         termKey: '',
         count,
@@ -2187,18 +2211,31 @@
   function drillTo(spec) {
     gran.value = spec.target;
     const filters = getSegmentsFiltersMap();
-    if (spec.columnScope) {
+    if (spec.characterScope != null) {
+      filters.delete('location');
+      filters.delete('genre');
+      filters.set('character_id', {
+        type: 'text',
+        pattern: `^${escapeRegexText(String(spec.characterScope))}$`
+      });
+    } else if (spec.columnScope) {
       if (!spec.preserveScope) {
         filters.delete('location');
         filters.delete('genre');
       }
+      filters.delete('character_id');
       filters.set(spec.columnScope.key, { type: 'text', pattern: '^' + escapeRegexText(spec.columnScope.value) + '$' });
     } else if (spec.genreScope) {
       filters.delete('location');
+      filters.delete('character_id');
       filters.set('genre', { type: 'text', pattern: '^' + escapeRegexText(spec.genreScope) + '$' });
     } else {
       filters.delete('genre');
-      filters.set('location', { type: 'text', pattern: '^' + escapeRegexText(spec.prefix) });
+      filters.delete('character_id');
+      filters.set('location', {
+        type: 'text',
+        pattern: spec.locationPattern || ('^' + escapeRegexText(spec.prefix))
+      });
     }
     if (spec.speakerScope != null) {
       filters.set('speaker', { type: 'text', pattern: '^' + escapeRegexText(spec.speakerScope) + '$' });
@@ -2239,6 +2276,7 @@
     if (spec.keepScope && genreFilter) filters.set('genre', { ...genreFilter });
     else filters.delete('genre');
     filters.delete('speaker');
+    filters.delete('character_id');
     for (const key of Array.from(filters.keys())) {
       if (TERM_COUNT_KEY_RE.test(key)) filters.delete(key);
     }
@@ -2264,15 +2302,24 @@
 
   // The proper-name list is editable when the scope resolves to exactly one
   // book (edits are stored per book, as the exclusion lists are).
+  function vocabScopeCharacter() {
+    if (!isVocabGranularity(gran.value)) return null;
+    const parsed = parseLiteralTextFilter(getSegmentsFiltersMap().get('character_id'));
+    if (!parsed || !parsed.exact) return null;
+    return charactersById.get(Number(parsed.literal)) || null;
+  }
+
   function vocabScopeSinglePlay() {
     if (!isVocabGranularity(gran.value)) return null;
-    const f = getSegmentsFiltersMap().get('location');
-    if (!f || f.type !== 'text' || !f.pattern || !f.pattern.startsWith('^')) return null;
-    const literal = f.pattern.slice(1).replace(/\\(.)/g, '$1');
-    if ('^' + escapeRegexText(literal) !== f.pattern) return null;
+    const character = vocabScopeCharacter();
+    if (character) return playsById.get(character.play_id) || null;
+    const parsed = parseLiteralTextFilter(getSegmentsFiltersMap().get('location'));
+    if (!parsed) return null;
     const matches = plays.filter(p => {
-      const loc = String(p.location || '') + '.';
-      return loc === literal || literal.startsWith(loc) || loc.startsWith(literal);
+      const loc = String(p.location || '');
+      return parsed.literal === loc
+        || parsed.literal.startsWith(loc + '.')
+        || (!parsed.exact && (loc + '.').startsWith(parsed.literal));
     });
     return matches.length === 1 ? matches[0] : null;
   }
@@ -2317,7 +2364,8 @@
     setElementHidden(container, false);
   }
 
-  function vocabIndexForN(n) {
+  function vocabIndexForN(n, characterScoped = false) {
+    if (characterScoped) return n === 2 ? tokensChar2 : n === 3 ? tokensChar3 : tokensChar;
     return n === 2 ? tokens2 : n === 3 ? tokens3 : tokens;
   }
 
@@ -2328,6 +2376,8 @@
   function buildVocabularyRows(granVal) {
     const n = vocabNFor(granVal);
     const filters = getSegmentsFiltersMap();
+    const hasCharacterScope = filters.has('character_id');
+    const characterScope = vocabScopeCharacter();
     const scopeFilter = filters.get('location');
     let scopeRe = null;
     if (scopeFilter && scopeFilter.type === 'text' && scopeFilter.pattern) {
@@ -2339,45 +2389,65 @@
       try { genreRe = new RegExp(genreFilter.pattern, 'i'); } catch (_) { genreRe = null; }
     }
     const nameFilterVersion = window.__nameFilterVersion || 0;
-    const cacheKey = `${n}|${scopeRe ? scopeRe.source : ''}|${genreRe ? genreRe.source : ''}|${vocabExcludeNames ? 1 : 0}|${nameFilterVersion}`;
+    const cacheKey = `${n}|${scopeRe ? scopeRe.source : ''}|${genreRe ? genreRe.source : ''}|${characterScope ? characterScope.character_id : (hasCharacterScope ? 'invalid' : '')}|${vocabExcludeNames ? 1 : 0}|${nameFilterVersion}`;
     let rows = vocabRowsCache.get(cacheKey);
     if (!rows) {
-      const index = vocabIndexForN(n);
-      const totalBooks = plays.length || 37;
+      const index = vocabIndexForN(n, hasCharacterScope);
+      const totalDocuments = hasCharacterScope ? (characters.length || 1) : (plays.length || 37);
       const scopePlayIds = new Set();
       const raw = [];
       for (const [ngram, postings] of Object.entries(index)) {
         if (!Array.isArray(postings) || !postings.length) continue;
         let tf = 0;
-        let verses = 0;
-        const bookSet = new Set();
+        const documentSet = new Set();
+        const sceneSet = new Set();
         for (const posting of postings) {
+          if (hasCharacterScope) {
+            const characterId = Number(posting[0]);
+            const character = charactersById.get(characterId);
+            if (!character) continue;
+            documentSet.add(characterId);
+            if (characterScope && characterId === Number(characterScope.character_id)) {
+              tf += Number(posting[1]) || 0;
+              scopePlayIds.add(character.play_id);
+            }
+            continue;
+          }
           const chunk = chunkById.get(posting[0]);
           if (!chunk) continue;
-          bookSet.add(chunk.play_id);
+          documentSet.add(chunk.play_id);
+          sceneSet.add(chunk.scene_id);
           if ((!scopeRe || scopeRe.test(String(chunk.location || '')))
             && (!genreRe || genreRe.test(String(chunk.genre || '')))) {
             tf += Number(posting[1]) || 0;
-            verses += 1;
             scopePlayIds.add(chunk.play_id);
           }
         }
         if (tf <= 0) continue;
-        const df = bookSet.size || 1;
-        // Sublinear term frequency: with only 37 documents, idf spans just
-        // 0–3.61, so a raw count would swamp rarity (a near-ubiquitous word
-        // missing from one play outscored genuinely concentrated words).
-        raw.push({
+        const df = documentSet.size || 1;
+        // Sublinear term frequency keeps raw count from swamping rarity.
+        // The document dimension follows the scope source: plays for normal
+        // vocabulary and speaking characters for character vocabulary.
+        const row = {
           ngram,
           count: tf,
-          verse_count: verses,
-          book_count: df,
-          tfidf: Math.round((1 + Math.log(tf)) * Math.log(totalBooks / df) * 10000) / 10000
-        });
+          tfidf: Math.round((1 + Math.log(tf)) * Math.log(totalDocuments / df) * 10000) / 10000
+        };
+        if (hasCharacterScope) row.character_count = df;
+        else {
+          // Distribution counts describe the corpus-wide reach of the term.
+          // Location and genre scopes affect its Count, but must not collapse
+          // either # plays or # scenes to the current slice.
+          row.verse_count = sceneSet.size;
+          row.book_count = df;
+        }
+        raw.push(row);
       }
       rows = raw;
       if (vocabExcludeNames && nameFilterDataAvailable() && typeof window.ngramContainsConfiguredName === 'function') {
-        const playIds = scopeRe ? Array.from(scopePlayIds) : plays.map(p => p.play_id);
+        const playIds = hasCharacterScope || scopeRe
+          ? Array.from(scopePlayIds)
+          : plays.map(p => p.play_id);
         rows = raw.filter(r => !playIds.some(pid => window.ngramContainsConfiguredName(r.ngram, pid)));
       }
       // Flag proper-name rows when a single book is in scope so the renderer
@@ -2404,14 +2474,22 @@
     }
     const cols = [
       { key: 'ngram', label: vocabColumnLabel(granVal), defaultDir: 'asc', type: 'text' },
-      { key: 'count', label: 'Count', type: 'number', defaultDir: 'desc' },
-      { key: 'book_count', label: '# plays', type: 'number', defaultDir: 'desc' },
-      { key: 'verse_count', label: '# scenes', type: 'number', defaultDir: 'desc' },
-      {
-        key: 'unusualness', label: 'Distinctiveness', type: 'number', defaultDir: 'desc',
-        tooltip: 'Percentile of TF-IDF ((1 + ln count within the current scope) × ln(37 / plays containing the term)) among this view’s vocabulary: 99 means more distinctive here than 99% of terms. Ubiquitous terms land near 0.'
-      }
+      { key: 'count', label: 'Count', type: 'number', defaultDir: 'desc' }
     ];
+    if (hasCharacterScope) {
+      cols.push({ key: 'character_count', label: '# characters', type: 'number', defaultDir: 'desc' });
+    } else {
+      cols.push(
+        { key: 'book_count', label: '# plays', type: 'number', defaultDir: 'desc' },
+        { key: 'verse_count', label: '# scenes', type: 'number', defaultDir: 'desc' }
+      );
+    }
+    cols.push({
+      key: 'unusualness', label: 'Distinctiveness', type: 'number', defaultDir: 'desc',
+      tooltip: hasCharacterScope
+        ? `Percentile of TF-IDF ((1 + ln count for this character) × ln(${characters.length || 1} / characters containing the term)) among this view’s vocabulary: 99 means more distinctive here than 99% of terms.`
+        : `Percentile of TF-IDF ((1 + ln count within the current scope) × ln(${plays.length || 1} / plays containing the term)) among this view’s vocabulary: 99 means more distinctive here than 99% of terms.`
+    });
     setHeaders(cols);
     ensureSegmentsSortForColumns(segmentsColumnDefs, 'count', 'desc');
     return rows.slice();
@@ -2491,15 +2569,6 @@
               else window.nameFilterEditor.exclude(vocabEditablePlay.play_id, r.ngram);
             });
             td.appendChild(hideBtn);
-          }
-        } else if (typeof isCharacterDetailCell === 'function' && isCharacterDetailCell(granVal, k, r)) {
-          const v = r[k];
-          if (v !== undefined && v !== null && r.character_id != null) {
-            const isNumeric = colTypeByKey.get(k) === 'number' && Number.isFinite(Number(v));
-            td.appendChild(buildCharacterDetailLink(isNumeric ? formatCellNumber(v) : v, r.character_id));
-            if (isNumeric) td.dataset.value = String(v);
-          } else {
-            td.textContent = (v === undefined || v === null) ? '' : v;
           }
         } else {
           const v = r[k];
@@ -2874,12 +2943,6 @@
       formatCount: formatCommentatorReferenceCount,
       focusSearch: () => { if (q) q.focus(); }
     });
-  }
-
-  // Character Detail Modal — loaded from js/character-detail.js
-  // Initialize with data dependencies
-  if (typeof window.initCharacterDetail === 'function') {
-    window.initCharacterDetail({ characters, playsById, tokensChar, tokensChar2, tokensChar3, allLines, characterNameFilterConfig, escapeHTML });
   }
 
   window.__contabulateReady = true;
