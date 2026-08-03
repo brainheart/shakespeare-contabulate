@@ -18,10 +18,10 @@
   "stats": {
     "texts": 38,
     "text_label": "plays",
-    "segments": 112538,
+    "segments": 112537,
     "segment_label": "lines",
-    "words": 853481,
-    "distinct_words": 23895,
+    "words": 851704,
+    "distinct_words": 23866,
     "commentaries": 0,
     "comments": 0
   }

@@ -44,22 +44,28 @@
       : new Map();
     const existing = (stateMap && stateMap.get && stateMap.get(key)) || { type };
 
+    // Stored filter values are set via element properties, never interpolated
+    // into markup: a crafted deep-link pattern must not become HTML.
     if (type === 'number') {
       pop.innerHTML = `
-        <h4>Filter: ${th.textContent.replace('⚙','').trim()}</h4>
-        <div class="row"><label style="width:3rem;">Min</label><input type="number" step="any" class="f-min" value="${existing.min ?? ''}" placeholder="min"></div>
-        <div class="row"><label style="width:3rem;">Max</label><input type="number" step="any" class="f-max" value="${existing.max ?? ''}" placeholder="max"></div>
+        <h4></h4>
+        <div class="row"><label style="width:3rem;">Min</label><input type="number" step="any" class="f-min" placeholder="min"></div>
+        <div class="row"><label style="width:3rem;">Max</label><input type="number" step="any" class="f-max" placeholder="max"></div>
         <div class="actions"><button class="link-btn f-clear">Clear</button><button class="link-btn f-close">Close</button></div>
         <div class="hint">Tip: for % columns you may enter 5 or 0.05</div>
       `;
+      pop.querySelector('.f-min').value = existing.min ?? '';
+      pop.querySelector('.f-max').value = existing.max ?? '';
     } else {
       pop.innerHTML = `
-        <h4>Filter: ${th.textContent.replace('⚙','').trim()}</h4>
-        <div class="row"><input type="text" class="f-pattern" value="${existing.pattern ?? ''}" placeholder="Regex pattern (case-insensitive)"></div>
+        <h4></h4>
+        <div class="row"><input type="text" class="f-pattern" placeholder="Regex pattern (case-insensitive)"></div>
         <div class="actions"><button class="link-btn f-clear">Clear</button><button class="link-btn f-close">Close</button></div>
         <div class="hint">Examples: ^Gen, John$, faith|hope</div>
       `;
+      pop.querySelector('.f-pattern').value = existing.pattern ?? '';
     }
+    pop.querySelector('h4').textContent = `Filter: ${th.textContent.replace('⚙','').trim()}`;
 
     document.body.appendChild(pop);
     currentFilterPopover = pop;

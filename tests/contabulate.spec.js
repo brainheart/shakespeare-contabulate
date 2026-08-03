@@ -214,7 +214,7 @@ test('character counts are doors into speech, line, and main-table vocabulary vi
   expect(name).toBe('HAMLET');
   const lineCount = parseInt((await firstRow.locator('td:nth-child(5)').innerText()).replace(/,/g, ''), 10);
   const wordCount = parseInt((await firstRow.locator('td:nth-child(6)').innerText()).replace(/,/g, ''), 10);
-  expect(wordCount).toBe(11866);
+  expect(wordCount).toBe(11849);
   const speechCount = parseInt((await firstRow.locator('td:nth-child(4)').innerText()).replace(/,/g, ''), 10);
   expect(speechCount).toBe(358);
   // # speeches → the Speech view, where full TEI speech boundaries are
@@ -249,12 +249,12 @@ test('character counts are doors into speech, line, and main-table vocabulary vi
   await page.locator('#results tbody tr').first().locator('td:nth-child(6) button.drill-link').click();
   await expect(page.locator('#gran')).toHaveValue('word');
   await expect(page.locator('#segmentsActiveFilters .active-filter-chip')).toContainText('Character is HAMLET');
-  await expect(page.locator('#segmentsTotalInfo')).toContainText('(2562 total rows)');
+  await expect(page.locator('#segmentsTotalInfo')).toContainText('(2557 total rows)');
   const vocabHeaders = await page.locator('#results thead th').allTextContents();
   expect(vocabHeaders.some(t => t.includes('# characters'))).toBeTruthy();
   expect(vocabHeaders.some(t => t.includes('# scenes'))).toBeFalsy();
   await expect(page.locator('#results tbody tr').first().locator('td:nth-child(1) span[dir="auto"]')).toHaveText('the');
-  await expect(page.locator('#results tbody tr').first().locator('td:nth-child(2)')).toHaveText('429');
+  await expect(page.locator('#results tbody tr').first().locator('td:nth-child(2)')).toHaveText('428');
   await expect(page.locator('.character-detail-modal')).toHaveCount(0);
 
   // Back/Forward retraces the drill, while all vocabulary sizes share the
@@ -284,14 +284,14 @@ test('scene word counts open the exact scene vocabulary instead of an empty desc
   await waitForDataLoaded(page);
   await page.waitForSelector('#results tbody tr', { timeout: 15000 });
   await expect(page.locator('#results tbody tr')).toHaveCount(1);
-  await expect(page.locator('#results tbody tr').first().locator('td[data-value="2061"]')).toHaveCount(1);
+  await expect(page.locator('#results tbody tr').first().locator('td[data-value="2059"]')).toHaveCount(1);
 
-  await page.locator('#results tbody tr').first().locator('td[data-value="2061"] button.drill-link').click();
+  await page.locator('#results tbody tr').first().locator('td[data-value="2059"] button.drill-link').click();
   await expect(page.locator('#gran')).toHaveValue('word');
   await expect(page.locator('#segmentsActiveFilters .active-filter-chip')).toContainText('Location is 07.HAM.001.002');
   await expect(page.locator('#segmentsTotalInfo')).toContainText('(718 total rows)');
   await expect(page.locator('#results tbody tr').first().locator('td:nth-child(1) span[dir="auto"]')).toHaveText('to');
-  await expect(page.locator('#results tbody tr').first().locator('td:nth-child(2)')).toHaveText('72');
+  await expect(page.locator('#results tbody tr').first().locator('td:nth-child(2)')).toHaveText('71');
   expect(new URL(page.url()).searchParams.get('s_ft_location')).toBe('^07\\.HAM\\.001\\.002$');
 });
 
@@ -323,4 +323,36 @@ test('vocabulary distribution counts stay corpus-wide under location and genre s
   await expect(genreScopedRow.locator('td:nth-child(2)')).toHaveText('57');
   await expect(genreScopedRow.locator('td:nth-child(3)')).toHaveText('34');
   await expect(genreScopedRow.locator('td:nth-child(4)')).toHaveText('119');
+});
+
+test('genre scopes carry into the Line view instead of emptying it', async ({ page }) => {
+  // Genre rows' "# lines" counts drill into a genre-scoped Line view; line
+  // rows carry a genre field so the scope filter actually matches them.
+  await page.goto('/?gran=genre');
+  await waitForDataLoaded(page);
+  await page.waitForSelector('#results tbody tr');
+  const headers = page.locator('#results thead th');
+  const headerKeys = await headers.evaluateAll(ths => ths.map(th => th.dataset.key));
+  const verseCol = headerKeys.indexOf('verse_count') + 1;
+  await page.locator(`#results tbody tr:first-child td:nth-child(${verseCol}) button.drill-link`).click();
+  await expect(page.locator('#gran')).toHaveValue('line');
+  await page.waitForSelector('#results tbody tr td:nth-child(2)', { timeout: 20000 });
+  await expect(page.locator('#segmentsActiveFilters .active-filter-chip')).toContainText('Genre');
+  const rowCount = await page.locator('#results tbody tr').count();
+  expect(rowCount).toBeGreaterThan(1);
+  await expect(page.locator('#results tbody')).not.toContainText('No results match the filters.');
+});
+
+test('filter popover renders stored patterns as text, not markup', async ({ page }) => {
+  // A crafted deep link must not execute when the filter popover opens.
+  const evil = encodeURIComponent('"><img src=x onerror="window.__xss=1">');
+  await page.goto(`/?gran=play&s_ft_title=${evil}`);
+  await waitForDataLoaded(page);
+  await page.waitForSelector('#results thead th');
+  await page.locator('#results thead th[data-key="title"] .filter-icon').click();
+  await page.waitForSelector('.filter-popover');
+  const fired = await page.evaluate(() => window.__xss === 1);
+  expect(fired).toBeFalsy();
+  const inputValue = await page.inputValue('.filter-popover .f-pattern');
+  expect(inputValue).toContain('onerror');
 });

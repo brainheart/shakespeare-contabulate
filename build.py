@@ -8,6 +8,21 @@ TOKEN_RE = re.compile(r"[A-Za-z]+")
 SENT_RE = re.compile(r"[.!?]+")
 def localname(tag): return tag.rsplit('}',1)[1] if '}' in tag else tag
 def text_of(elem): return ''.join(elem.itertext())
+# Stage directions and speaker labels are not spoken text; collect dialogue
+# around them at any nesting depth.
+NON_SPOKEN_TAGS = ("stage", "speaker")
+def spoken_text_of(elem):
+    parts = []
+    def walk(node):
+        if node.text:
+            parts.append(node.text)
+        for child in node:
+            if localname(child.tag) not in NON_SPOKEN_TAGS:
+                walk(child)
+            if child.tail:
+                parts.append(child.tail)
+    walk(elem)
+    return ''.join(parts)
 def tokenize(text): return TOKEN_RE.findall((text or "").lower())
 def count_sentences(text): return len(SENT_RE.findall(text or ""))
 
@@ -77,13 +92,13 @@ def parse_play(path: Path, play_id: int, metadata: dict = None):
         cur = p_elem.text or ""
         for child in p_elem:
             if localname(child.tag) == "lb":
-                text = cur.strip()
+                text = re.sub(r"\s+", " ", cur).strip()
                 if text:
                     lines.append(text)
                 cur = child.tail or ""
-            else:
-                cur += text_of(child)
-        text = cur.strip()
+            elif localname(child.tag) not in NON_SPOKEN_TAGS:
+                cur += spoken_text_of(child)
+        text = re.sub(r"\s+", " ", cur).strip()
         if text:
             lines.append(text)
         return lines
@@ -114,7 +129,7 @@ def parse_play(path: Path, play_id: int, metadata: dict = None):
                     and child.attrib.get("unit") == "ftln"
                 ):
                     flush()
-                elif localname(child.tag) != "lb":
+                elif localname(child.tag) != "lb" and localname(child.tag) not in NON_SPOKEN_TAGS:
                     walk(child)
                 append_source_text(child.tail)
 
@@ -143,19 +158,9 @@ def parse_play(path: Path, play_id: int, metadata: dict = None):
         if not elems and uses_master_structure:
             elems = [e for e in sp_elem.iter() if localname(e.tag) == "ab"]
         if not elems:
-            # Fallback: collect text in the speech while skipping the speaker label.
-            parts = []
-            if sp_elem.text:
-                parts.append(sp_elem.text)
-            for child in sp_elem:
-                if localname(child.tag) == "speaker":
-                    if child.tail:
-                        parts.append(child.tail)
-                    continue
-                parts.append(text_of(child))
-                if child.tail:
-                    parts.append(child.tail)
-            t = "".join(parts).strip()
+            # Fallback: collect spoken text, skipping speaker labels and stage
+            # directions (e.g. the "reads" cue before a letter) at any depth.
+            t = re.sub(r"\s+", " ", spoken_text_of(sp_elem)).strip()
             if t:
                 yield t
             return
@@ -172,7 +177,7 @@ def parse_play(path: Path, play_id: int, metadata: dict = None):
             else:
                 parts = split_p_by_lb(ln)
             if not parts:
-                t = (text_of(ln) or "").strip()
+                t = re.sub(r"\s+", " ", spoken_text_of(ln)).strip()
                 if t:
                     parts = [t]
             for part in parts:
@@ -277,12 +282,7 @@ def parse_play(path: Path, play_id: int, metadata: dict = None):
                     speaker_elems = [e for e in sp if localname(e.tag) == "speaker"]
                     speakers = []
                     for se in speaker_elems:
-                        raw_name = text_of(se) or ""
-                        nm = (
-                            re.sub(r"\s+", " ", raw_name).strip()
-                            if uses_master_structure
-                            else raw_name.strip()
-                        )
+                        nm = re.sub(r"\s+", " ", text_of(se) or "").strip()
                         if nm: speakers.append(nm); char_set.add(nm)
                     # ensure character aggregates exist for the speakers before counting lines
                     if not speakers:
@@ -433,12 +433,7 @@ def parse_play(path: Path, play_id: int, metadata: dict = None):
                 speaker_elems = [e for e in sp if localname(e.tag) == "speaker"]
                 speakers = []
                 for se in speaker_elems:
-                    raw_name = text_of(se) or ""
-                    nm = (
-                        re.sub(r"\s+", " ", raw_name).strip()
-                        if uses_master_structure
-                        else raw_name.strip()
-                    )
+                    nm = re.sub(r"\s+", " ", text_of(se) or "").strip()
                     if nm: speakers.append(nm); char_set.add(nm)
                 # ensure character aggregates exist for the speakers before counting lines
                 if not speakers:

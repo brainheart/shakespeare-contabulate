@@ -1,6 +1,6 @@
 # shakespeare-contabulate
 
-Search all 38 surviving plays in the Folger Shakespeare—including Shakespeare and John Fletcher's coauthored *The Two Noble Kinsmen*—by token, phrase, and regex across plays, acts/scenes, characters, speeches, and lines.
+Search all 38 plays of the Folger Shakespeare—including Shakespeare and John Fletcher's coauthored *The Two Noble Kinsmen*—by token, phrase, and regex across plays, acts/scenes, characters, speeches, and lines.
 
 This repo contains:
 

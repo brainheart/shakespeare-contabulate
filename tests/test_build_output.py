@@ -355,7 +355,7 @@ class TestPublishedMetadata(unittest.TestCase):
         self.assertEqual(instance['id'], 'shakespeare')
         self.assertEqual(instance['created'], '2025-09-09')
         self.assertEqual(instance['stats']['texts'], 38)
-        self.assertEqual(instance['stats']['segments'], 112538)
+        self.assertEqual(instance['stats']['segments'], 112537)
         self.assertEqual(instance['stats']['segment_label'], 'lines')
         self.assertEqual(instance['stats']['commentaries'], 0)
         self.assertEqual(instance['stats']['comments'], 0)
@@ -366,6 +366,42 @@ class TestPublishedMetadata(unittest.TestCase):
         texts = [line['text'].lower() for line in lines]
         for phrase in ('was met even now', 'century send forth', 'aidant and remediate'):
             self.assertEqual(sum(phrase in text for text in texts), 1, phrase)
+
+
+class TestSpokenTextHygiene(unittest.TestCase):
+    """Stage directions and TEI pretty-printing must not leak into published text."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.lines = json.loads((LINES_DIR / 'all_lines.json').read_text())
+        with open(DATA_DIR / 'characters.json') as f:
+            cls.chars = json.load(f)
+
+    def test_no_raw_whitespace_in_names_speakers_or_text(self):
+        import re
+        messy = re.compile(r'\s{2,}|[\n\t]')
+        self.assertEqual([c['name'] for c in self.chars if messy.search(c['name'])], [])
+        self.assertEqual([l['canonical_id'] for l in self.lines if messy.search(l['speaker'])], [])
+        self.assertEqual([l['canonical_id'] for l in self.lines if messy.search(l['text'])], [])
+
+    def test_known_stage_direction_leaks_are_clean(self):
+        by_id = {l['canonical_id']: l['text'] for l in self.lines}
+        # TEIsimple inline stage: was "…out of the air. Aside . How…"
+        self.assertNotIn('Aside', by_id['HAM.2.2.222'])
+        # TNK master format inline stage: was "…the gods.Enter Valerius."
+        self.assertEqual(by_id['TNK.1.2.93'], 'Due audience of the gods.')
+        # Read-aloud letters must not start with the "reads" cue
+        self.assertEqual([l['canonical_id'] for l in self.lines
+                          if l['text'].lower().startswith('reads ')], [])
+        # Stage cues must not survive as standalone "lines" (e.g. PER 5.1 "sings")
+        cues = {'sings', 'aside', 'exits', 'exeunt', 'reads', 'sings a song'}
+        self.assertEqual([l['canonical_id'] for l in self.lines
+                          if l['text'].strip(' .').lower() in cues], [])
+
+    def test_dialogue_exit_lines_survive(self):
+        # Jaques' "they have their exits and their entrances" is dialogue, not
+        # a stage direction, and must remain searchable.
+        self.assertTrue(any('their exits and their entrances' in l['text'] for l in self.lines))
 
 
 if __name__ == '__main__':
