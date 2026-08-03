@@ -1,6 +1,6 @@
 # shakespeare-contabulate
 
-Search Shakespeare's works by token, phrase, and regex across plays, acts/scenes, characters, and lines.
+Search Shakespeare's works by token, phrase, and regex across plays, acts/scenes, characters, speeches, and lines.
 
 This repo contains:
 
@@ -34,6 +34,7 @@ Generated files include:
 - `docs/data/plays.json`
 - `docs/data/chunks.json`
 - `docs/data/characters.json`
+- `docs/data/speeches.json`
 - `docs/data/tokens.json`
 - `docs/data/tokens2.json`
 - `docs/data/tokens3.json`

@@ -133,11 +133,21 @@ test.describe('Segments Search', () => {
     await expect(page.locator('#results tbody td .hit').first()).toBeVisible({ timeout: 15000 });
   });
 
-  test('granularity selector spans play, act, scene, line, and character', async ({ page }) => {
+  test('speech rows support matching term columns and highlighted text', async ({ page }) => {
+    const sample = await pickSampleQuery(page);
+    await search(page, sample, { gran: 'speech' });
+    const texts = await page.locator('#results thead th').allTextContents();
+    expect(texts.some(t => t.includes('Speech'))).toBeTruthy();
+    expect(texts.some(t => t.includes(`# "${sample}"`))).toBeTruthy();
+    await page.locator('#segmentsTab details summary').click();
+    await expect(page.locator('#results tbody .speech-text-cell .hit').first()).toBeVisible({ timeout: 15000 });
+  });
+
+  test('granularity selector spans play, act, scene, speech, line, and character', async ({ page }) => {
     const options = await page.locator('#gran option').evaluateAll((opts) =>
       opts.map((opt) => ({ value: opt.value, text: (opt.textContent || '').trim() }))
     );
-    for (const value of ['genre', 'play', 'act', 'scene', 'line', 'character', 'word', 'bigram', 'trigram']) {
+    for (const value of ['genre', 'play', 'act', 'scene', 'speech', 'line', 'character', 'word', 'bigram', 'trigram']) {
       expect(options.some((opt) => opt.value === value)).toBeTruthy();
     }
   });
@@ -191,7 +201,7 @@ test('vocabulary scope survives switching the n-gram size', async ({ page }) => 
   await expect(page.locator('#segmentsActiveFilters .active-filter-chip')).toContainText('starts with 06.MAC.');
 });
 
-test('character counts are doors into line and main-table vocabulary views', async ({ page }) => {
+test('character counts are doors into speech, line, and main-table vocabulary views', async ({ page }) => {
   // Keep a non-unigram search-column setting active to prove that the
   // explicitly "# words" door still opens unigrams and reports word totals.
   await page.goto('/?gran=character&sk=line_count&sd=desc&mm=regex&nm=3');
@@ -205,8 +215,28 @@ test('character counts are doors into line and main-table vocabulary views', asy
   const lineCount = parseInt((await firstRow.locator('td:nth-child(5)').innerText()).replace(/,/g, ''), 10);
   const wordCount = parseInt((await firstRow.locator('td:nth-child(6)').innerText()).replace(/,/g, ''), 10);
   expect(wordCount).toBe(11866);
+  const speechCount = parseInt((await firstRow.locator('td:nth-child(4)').innerText()).replace(/,/g, ''), 10);
+  expect(speechCount).toBe(358);
+  // # speeches → the Speech view, where full TEI speech boundaries are
+  // represented as rows and long speech text expands in place.
+  await firstRow.locator('td:nth-child(4) button.drill-link').click();
+  await expect(page.locator('#gran')).toHaveValue('speech');
+  await expect(page.locator('#segmentsActiveFilters .active-filter-chip')).toContainText('Character is HAMLET');
+  await expect(page.locator('#segmentsTotalInfo')).toContainText(`(${speechCount} total rows)`);
+  const speechHeaders = await page.locator('#results thead th').allTextContents();
+  expect(speechHeaders.some(t => t.includes('Speech'))).toBeTruthy();
+  expect(speechHeaders.some(t => t.includes('Speaker'))).toBeTruthy();
+  const speechToggle = page.locator('#results tbody .speech-text-toggle').first();
+  await expect(speechToggle).toHaveAttribute('aria-expanded', 'false');
+  const collapsedSpeech = await speechToggle.innerText();
+  expect(collapsedSpeech.endsWith('…')).toBeTruthy();
+  await speechToggle.click();
+  await expect(speechToggle).toHaveAttribute('aria-expanded', 'true');
+  expect((await speechToggle.innerText()).length).toBeGreaterThan(collapsedSpeech.length);
+  await page.goBack();
+  await expect(page.locator('#gran')).toHaveValue('character');
   // # lines → the Line view scoped to the character's play and speaker
-  await firstRow.locator('td:nth-child(5) button.drill-link').click();
+  await page.locator('#results tbody tr').first().locator('td:nth-child(5) button.drill-link').click();
   await expect(page.locator('#gran')).toHaveValue('line');
   const chips = await page.locator('#segmentsActiveFilters .active-filter-chip').allTextContents();
   expect(chips.some(c => c.includes('starts with'))).toBeTruthy();

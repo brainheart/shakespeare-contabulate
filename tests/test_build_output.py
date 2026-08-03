@@ -15,6 +15,7 @@ class TestBuildOutputExists(unittest.TestCase):
 
     EXPECTED_FILES = [
         'plays.json', 'chunks.json', 'characters.json',
+        'speeches.json',
         'tokens.json', 'tokens2.json', 'tokens3.json',
         'tokens_char.json', 'tokens_char2.json', 'tokens_char3.json',
         'character_name_filter_config.json',
@@ -170,6 +171,50 @@ class TestCharacters(unittest.TestCase):
             if character_id == hamlet['character_id']
         )
         self.assertEqual(posting_total, hamlet['total_words_spoken'])
+
+
+class TestSpeeches(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.speeches = json.loads((DATA_DIR / 'speeches.json').read_text())
+        cls.characters = json.loads((DATA_DIR / 'characters.json').read_text())
+
+    def test_speech_rows_are_complete_and_unique(self):
+        self.assertGreater(len(self.speeches), 30000)
+        required = {
+            'speech_id', 'canonical_id', 'scene_id', 'play_id', 'act', 'scene',
+            'speech_num', 'speaker', 'character_ids', 'text',
+            'line_count', 'total_words'
+        }
+        for speech in self.speeches:
+            self.assertTrue(required.issubset(speech), f"Speech {speech.get('speech_id')} missing fields")
+            self.assertEqual(speech['line_count'], len(speech['text'].splitlines()))
+        speech_ids = [speech['speech_id'] for speech in self.speeches]
+        self.assertEqual(len(speech_ids), len(set(speech_ids)))
+
+    def test_character_speech_counts_match_speech_membership(self):
+        membership_counts = {}
+        for speech in self.speeches:
+            for character_id in speech['character_ids']:
+                membership_counts[character_id] = membership_counts.get(character_id, 0) + 1
+        for character in self.characters:
+            self.assertEqual(
+                membership_counts.get(character['character_id'], 0),
+                character['num_speeches'],
+                f"Speech membership mismatch for {character['play_title']} / {character['name']}"
+            )
+
+    def test_hamlet_speech_count_is_358(self):
+        hamlet = next(
+            character for character in self.characters
+            if character['name'] == 'HAMLET' and character['play_title'] == 'Hamlet'
+        )
+        matching = [
+            speech for speech in self.speeches
+            if hamlet['character_id'] in speech['character_ids']
+        ]
+        self.assertEqual(hamlet['num_speeches'], 358)
+        self.assertEqual(len(matching), hamlet['num_speeches'])
 
 
 class TestPublishedMetadata(unittest.TestCase):

@@ -7,19 +7,21 @@ class ParsePlaySmokeTest(unittest.TestCase):
     def test_hamlet_parse(self):
         tei = Path(__file__).parent / 'tei' / 'hamlet_TEIsimple_FolgerShakespeare.xml'
         self.assertTrue(tei.exists(), 'hamlet TEI must exist for smoke test')
-        scenes, lines_map, token_idx, token2_idx, token3_idx, characters, tokens_char_tmp, tokens_char2_tmp, tokens_char3_tmp, play_row = build.parse_play(tei, 1)
+        scenes, lines_map, token_idx, token2_idx, token3_idx, characters, tokens_char_tmp, tokens_char2_tmp, tokens_char3_tmp, speeches, play_row = build.parse_play(tei, 1)
         # basic shape checks
         self.assertIsInstance(scenes, list)
         self.assertGreater(len(scenes), 0)
         self.assertIsInstance(lines_map, dict)
         self.assertIsInstance(token_idx, dict)
+        self.assertGreater(len(speeches), 0)
+        self.assertTrue({'speech_id', 'speakers', 'text', 'first_line', 'line_count', 'total_words'}.issubset(speeches[0]))
         self.assertIsInstance(play_row, dict)
         self.assertIn('title', play_row)
 
     def test_henry_v_includes_prologue_epilogue(self):
         tei = Path(__file__).parent / 'tei' / 'henry-v_TEIsimple_FolgerShakespeare.xml'
         self.assertTrue(tei.exists(), 'henry-v TEI must exist for prologue test')
-        scenes, lines_map, token_idx, token2_idx, token3_idx, characters, tokens_char_tmp, tokens_char2_tmp, tokens_char3_tmp, play_row = build.parse_play(tei, 1)
+        scenes, lines_map, token_idx, token2_idx, token3_idx, characters, tokens_char_tmp, tokens_char2_tmp, tokens_char3_tmp, speeches, play_row = build.parse_play(tei, 1)
         labels = {s.get("act_label") for s in scenes if s.get("act_label")}
         self.assertIn("Prologue", labels)
         self.assertIn("Epilogue", labels)
@@ -27,7 +29,7 @@ class ParsePlaySmokeTest(unittest.TestCase):
     def test_as_you_like_it_includes_epilogue(self):
         tei = Path(__file__).parent / 'tei' / 'as-you-like-it_TEIsimple_FolgerShakespeare.xml'
         self.assertTrue(tei.exists(), 'as-you-like-it TEI must exist for epilogue test')
-        scenes, lines_map, token_idx, token2_idx, token3_idx, characters, tokens_char_tmp, tokens_char2_tmp, tokens_char3_tmp, play_row = build.parse_play(tei, 1)
+        scenes, lines_map, token_idx, token2_idx, token3_idx, characters, tokens_char_tmp, tokens_char2_tmp, tokens_char3_tmp, speeches, play_row = build.parse_play(tei, 1)
         labels = {s.get("act_label") for s in scenes if s.get("act_label")}
         self.assertIn("Epilogue", labels)
 
@@ -37,7 +39,7 @@ class ParsePlaySmokeTest(unittest.TestCase):
             tmp.write(xml)
             tmp_path = Path(tmp.name)
         try:
-            scenes, lines_map, token_idx, token2_idx, token3_idx, characters, tokens_char_tmp, tokens_char2_tmp, tokens_char3_tmp, play_row = build.parse_play(tmp_path, 1)
+            scenes, lines_map, token_idx, token2_idx, token3_idx, characters, tokens_char_tmp, tokens_char2_tmp, tokens_char3_tmp, speeches, play_row = build.parse_play(tmp_path, 1)
             self.assertEqual(len(scenes), 1)
             scene_id = scenes[0]["scene_id"]
             scene_lines = lines_map.get(scene_id, [])
@@ -45,6 +47,11 @@ class ParsePlaySmokeTest(unittest.TestCase):
             self.assertEqual(scene_lines[0]["text"], "One")
             self.assertEqual(scene_lines[1]["text"], "Two")
             self.assertEqual(scene_lines[2]["text"], "Three")
+            self.assertEqual(len(speeches), 1)
+            self.assertEqual(speeches[0]["text"], "One\nTwo\nThree")
+            self.assertEqual(speeches[0]["first_line"], "One")
+            self.assertEqual(speeches[0]["line_count"], 3)
+            self.assertEqual(speeches[0]["total_words"], 3)
         finally:
             tmp_path.unlink(missing_ok=True)
 

@@ -60,7 +60,7 @@ def parse_play(path: Path, play_id: int, metadata: dict = None):
         if not genre: genre = "unknown"
         first_year = find_first_performance_year(root)
 
-    scenes = []; lines_map = {}
+    scenes = []; lines_map = {}; speech_rows = []
     play_tokens = []  # ordered token stream for play-level MATTR
     token_idx = {}; token2_idx={}; token3_idx={}
     characters = {}; tokens_char_tmp = {}
@@ -187,7 +187,7 @@ def parse_play(path: Path, play_id: int, metadata: dict = None):
                 num_speeches = len(speeches); play_num_speeches += num_speeches
                 num_lines = 0; char_set=set()
                 scene_unigrams={}; scene_bigrams={}; scene_trigrams={}; scene_lines=[]; line_idx=0; scene_sentences=0
-                for sp in speeches:
+                for speech_idx, sp in enumerate(speeches, start=1):
                     speaker_elems = [e for e in sp if localname(e.tag) == "speaker"]
                     speakers = []
                     for se in speaker_elems:
@@ -205,7 +205,13 @@ def parse_play(path: Path, play_id: int, metadata: dict = None):
                         # count this speech for each named speaker
                         characters[key]["num_speeches"] += 1
 
-                    for t in iter_sp_line_texts(sp):
+                    raw_speech_line_texts = list(iter_sp_line_texts(sp))
+                    speech_line_texts = [
+                        re.sub(r"\s+", " ", text).strip()
+                        for text in raw_speech_line_texts
+                        if text and text.strip()
+                    ]
+                    for t in raw_speech_line_texts:
                         line_idx += 1
                         line_canonical_id = f"{play_abbr}.{act_sort}.{scene_idx}.{line_idx}"
                         line_row = {"line_id": line_idx, "canonical_id": line_canonical_id, "speaker": (speakers[0] if speakers else "UNKNOWN") or "UNKNOWN", "text": t}
@@ -245,6 +251,30 @@ def parse_play(path: Path, play_id: int, metadata: dict = None):
                             for nm in speakers:
                                 d3 = tokens_char3_tmp.setdefault((play_id,nm), {})
                                 d3[tg] = d3.get(tg,0)+1
+                    speech_text = "\n".join(speech_line_texts)
+                    speech_tokens = tokenize(speech_text)
+                    speech_row = {
+                        "speech_id": scene_id * 1000 + speech_idx,
+                        "canonical_id": f"{scene_canonical_id}.S{speech_idx:03d}",
+                        "scene_id": scene_id,
+                        "play_id": play_id,
+                        "play_title": title,
+                        "play_abbr": play_abbr,
+                        "genre": genre,
+                        "act": act_sort,
+                        "scene": scene_idx,
+                        "speech_num": speech_idx,
+                        "speaker": " / ".join(speakers),
+                        "speakers": speakers,
+                        "text": speech_text,
+                        "first_line": speech_line_texts[0] if speech_line_texts else "",
+                        "line_count": len(speech_line_texts),
+                        "total_words": len(speech_tokens),
+                        "sentence_count": count_sentences(speech_text),
+                    }
+                    if act_label: speech_row["act_label"] = act_label
+                    if scene_label: speech_row["scene_label"] = scene_label
+                    speech_rows.append(speech_row)
                     for nm in speakers or ["UNKNOWN"]:
                         key = (play_id, nm)
                         agg = characters.get(key)
@@ -304,7 +334,7 @@ def parse_play(path: Path, play_id: int, metadata: dict = None):
             num_speeches = len(speeches); play_num_speeches += num_speeches
             num_lines = 0; char_set=set()
             scene_unigrams={}; scene_bigrams={}; scene_trigrams={}; scene_lines=[]; line_idx=0; scene_sentences=0
-            for sp in speeches:
+            for speech_idx, sp in enumerate(speeches, start=1):
                 speaker_elems = [e for e in sp if localname(e.tag) == "speaker"]
                 speakers = []
                 for se in speaker_elems:
@@ -322,7 +352,13 @@ def parse_play(path: Path, play_id: int, metadata: dict = None):
                     # count this speech for each named speaker
                     characters[key]["num_speeches"] += 1
 
-                for t in iter_sp_line_texts(sp):
+                raw_speech_line_texts = list(iter_sp_line_texts(sp))
+                speech_line_texts = [
+                    re.sub(r"\s+", " ", text).strip()
+                    for text in raw_speech_line_texts
+                    if text and text.strip()
+                ]
+                for t in raw_speech_line_texts:
                     line_idx += 1
                     line_canonical_id = f"{play_abbr}.{act_sort}.{scene_idx}.{line_idx}"
                     line_row = {"line_id": line_idx, "canonical_id": line_canonical_id, "speaker": (speakers[0] if speakers else "UNKNOWN") or "UNKNOWN", "text": t}
@@ -362,6 +398,30 @@ def parse_play(path: Path, play_id: int, metadata: dict = None):
                         for nm in speakers:
                             d3 = tokens_char3_tmp.setdefault((play_id,nm), {})
                             d3[tg] = d3.get(tg,0)+1
+                speech_text = "\n".join(speech_line_texts)
+                speech_tokens = tokenize(speech_text)
+                speech_row = {
+                    "speech_id": scene_id * 1000 + speech_idx,
+                    "canonical_id": f"{scene_canonical_id}.S{speech_idx:03d}",
+                    "scene_id": scene_id,
+                    "play_id": play_id,
+                    "play_title": title,
+                    "play_abbr": play_abbr,
+                    "genre": genre,
+                    "act": act_sort,
+                    "scene": scene_idx,
+                    "speech_num": speech_idx,
+                    "speaker": " / ".join(speakers),
+                    "speakers": speakers,
+                    "text": speech_text,
+                    "first_line": speech_line_texts[0] if speech_line_texts else "",
+                    "line_count": len(speech_line_texts),
+                    "total_words": len(speech_tokens),
+                    "sentence_count": count_sentences(speech_text),
+                }
+                if act_label: speech_row["act_label"] = act_label
+                if scene_label: speech_row["scene_label"] = scene_label
+                speech_rows.append(speech_row)
                 for nm in speakers or ["UNKNOWN"]:
                     key = (play_id, nm)
                     agg = characters.get(key)
@@ -392,7 +452,7 @@ def parse_play(path: Path, play_id: int, metadata: dict = None):
                 "num_acts": act_total, "num_scenes": play_num_scenes, "num_speeches": play_num_speeches,
                 "total_words": play_total_words, "total_lines": play_total_lines,
                 "mattr_50": round(mattr(play_tokens), 3)}
-    return scenes, lines_map, token_idx, token2_idx, token3_idx, characters, tokens_char_tmp, tokens_char2_tmp, tokens_char3_tmp, play_row
+    return scenes, lines_map, token_idx, token2_idx, token3_idx, characters, tokens_char_tmp, tokens_char2_tmp, tokens_char3_tmp, speech_rows, play_row
 
 def build(tei_dir: Path, out_dir: Path):
     data_dir = out_dir / "data"
@@ -430,12 +490,12 @@ def build(tei_dir: Path, out_dir: Path):
         except Exception:
             character_meta_map = {}
     
-    plays=[]; scenes_all=[]; token_idx_all={}; token2_idx_all={}; token3_idx_all={}; characters_rows=[]; tokens_char_idx={}; tokens_char2_idx={}; tokens_char3_idx={}
+    plays=[]; scenes_all=[]; speech_rows_all=[]; token_idx_all={}; token2_idx_all={}; token3_idx_all={}; characters_rows=[]; tokens_char_idx={}; tokens_char2_idx={}; tokens_char3_idx={}
     all_lines = []  # Collect all lines from all plays with global metadata
     play_id=1
     for path in sorted(tei_dir.glob("*.xml")):
         metadata = play_metadata_map.get(path.name)
-        scenes, lines_map, token_idx, token2_idx, token3_idx, characters, tokens_char_tmp, tokens_char2_tmp, tokens_char3_tmp, play_row = parse_play(path, play_id, metadata)
+        scenes, lines_map, token_idx, token2_idx, token3_idx, characters, tokens_char_tmp, tokens_char2_tmp, tokens_char3_tmp, speech_rows, play_row = parse_play(path, play_id, metadata)
         # Attach play_abbr to each scene for easier joins by abbr
         for sc in scenes:
             sc.setdefault("play_abbr", play_row.get("abbr"))
@@ -483,6 +543,18 @@ def build(tei_dir: Path, out_dir: Path):
             # convert scenes_appeared_in set -> sorted list
             agg["scenes_appeared_in"] = sorted(list(agg.get("scenes_appeared_in", set())))
             characters_rows.append(agg)
+        for speech in speech_rows:
+            speech["character_ids"] = [
+                name_to_id[(play_id, nm)]
+                for nm in speech.get("speakers", [])
+                if (play_id, nm) in name_to_id
+            ]
+            # These values are available through play_id or are trivially
+            # derived from text. Keep the published speech file compact
+            # because it is loaded on demand in the browser.
+            for redundant_key in ("play_title", "play_abbr", "genre", "speakers", "first_line"):
+                speech.pop(redundant_key, None)
+            speech_rows_all.append(speech)
         for (pid, nm), tokdict in tokens_char_tmp.items():
             cid = name_to_id.get((pid, nm))
             if cid is None: continue
@@ -615,6 +687,10 @@ def build(tei_dir: Path, out_dir: Path):
         ch.setdefault("sentence_count", 0)
         ch["char_count"] = char_chars.get(cid, 0)
         ch["rarity_sum"] = round(char_rarity.get(cid, 0.0), 3)
+    for speech in speech_rows_all:
+        speech_tokens = tokenize(speech.get("text", ""))
+        speech["char_count"] = sum(len(tok) for tok in speech_tokens)
+        speech["rarity_sum"] = round(sum(tok_rarity.get(tok, 0.0) for tok in speech_tokens), 3)
 
     # Hapax legomena (words appearing exactly once in the corpus), counted
     # per scene and per character so % Hapax works at every granularity.
@@ -632,6 +708,8 @@ def build(tei_dir: Path, out_dir: Path):
                 char_hapax[cid] = char_hapax.get(cid, 0) + 1
     for ch in characters_rows:
         ch["hapax_count"] = char_hapax.get(ch["character_id"], 0)
+    for speech in speech_rows_all:
+        speech["hapax_count"] = sum(1 for tok in tokenize(speech.get("text", "")) if tok in hapax_words)
 
     # Lines actually spoken by each character (num_lines counts the lines of
     # the scenes a character appears in, which is a different thing).
@@ -664,12 +742,13 @@ def build(tei_dir: Path, out_dir: Path):
     instance_payload.pop("text_label", None)
     instance_payload.pop("segment_label", None)
     (out_dir / "instance.json").write_text(
-        json.dumps(instance_payload, ensure_ascii=False, indent=2), encoding="utf-8"
+        json.dumps(instance_payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )
 
     (data_dir / "plays.json").write_text(json.dumps(plays, ensure_ascii=False), encoding="utf-8")
-    (data_dir / "chunks.json").write_text(json.dumps(scenes_all, ensure_ascii=False), encoding="utf-8")
-    (data_dir / "characters.json").write_text(json.dumps(characters_rows, ensure_ascii=False), encoding="utf-8")
+    (data_dir / "chunks.json").write_text(json.dumps(scenes_all, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+    (data_dir / "characters.json").write_text(json.dumps(characters_rows, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+    (data_dir / "speeches.json").write_text(json.dumps(speech_rows_all, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     (data_dir / "tokens.json").write_text(json.dumps(token_idx_all, ensure_ascii=False), encoding="utf-8")
     (data_dir / "tokens2.json").write_text(json.dumps(token2_idx_all, ensure_ascii=False), encoding="utf-8")
     (data_dir / "tokens3.json").write_text(json.dumps(token3_idx_all, ensure_ascii=False), encoding="utf-8")
@@ -680,7 +759,7 @@ def build(tei_dir: Path, out_dir: Path):
     # Write consolidated all_lines.json file
     (lines_dir / "all_lines.json").write_text(json.dumps(all_lines, ensure_ascii=False), encoding="utf-8")
     
-    return {"play_count": len(plays), "scene_count": len(scenes_all), "line_count": len(all_lines)}
+    return {"play_count": len(plays), "scene_count": len(scenes_all), "speech_count": len(speech_rows_all), "line_count": len(all_lines)}
 
 
 if __name__ == '__main__':
@@ -690,4 +769,4 @@ if __name__ == '__main__':
     out_dir = base / 'docs'
     print(f"Building from {tei_dir} -> {out_dir}")
     res = build(tei_dir, out_dir)
-    print(f"Done: {res['play_count']} plays, {res['scene_count']} scenes, {res['line_count']} lines written to {out_dir}/data and {out_dir}/lines")
+    print(f"Done: {res['play_count']} plays, {res['scene_count']} scenes, {res['speech_count']} speeches, {res['line_count']} lines written to {out_dir}/data and {out_dir}/lines")

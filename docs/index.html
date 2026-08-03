@@ -12,7 +12,7 @@
   <meta property="og:url" content="https://shakespeare.contabulate.org/">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ctext y='56' font-size='56'%3E🎭%3C/text%3E%3C/svg%3E">
   <title>🎭 Shakespeare Tabular Explorer</title>
-  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/main.css?v=20260803-speech">
   <style>
   </style>
 </head>
@@ -24,7 +24,7 @@
     </div>
   </div>
   <h1><a href="https://contabulate.org/">Contabulate</a>: 🎭 Shakespeare Tabular Explorer</h1>
-  <p class="muted">A sortable, filterable table of Shakespeare's complete plays — by genre, play, act, scene, line, or character, or flipped to its vocabulary: word, bigram, and trigram rows. Add search-term columns (1–3 words, exact or regex) and text metrics like sentence length and lexical rarity — the metrics live under the <strong>+</strong> at the right edge of the table. TEI texts courtesy of <a href="https://www.folgerdigitaltexts.org" target="_blank" rel="noopener">Folger Digital Texts</a>.</p>
+  <p class="muted">A sortable, filterable table of Shakespeare's complete plays — by genre, play, act, scene, speech, line, or character, or flipped to its vocabulary: word, bigram, and trigram rows. Add search-term columns (1–3 words, exact or regex) and text metrics like sentence length and lexical rarity — the metrics live under the <strong>+</strong> at the right edge of the table. TEI texts courtesy of <a href="https://www.folgerdigitaltexts.org" target="_blank" rel="noopener">Folger Digital Texts</a>.</p>
 
   <div class="tab-content" id="segmentsTab">
     <div class="controls">
@@ -36,6 +36,7 @@
             <option value="play">Play</option>
             <option value="act">Act</option>
             <option value="scene" selected>Scene</option>
+            <option value="speech">Speech</option>
             <option value="line">Line</option>
             <option value="character">Character</option>
             <option value="word">Word</option>
@@ -473,13 +474,13 @@
   let segmentsColumnOrder = [];
   let segmentsColumnDefs = [];
   // Column filters maps (declare early for deep-link)
-  // Scope segments filters by current granularity (play/genre/act/scene/line/character)
+  // Scope segments filters by current granularity (play/genre/act/scene/speech/line/character)
   const segmentsFiltersByGran = new Map(); // gran -> Map(columnKey -> filter)
   // Scene is a real granularity here (plays → acts → scenes → lines);
   // legacy 'verse' aliases the Line view.
   function normalizeGranularity(value) {
     if (value === 'verse') return 'line';
-    return ['genre', 'play', 'act', 'scene', 'line', 'character', 'word', 'bigram', 'trigram'].includes(value) ? value : 'scene';
+    return ['genre', 'play', 'act', 'scene', 'speech', 'line', 'character', 'word', 'bigram', 'trigram'].includes(value) ? value : 'scene';
   }
   function granularityToURL(value) {
     return normalizeGranularity(value);
@@ -529,7 +530,7 @@
     act: { num_scenes: 'scene', verse_count: 'line' },
     scene: { verse_count: 'line' }
   };
-  const DRILL_NOUNS = { play: 'plays', act: 'acts', scene: 'scenes', line: 'lines', word: 'words', bigram: 'bigrams', trigram: 'trigrams' };
+  const DRILL_NOUNS = { play: 'plays', act: 'acts', scene: 'scenes', speech: 'speeches', line: 'lines', word: 'words', bigram: 'bigrams', trigram: 'trigrams' };
   // Declared early: deep links can render vocabulary views during startup
   const vocabRowsCache = new Map();
   // Segments pagination and rows (declare early for deep-link)
@@ -538,6 +539,7 @@
   let segmentsAllRows = [];
   let lastSegmentsBaseRows = [];
   let segmentsSearchRequestId = 0;
+  const expandedSpeechIds = new Set();
   function normalizeSegmentsColumnKey(key) {
     return key === 'ref_code' ? 'location' : key;
   }
@@ -748,8 +750,9 @@
     return res.json();
   }
 
-  let chunks=[], tokens={}, tokens2={}, tokens3={}, plays=[], characters=[], tokensChar={}, tokensChar2={}, tokensChar3={}, allLines=[], characterNameFilterConfig=null, commentaryInterestConfig=null;
+  let chunks=[], tokens={}, tokens2={}, tokens3={}, plays=[], characters=[], tokensChar={}, tokensChar2={}, tokensChar3={}, allLines=[], allSpeeches=[], characterNameFilterConfig=null, commentaryInterestConfig=null;
   let allLinesLoadPromise = null;
+  let allSpeechesLoadPromise = null;
   try {
     setLoadingState(true, 'Loading data...');
     [chunks, tokens, tokens2, tokens3, plays, characters, tokensChar, tokensChar2, tokensChar3, characterNameFilterConfig, commentaryInterestConfig] = await Promise.all([
@@ -791,6 +794,29 @@
     }
     try {
       return await allLinesLoadPromise;
+    } finally {
+      if (shouldShowOverlay) setLoadingState(false);
+    }
+  }
+
+  async function ensureAllSpeechesLoaded({ showOverlay = false } = {}) {
+    if (Array.isArray(allSpeeches) && allSpeeches.length > 0) return allSpeeches;
+    const shouldShowOverlay = !!showOverlay;
+    if (shouldShowOverlay) setLoadingState(true, 'Loading speeches...');
+    if (!allSpeechesLoadPromise) {
+      allSpeechesLoadPromise = loadJSON('data/speeches.json')
+        .then(data => {
+          allSpeeches = Array.isArray(data) ? data : [];
+          return allSpeeches;
+        })
+        .catch(e => {
+          allSpeechesLoadPromise = null;
+          console.warn('Speech data not available:', e);
+          throw e;
+        });
+    }
+    try {
+      return await allSpeechesLoadPromise;
     } finally {
       if (shouldShowOverlay) setLoadingState(false);
     }
@@ -997,6 +1023,9 @@
     if (granVal === 'character') {
       const c = charactersById.get(row.character_id);
       return c ? { tw: c.total_words_spoken||0, sc: c.sentence_count||0, cc: c.char_count||0, rs: c.rarity_sum||0, hc: c.hapax_count||0 } : null;
+    }
+    if (granVal === 'speech') {
+      return { tw: row.total_words||0, sc: row.sentence_count||0, cc: row.char_count||0, rs: row.rarity_sum||0, hc: row.hapax_count||0 };
     }
     return null;
   }
@@ -1443,7 +1472,8 @@
                : (levelKey==='act') ? (actTotals.get(`${meta.play_id}:${meta.act}`)||0)
                : (levelKey==='play') ? (playTotals.get(meta.play_id)||0)
                : (levelKey==='genre') ? ((meta && meta.total_words) || 0)
-               : (levelKey==='character') ? (meta.total_words_spoken||0) : 0;
+               : (levelKey==='character') ? (meta.total_words_spoken||0)
+               : (levelKey==='speech') ? (meta.total_words||0) : 0;
     return Math.max(0, tw - (n-1));
   }
 
@@ -1499,6 +1529,9 @@
     }
     function getLineLocation(play, act, scene, lineNum) {
       return `${getVerseLocation(play, act, scene)}.${String(Number(lineNum) || 0).padStart(4, '0')}`;
+    }
+    function getSpeechLocation(play, act, scene, speechNum) {
+      return `${getVerseLocation(play, act, scene)}.S${String(Number(speechNum) || 0).padStart(3, '0')}`;
     }
 
     const compiledRegexes = new Array(activeTerms.length).fill(null);
@@ -1573,7 +1606,7 @@
         genreSceneCounts.set(g, (genreSceneCounts.get(g) || 0) + (play.num_scenes || 0));
       });
     }
-    if ((showZeroRows || !hasTerms) && granVal !== 'line') {
+    if ((showZeroRows || !hasTerms) && granVal !== 'line' && granVal !== 'speech') {
       if (granVal === 'scene') {
         chunks.forEach(m => {
           ensureRow(m.scene_id, () => {
@@ -1623,6 +1656,106 @@
           });
         });
       }
+    }
+
+    if (granVal === 'speech') {
+      if (!Array.isArray(allSpeeches) || allSpeeches.length === 0) {
+        theadRow.innerHTML = '';
+        tbody.innerHTML = '<tr><td class="muted">Speech data not available.</td></tr>';
+        return null;
+      }
+      const speechMatchers = [];
+      activeTerms.forEach((termSpec, termIdx) => {
+        if (!termSpec) { speechMatchers.push(null); return; }
+        const termN = normalizeTermN(termSpec.n) || 1;
+        if (termSpec.mode === 'regex') {
+          const re = compiledRegexes[termIdx];
+          speechMatchers.push(re ? { type: 'regex', re, n: termN } : null);
+          return;
+        }
+        const parts = normalizeTerm(termSpec.text).split(/\s+/).filter(Boolean).slice(0, termN);
+        speechMatchers.push({ type: 'exact', ngram: parts.length ? parts.join(' ') : null, n: termN });
+      });
+
+      for (const speech of allSpeeches) {
+        const play = playsById.get(speech.play_id) || { play_id: speech.play_id, abbr: speech.play_abbr };
+        const row = {
+          id: speech.canonical_id,
+          speech_id: speech.speech_id,
+          location: speech.location || getSpeechLocation(play, speech.act, speech.scene, speech.speech_num),
+          play_id: speech.play_id,
+          play_title: speech.play_title || play.title || '',
+          genre: speech.genre || play.genre || '',
+          act: speech.act,
+          scene: speech.scene,
+          act_label: speech.act_label,
+          scene_label: speech.scene_label,
+          speech_num: speech.speech_num,
+          speaker: speech.speaker || (speech.speakers || []).join(' / '),
+          character_ids: Array.isArray(speech.character_ids) ? speech.character_ids : [],
+          line_count: speech.line_count || 0,
+          total_words: speech.total_words || 0,
+          ngram_count: speech.total_words || 0,
+          sentence_count: speech.sentence_count || 0,
+          char_count: speech.char_count || 0,
+          rarity_sum: speech.rarity_sum || 0,
+          hapax_count: speech.hapax_count || 0,
+          speech_text: speech.text || '',
+          speech_first_line: speech.first_line || ''
+        };
+        let hasTerm = false;
+        const matchedNgrams = [];
+        speechMatchers.forEach((m, idx) => {
+          if (!m) return;
+          const ngrams = getLineNgrams(speech, normalizeTermN(m.n) || 1);
+          let count = 0;
+          if (m.type === 'regex' && m.re) {
+            const re = new RegExp(m.re.source, m.re.flags.replace('g', ''));
+            for (const ngram of ngrams) {
+              if (re.test(ngram)) {
+                count++;
+                if (matchedNgrams.length <= 80) matchedNgrams.push(ngram);
+              }
+            }
+          } else if (m.type === 'exact' && m.ngram) {
+            for (const ngram of ngrams) if (ngram === m.ngram) count++;
+            if (count > 0 && matchedNgrams.length <= 80) matchedNgrams.push(m.ngram);
+          }
+          if (count > 0) {
+            hasTerm = true;
+            const denominator = denomFor(normalizeTermN(m.n) || 1, 'speech', speech);
+            row[`${termKeys[idx]}_count`] = count;
+            row[`${termKeys[idx]}_pct`] = denominator ? count / denominator : 0;
+          }
+        });
+        if (hasTerm) {
+          row.speech_highlight_regex = (matchedNgrams.length === 0 || matchedNgrams.length > 60)
+            ? null
+            : buildHighlightRegexFromNgrams(matchedNgrams);
+        }
+        if (hasTerm || !hasTerms || showZeroRows) rowsMap.set(row.id, row);
+      }
+
+      const baseCols = [
+        { key: 'location', label: 'Location', defaultDir: 'asc', type: 'text' },
+        { key: 'play_title', label: 'Play', defaultDir: 'asc', type: 'text' },
+        { key: 'act', label: 'Act', type: 'number' },
+        { key: 'scene', label: 'Scene', type: 'number' },
+        { key: 'speaker', label: 'Speaker', defaultDir: 'asc', type: 'text' },
+        { key: 'line_count', label: '# lines', type: 'number', defaultDir: 'desc' },
+        { key: 'ngram_count', label: getBaseCountLabel(), type: 'number', defaultDir: 'desc' }
+      ];
+      baseCols.push(...metricColsFor(granVal));
+      const termCols = buildTermColumns();
+      baseCols.push(...termCols);
+      baseCols.push({ key: 'speech_text', label: 'Speech', type: 'text' });
+      setHeaders(baseCols);
+      if (!applyPreferredTermSort(termCols, preferredSortTermIndex)) {
+        const defaultSortKey = termCols[0]?.key || 'location';
+        const defaultSortDir = termCols.length ? 'desc' : 'asc';
+        ensureSegmentsSortForColumns(segmentsColumnDefs, defaultSortKey, defaultSortDir);
+      }
+      return finalizeRows();
     }
 
     if (granVal === 'line') {
@@ -1925,6 +2058,14 @@
       // rows have no location, genre, or character-id field of their own.
       if ((key === 'location' || key === 'genre' || key === 'character_id')
         && isVocabGranularity(gran.value)) continue;
+      if (key === 'character_id' && gran.value === 'speech') {
+        if (!f.pattern) continue;
+        let characterRe = null;
+        try { characterRe = new RegExp(f.pattern, 'i'); } catch(e) { characterRe = null; }
+        if (!characterRe) continue;
+        out = out.filter(row => (row.character_ids || []).some(id => characterRe.test(String(id))));
+        continue;
+      }
       if (key === 'location' && gran.value === 'genre') continue;
       const type = f.type || 'text';
       if (type === 'number') {
@@ -2046,6 +2187,7 @@
     if (granVal === 'act') return `${row.play_title || ''} act ${row.act ?? ''}`.trim();
     if (granVal === 'scene') return `${row.play_title || ''} ${row.act ?? ''}.${row.scene ?? ''}`.trim();
     if (granVal === 'character') return String(row.name || '').replace(/\s+/g, ' ').trim();
+    if (granVal === 'speech') return `${row.play_title || ''} ${row.act ?? ''}.${row.scene ?? ''}, speech ${row.speech_num ?? ''}`.trim();
     return row.title || row.play_title || row.genre || '';
   }
 
@@ -2083,6 +2225,17 @@
         const count = Number(row[key]);
         if (!Number.isFinite(count) || count <= 0) return null;
         return { target: 'line', prefix, speakerScope, termKey: '', count, title: `Show the ${formatCellNumber(count)} lines spoken by ${label}` };
+      }
+      if (key === 'num_speeches' && row.character_id != null) {
+        const count = Number(row[key]);
+        if (!Number.isFinite(count) || count <= 0) return null;
+        return {
+          target: 'speech',
+          characterScope: Number(row.character_id),
+          termKey: '',
+          count,
+          title: `Show the ${formatCellNumber(count)} speeches by ${label}`
+        };
       }
       if (key === 'ngram_count' && row.character_id != null) {
         const count = Number(row[key]);
@@ -2148,7 +2301,7 @@
       return { target: 'play', prefix: '', genreScope: String(row.genre), termKey: '', text: String(row.genre), title: `Show the plays of the ${row.genre} genre` };
     }
     const locParts = String(row.location || '').split('.');
-    if ((granVal === 'act' || granVal === 'scene' || granVal === 'line') && key === 'play_title' && row.play_title && locParts.length >= 3) {
+    if ((granVal === 'act' || granVal === 'scene' || granVal === 'speech' || granVal === 'line') && key === 'play_title' && row.play_title && locParts.length >= 3) {
       const prefix = locParts.slice(0, 2).join('.') + '.';
       return {
         target: granVal,
@@ -2158,7 +2311,7 @@
         title: `Show the ${DRILL_NOUNS[granVal]} of ${row.play_title}`
       };
     }
-    if ((granVal === 'scene' || granVal === 'line') && key === 'act' && row.act != null && locParts.length >= 4) {
+    if ((granVal === 'scene' || granVal === 'speech' || granVal === 'line') && key === 'act' && row.act != null && locParts.length >= 4) {
       const prefix = locParts.slice(0, 3).join('.') + '.';
       return {
         target: granVal,
@@ -2168,14 +2321,14 @@
         title: `Show the ${DRILL_NOUNS[granVal]} of ${row.play_title || ''} act ${row.act}`.trim()
       };
     }
-    if (granVal === 'line' && key === 'scene' && row.scene != null && locParts.length >= 5) {
+    if ((granVal === 'speech' || granVal === 'line') && key === 'scene' && row.scene != null && locParts.length >= 5) {
       const prefix = locParts.slice(0, 4).join('.') + '.';
       return {
-        target: 'line',
+        target: granVal,
         prefix,
         termKey: '',
         text: String(row.scene),
-        title: `Show the lines of ${row.play_title || ''} ${row.act ?? ''}.${row.scene}`.trim()
+        title: `Show the ${DRILL_NOUNS[granVal]} of ${row.play_title || ''} ${row.act ?? ''}.${row.scene}`.trim()
       };
     }
     // The Play cell in the Character view scopes to the play's location
@@ -2191,14 +2344,14 @@
     }
     // Speaker cells narrow the Line view to that speaker, keeping the
     // current location scope in place.
-    if (granVal === 'line' && key === 'speaker' && row.speaker) {
+    if ((granVal === 'speech' || granVal === 'line') && key === 'speaker' && row.speaker) {
       return {
-        target: 'line',
+        target: granVal,
         columnScope: { key: 'speaker', value: String(row.speaker) },
         preserveScope: true,
         termKey: '',
         text: String(row.speaker),
-        title: `Show the lines spoken by ${String(row.speaker).replace(/\s+/g, ' ').trim()}`
+        title: `Show the ${DRILL_NOUNS[granVal]} spoken by ${String(row.speaker).replace(/\s+/g, ' ').trim()}`
       };
     }
     return null;
@@ -2519,6 +2672,7 @@
 
     for (const r of paginatedRows) {
       const tr = document.createElement('tr');
+      if (granVal === 'speech') tr.classList.add('speech-row');
       cols.forEach((k) => {
         const td = document.createElement('td');
         if (k === '__add') {
@@ -2536,6 +2690,42 @@
           td.innerHTML = (colorScaleState.highlightEnabled && r.line_highlight_regex)
             ? highlightHTML(r.line, r.line_highlight_regex)
             : escapeHTML(r.line);
+        } else if (k === 'speech_text' && r.speech_text != null) {
+          td.classList.add('speech-text-cell');
+          const fullText = String(r.speech_text);
+          const firstLine = String(r.speech_first_line || fullText.split('\n', 1)[0] || '');
+          const expandable = fullText !== firstLine;
+          const renderSpeechText = (expanded) => {
+            const displayText = expanded || !expandable ? fullText : `${firstLine} …`;
+            return (colorScaleState.highlightEnabled && r.speech_highlight_regex)
+              ? highlightHTML(displayText, r.speech_highlight_regex)
+              : escapeHTML(displayText);
+          };
+          if (!expandable) {
+            const text = document.createElement('span');
+            text.className = 'speech-text-content';
+            text.innerHTML = renderSpeechText(true);
+            td.appendChild(text);
+          } else {
+            const speechId = String(r.speech_id ?? r.id);
+            const expanded = expandedSpeechIds.has(speechId);
+            const toggle = document.createElement('button');
+            toggle.type = 'button';
+            toggle.className = 'speech-text-toggle';
+            toggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+            toggle.title = expanded ? 'Collapse speech' : 'Expand full speech';
+            toggle.innerHTML = renderSpeechText(expanded);
+            toggle.addEventListener('click', (event) => {
+              event.stopPropagation();
+              const nextExpanded = toggle.getAttribute('aria-expanded') !== 'true';
+              if (nextExpanded) expandedSpeechIds.add(speechId);
+              else expandedSpeechIds.delete(speechId);
+              toggle.setAttribute('aria-expanded', nextExpanded ? 'true' : 'false');
+              toggle.title = nextExpanded ? 'Collapse speech' : 'Expand full speech';
+              toggle.innerHTML = renderSpeechText(nextExpanded);
+            });
+            td.appendChild(toggle);
+          }
         } else if (typeof isCommentaryDetailCell === 'function' && isCommentaryDetailCell(k)) {
           const v = r[k];
           if (Number(v) > 0 && typeof buildCommentaryDetailLink === 'function') {
@@ -2718,6 +2908,18 @@
       } catch (e) {
         if (requestId === segmentsSearchRequestId) {
           showSegmentsTableMessage('Line data not available.', 'warning');
+        }
+        return;
+      }
+      if (requestId !== segmentsSearchRequestId) return;
+    }
+    if (gran.value === 'speech' && (!Array.isArray(allSpeeches) || allSpeeches.length === 0)) {
+      showSegmentsTableMessage('Loading speeches...');
+      try {
+        await ensureAllSpeechesLoaded({ showOverlay: true });
+      } catch (e) {
+        if (requestId === segmentsSearchRequestId) {
+          showSegmentsTableMessage('Speech data not available.', 'warning');
         }
         return;
       }

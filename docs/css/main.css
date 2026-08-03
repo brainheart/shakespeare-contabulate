@@ -617,6 +617,46 @@ input[type="checkbox"] {
   font-style: normal;
   font-weight: 600;
 }
+.speech-text-cell {
+  min-width: min(30rem, 58vw);
+  max-width: 48rem;
+  line-height: 1.45;
+  vertical-align: top;
+}
+.speech-row > td {
+  vertical-align: top;
+}
+.speech-text-content,
+.speech-text-toggle {
+  display: block;
+  white-space: pre-wrap;
+}
+.speech-text-toggle {
+  width: 100%;
+  margin: -0.2rem;
+  padding: 0.2rem;
+  border: 0;
+  border-radius: 3px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  letter-spacing: inherit;
+  line-height: inherit;
+  text-align: left;
+}
+.speech-text-toggle:hover {
+  background: rgba(139, 21, 56, 0.06);
+  box-shadow: none;
+}
+.speech-text-toggle:focus-visible {
+  outline: 2px solid var(--burgundy);
+  outline-offset: 2px;
+}
+.speech-text-toggle .hit,
+.speech-text-content .hit {
+  font-weight: 600;
+}
 /* Hide advanced color scale controls for now */
 .color-scale-options { display: none; }
 /* Color legend */
