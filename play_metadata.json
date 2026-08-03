@@ -318,7 +318,7 @@
     {
       "filename": "troilus-and-cressida_TEIsimple_FolgerShakespeare.xml",
       "title": "Troilus and Cressida",
-      "genre": "comedy",
+      "genre": "tragedy",
       "first_performance_year": 1602,
       "notes": "Problem play set during Trojan War",
       "abbr": "TRO",
@@ -332,6 +332,15 @@
       "notes": "Romantic comedy",
       "abbr": "TN",
       "play_id": 37
+    },
+    {
+      "filename": "the-two-noble-kinsmen_FolgerDigitalTexts.xml",
+      "title": "The Two Noble Kinsmen",
+      "genre": "romance",
+      "first_performance_year": 1613,
+      "notes": "Late tragicomedy co-written with John Fletcher",
+      "abbr": "TNK",
+      "play_id": 38
     }
   ]
 }

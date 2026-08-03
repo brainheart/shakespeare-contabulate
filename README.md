@@ -1,10 +1,10 @@
 # shakespeare-contabulate
 
-Search Shakespeare's works by token, phrase, and regex across plays, acts/scenes, characters, speeches, and lines.
+Search all 38 surviving plays in the Folger Shakespeare—including Shakespeare and John Fletcher's coauthored *The Two Noble Kinsmen*—by token, phrase, and regex across plays, acts/scenes, characters, speeches, and lines.
 
 This repo contains:
 
-- A Python build pipeline (`build.py`) that reads Folger TEI XML in `tei/` and emits JSON indexes.
+- A Python build pipeline (`build.py`) that reads Folger TEI XML in `tei/` and emits JSON indexes. It supports both Folger TEI Simple and the Folger master XML structure used by *The Two Noble Kinsmen*.
 - A static web UI in `docs/` that loads those generated JSON files.
 - Python and Playwright tests for data and UI behavior.
 

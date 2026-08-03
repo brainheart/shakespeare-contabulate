@@ -5,9 +5,16 @@ Or:       python3 -m unittest tests.test_build_output -v
 import unittest
 import json
 from pathlib import Path
+import xml.etree.ElementTree as ET
 
 DATA_DIR = Path(__file__).parent.parent / 'docs' / 'data'
 LINES_DIR = Path(__file__).parent.parent / 'docs' / 'lines'
+TEI_DIR = Path(__file__).parent.parent / 'tei'
+PLAY_METADATA = Path(__file__).parent.parent / 'play_metadata.json'
+
+
+def localname(tag):
+    return tag.rsplit('}', 1)[-1]
 
 
 class TestBuildOutputExists(unittest.TestCase):
@@ -40,8 +47,8 @@ class TestPlays(unittest.TestCase):
         with open(DATA_DIR / 'plays.json') as f:
             cls.plays = json.load(f)
 
-    def test_37_plays(self):
-        self.assertEqual(len(self.plays), 37)
+    def test_38_plays(self):
+        self.assertEqual(len(self.plays), 38)
 
     def test_play_has_required_fields(self):
         required = {'play_id', 'title', 'abbr', 'genre', 'total_words', 'total_lines', 'num_acts', 'num_scenes'}
@@ -56,6 +63,47 @@ class TestPlays(unittest.TestCase):
         valid = {'comedy', 'tragedy', 'history', 'romance'}
         for p in self.plays:
             self.assertIn(p['genre'], valid, f"{p['title']} has unknown genre '{p['genre']}'")
+
+    def test_troilus_is_a_tragedy_and_genre_counts_are_correct(self):
+        troilus = next(p for p in self.plays if p['abbr'] == 'TRO')
+        self.assertEqual(troilus['genre'], 'tragedy')
+        counts = {}
+        for play in self.plays:
+            counts[play['genre']] = counts.get(play['genre'], 0) + 1
+        self.assertEqual(counts, {'comedy': 12, 'tragedy': 11, 'history': 10, 'romance': 5})
+
+    def test_two_noble_kinsmen_is_the_stable_38th_play(self):
+        tnk = next(p for p in self.plays if p['abbr'] == 'TNK')
+        self.assertEqual(
+            {
+                'play_id': tnk['play_id'],
+                'title': tnk['title'],
+                'genre': tnk['genre'],
+                'num_acts': tnk['num_acts'],
+                'num_scenes': tnk['num_scenes'],
+                'num_speeches': tnk['num_speeches'],
+                'total_lines': tnk['total_lines'],
+            },
+            {
+                'play_id': 38,
+                'title': 'The Two Noble Kinsmen',
+                'genre': 'romance',
+                'num_acts': 5,
+                'num_scenes': 26,
+                'num_speeches': 840,
+                'total_lines': 3382,
+            },
+        )
+
+    def test_generated_play_ids_match_metadata(self):
+        metadata = json.loads(PLAY_METADATA.read_text())
+        expected = {p['abbr']: p['play_id'] for p in metadata['plays']}
+        actual = {p['abbr']: p['play_id'] for p in self.plays}
+        self.assertEqual(actual, expected)
+        self.assertEqual(
+            {abbr: actual[abbr] for abbr in ('WT', 'TIM', 'TIT', 'TRO', 'TN', 'TNK')},
+            {'WT': 33, 'TIM': 34, 'TIT': 35, 'TRO': 36, 'TN': 37, 'TNK': 38},
+        )
 
     def test_unique_play_ids(self):
         ids = [p['play_id'] for p in self.plays]
@@ -89,6 +137,39 @@ class TestChunks(unittest.TestCase):
     def test_unique_scene_ids(self):
         ids = [c['scene_id'] for c in self.chunks]
         self.assertEqual(len(ids), len(set(ids)), 'scene_ids must be unique')
+
+    def test_king_lear_scene_structure_and_recovered_scene(self):
+        lear = [c for c in self.chunks if c['play_id'] == 17]
+        self.assertEqual(len(lear), 26)
+        act_four = [c for c in lear if c['act'] == 4]
+        self.assertEqual([c['scene'] for c in act_four], list(range(1, 8)))
+        recovered = next(c for c in act_four if c['scene'] == 4)
+        lines = json.loads((LINES_DIR / f"{recovered['scene_id']}.json").read_text())
+        self.assertEqual({line['speaker'] for line in lines}, {'CORDELIA', 'DOCTOR', 'MESSENGER'})
+        self.assertTrue(any('was met even now' in line['text'] for line in lines))
+        reunion = next(c for c in act_four if c['scene'] == 7)
+        reunion_lines = json.loads((LINES_DIR / f"{reunion['scene_id']}.json").read_text())
+        self.assertTrue(any(line['speaker'] == 'LEAR' for line in reunion_lines))
+        self.assertTrue(any(line['speaker'] == 'CORDELIA' for line in reunion_lines))
+
+    def test_two_noble_kinsmen_source_structure_is_preserved(self):
+        tnk = [c for c in self.chunks if c['play_id'] == 38]
+        self.assertEqual(len(tnk), 26)
+        self.assertEqual(sum(c['num_speeches'] for c in tnk), 840)
+        self.assertEqual(sum(c['num_lines'] for c in tnk), 3382)
+        self.assertEqual(tnk[0]['canonical_id'], 'TNK.0.1')
+        self.assertEqual(tnk[0]['act_label'], 'Prologue')
+        self.assertEqual(tnk[-1]['canonical_id'], 'TNK.6.2')
+        self.assertEqual(tnk[-1]['act_label'], 'Epilogue')
+        prologue = json.loads((LINES_DIR / f"{tnk[0]['scene_id']}.json").read_text())
+        epilogue = json.loads((LINES_DIR / f"{tnk[-1]['scene_id']}.json").read_text())
+        self.assertEqual(prologue[0]['text'], 'New plays and maidenheads are near akin:')
+        self.assertEqual(epilogue[-1]['text'], 'Rest at your service. Gentlemen, good night.')
+
+    def test_no_orphan_per_scene_line_files(self):
+        expected = {f"{chunk['scene_id']}.json" for chunk in self.chunks}
+        actual = {path.name for path in LINES_DIR.glob('*.json') if path.name != 'all_lines.json'}
+        self.assertEqual(actual, expected)
 
 
 class TestTokens(unittest.TestCase):
@@ -157,6 +238,36 @@ class TestCharacters(unittest.TestCase):
         hamlets = [c for c in self.chars if c['name'].upper() == 'HAMLET']
         self.assertGreater(len(hamlets), 0, 'Hamlet should exist as a character')
 
+    def test_corrected_female_characters(self):
+        expected = {
+            ('AWW', 'HELEN'), ('AWW', 'MARIANA'), ('AWW', 'WIDOW'),
+            ('MM', 'ISABELLA'), ('MM', 'MARIANA'),
+            ('COR', 'VOLUMNIA'), ('COR', 'VIRGILIA'), ('COR', 'VALERIA'),
+            ('TRO', 'CRESSIDA'), ('TRO', 'CASSANDRA'), ('TRO', 'HELEN'),
+            ('1H6', 'PUCELLE'),
+            ('WT', 'HERMIONE'), ('WT', 'DORCAS'), ('WT', 'MOPSA'),
+            ('LLL', 'ROSALINE'), ('LLL', 'JAQUENETTA'),
+            ('PER', 'MARINA'), ('PER', 'DIONYZA'), ('PER', 'THAISA'),
+            ('MND', 'TITANIA'),
+            ('ANT', 'CHARMIAN'), ('ANT', 'IRAS'),
+            ('AYL', 'PHOEBE'), ('AYL', 'AUDREY'),
+            ('2H4', 'DOLL'), ('JC', 'CALPHURNIA'), ('JN', 'BLANCHE'),
+            ('ADO', 'URSULA'), ('ERR', 'LUCE'), ('TGV', 'LUCETTA'),
+        }
+        actual = {
+            (character['play_abbr'], character['name'])
+            for character in self.chars
+            if character['gender'] == 'F'
+        }
+        self.assertTrue(expected.issubset(actual), f"Missing corrected female characters: {expected - actual}")
+
+    def test_female_share_of_labelled_words_is_plausible(self):
+        labelled = [character for character in self.chars if character['gender'] in {'F', 'M'}]
+        female_words = sum(character['total_words_spoken'] for character in labelled if character['gender'] == 'F')
+        labelled_words = sum(character['total_words_spoken'] for character in labelled)
+        self.assertGreaterEqual(female_words / labelled_words, 0.16)
+        self.assertLessEqual(female_words / labelled_words, 0.18)
+
     def test_character_unigram_postings_sum_to_spoken_word_total(self):
         """The main-table character vocabulary uses a complete token index."""
         hamlet = next(
@@ -180,7 +291,7 @@ class TestSpeeches(unittest.TestCase):
         cls.characters = json.loads((DATA_DIR / 'characters.json').read_text())
 
     def test_speech_rows_are_complete_and_unique(self):
-        self.assertGreater(len(self.speeches), 30000)
+        self.assertEqual(len(self.speeches), 31906)
         required = {
             'speech_id', 'canonical_id', 'scene_id', 'play_id', 'act', 'scene',
             'speech_num', 'speaker', 'character_ids', 'text',
@@ -191,6 +302,13 @@ class TestSpeeches(unittest.TestCase):
             self.assertEqual(speech['line_count'], len(speech['text'].splitlines()))
         speech_ids = [speech['speech_id'] for speech in self.speeches]
         self.assertEqual(len(speech_ids), len(set(speech_ids)))
+
+    def test_speech_count_matches_folger_tei(self):
+        source_speech_count = 0
+        for path in TEI_DIR.glob('*.xml'):
+            root = ET.parse(path).getroot()
+            source_speech_count += sum(1 for elem in root.iter() if localname(elem.tag) == 'sp')
+        self.assertEqual(source_speech_count, len(self.speeches))
 
     def test_character_speech_counts_match_speech_membership(self):
         membership_counts = {}
@@ -236,12 +354,18 @@ class TestPublishedMetadata(unittest.TestCase):
         instance = json.loads((DATA_DIR.parent / 'instance.json').read_text())
         self.assertEqual(instance['id'], 'shakespeare')
         self.assertEqual(instance['created'], '2025-09-09')
-        self.assertEqual(instance['stats']['texts'], 37)
-        self.assertEqual(instance['stats']['segments'], 109124)
+        self.assertEqual(instance['stats']['texts'], 38)
+        self.assertEqual(instance['stats']['segments'], 112538)
         self.assertEqual(instance['stats']['segment_label'], 'lines')
         self.assertEqual(instance['stats']['commentaries'], 0)
         self.assertEqual(instance['stats']['comments'], 0)
         self.assertEqual(len(instance['sample_queries']), 1)
+
+    def test_recovered_lear_phrases_occur_once(self):
+        lines = json.loads((LINES_DIR / 'all_lines.json').read_text())
+        texts = [line['text'].lower() for line in lines]
+        for phrase in ('was met even now', 'century send forth', 'aidant and remediate'):
+            self.assertEqual(sum(phrase in text for text in texts), 1, phrase)
 
 
 if __name__ == '__main__':

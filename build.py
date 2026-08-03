@@ -1,6 +1,6 @@
 
 import datetime
-import re, json, math
+import re, json, math, sys
 from pathlib import Path
 import xml.etree.ElementTree as ET
 
@@ -35,6 +35,10 @@ def find_first_performance_year(root):
 
 def parse_play(path: Path, play_id: int, metadata: dict = None):
     root = ET.parse(path).getroot()
+    uses_master_structure = any(
+        localname(elem.tag) in ("div1", "div2")
+        for elem in root.iter()
+    )
     # Title and metadata from external source if available
     if metadata:
         title = metadata.get("title", path.stem)
@@ -84,8 +88,60 @@ def parse_play(path: Path, play_id: int, metadata: dict = None):
             lines.append(text)
         return lines
 
+    def split_ab_by_ftln(ab_elem):
+        lines = []
+        cur = []
+
+        def flush():
+            text = re.sub(r"\s+", " ", "".join(cur)).strip()
+            cur.clear()
+            if text:
+                lines.append(text)
+
+        def append_source_text(value, semantic_space=False):
+            if not value:
+                return
+            if value.strip():
+                cur.append(value)
+            elif semantic_space:
+                cur.append(" ")
+
+        def walk(node):
+            append_source_text(node.text, localname(node.tag) == "c")
+            for child in node:
+                if (
+                    localname(child.tag) == "milestone"
+                    and child.attrib.get("unit") == "ftln"
+                ):
+                    flush()
+                elif localname(child.tag) != "lb":
+                    walk(child)
+                append_source_text(child.tail)
+
+        walk(ab_elem)
+        flush()
+        return lines
+
+    def fallback_speakers_from_who(sp_elem):
+        refs = [
+            ref.lstrip("#")
+            for ref in (sp_elem.attrib.get("who") or "").split()
+            if ref.startswith("#")
+        ]
+        if not refs:
+            return []
+        bare = [re.sub(r"_.*$", "", ref) for ref in refs]
+        if len(bare) == 1:
+            return [bare[0].upper()]
+        roots = {re.sub(r"\..*$", "", ref) for ref in bare}
+        if len(roots) == 1:
+            return [f"ALL {next(iter(roots)).upper()}"]
+        return [" / ".join(ref.upper() for ref in bare)]
+
     def iter_sp_line_texts(sp_elem):
         elems = [e for e in sp_elem.iter() if localname(e.tag) in ("l", "p")]
+        if not elems and uses_master_structure:
+            elems = [e for e in sp_elem.iter() if localname(e.tag) == "ab"]
         if not elems:
             # Fallback: collect text in the speech while skipping the speaker label.
             parts = []
@@ -104,7 +160,17 @@ def parse_play(path: Path, play_id: int, metadata: dict = None):
                 yield t
             return
         for ln in elems:
-            parts = split_p_by_lb(ln)
+            if (
+                localname(ln.tag) == "ab"
+                and any(
+                    localname(e.tag) == "milestone"
+                    and e.attrib.get("unit") == "ftln"
+                    for e in ln.iter()
+                )
+            ):
+                parts = split_ab_by_ftln(ln)
+            else:
+                parts = split_p_by_lb(ln)
             if not parts:
                 t = (text_of(ln) or "").strip()
                 if t:
@@ -114,16 +180,26 @@ def parse_play(path: Path, play_id: int, metadata: dict = None):
 
     def div_type(e):
         return (e.attrib.get("type","") or "").lower()
+    def is_div(e):
+        return localname(e.tag) in ("div", "div1", "div2")
     def is_div_type(e, typ):
-        return localname(e.tag) == "div" and div_type(e) == typ
+        return is_div(e) and div_type(e) == typ
+    def has_speech_descendant(e):
+        return any(localname(desc.tag) == "sp" for desc in e.iter())
+    def numbered_div_index(e, fallback):
+        raw = (e.attrib.get("n") or "").strip()
+        try:
+            return int(raw)
+        except ValueError:
+            return fallback
     special_types = {"prologue", "epilogue", "induction", "chorus"}
     body = None
     for e in root.iter():
         if localname(e.tag) == "body":
             body = e
             break
-    top_divs = [e for e in list(body) if localname(e.tag) == "div"] if body is not None else []
-    sections = [e for e in top_divs if localname(e.tag) == "div" and (is_div_type(e, "act") or div_type(e) in special_types)]
+    top_divs = [e for e in list(body) if is_div(e)] if body is not None else []
+    sections = [e for e in top_divs if is_div_type(e, "act") or div_type(e) in special_types]
     used_root_fallback = False
     if not sections:
         acts = [e for e in root.iter() if is_div_type(e, "act")]
@@ -141,18 +217,28 @@ def parse_play(path: Path, play_id: int, metadata: dict = None):
     special_scene_idx = 0
 
     for section in sections:
-        section_type = div_type(section) if localname(section.tag) == "div" else "act"
+        section_type = div_type(section) if is_div(section) else "act"
         if section_type == "act":
             act_idx += 1
             act_sort_act = act_idx
             act_scene_idx = 0
             act_label = None
-            child_divs = [e for e in list(section) if localname(e.tag) == "div"]
-            scs = [e for e in child_divs if is_div_type(e, "scene") or div_type(e) in special_types]
+            child_divs = [e for e in list(section) if is_div(e)]
+            scs = []
+            for child in child_divs:
+                if is_div_type(child, "scene") or div_type(child) in special_types:
+                    scs.append(child)
+                elif has_speech_descendant(child):
+                    print(
+                        f"Warning: treating unrecognized <div type={div_type(child)!r} "
+                        f"n={child.attrib.get('n')!r}> with speeches as a scene in {path.name}",
+                        file=sys.stderr,
+                    )
+                    scs.append(child)
             if not scs:
                 scs = [section]
             for scene in scs:
-                scene_type = div_type(scene) if localname(scene.tag) == "div" else "scene"
+                scene_type = div_type(scene) if is_div(scene) else "scene"
                 if scene_type in special_types:
                     act_label = scene_type.capitalize()
                     if scene_type == "epilogue":
@@ -168,7 +254,7 @@ def parse_play(path: Path, play_id: int, metadata: dict = None):
                     act_sort = act_sort_act
                     act_label = None
                     scene_label = None
-                    scene_idx = act_scene_idx
+                    scene_idx = numbered_div_index(scene, act_scene_idx)
                 scene_seq += 1
                 scene_id = play_id * 1000 + scene_seq
                 scene_canonical_id = f"{play_abbr}.{act_sort}.{scene_idx}"
@@ -191,12 +277,21 @@ def parse_play(path: Path, play_id: int, metadata: dict = None):
                     speaker_elems = [e for e in sp if localname(e.tag) == "speaker"]
                     speakers = []
                     for se in speaker_elems:
-                        nm = (text_of(se) or "").strip()
+                        raw_name = text_of(se) or ""
+                        nm = (
+                            re.sub(r"\s+", " ", raw_name).strip()
+                            if uses_master_structure
+                            else raw_name.strip()
+                        )
                         if nm: speakers.append(nm); char_set.add(nm)
                     # ensure character aggregates exist for the speakers before counting lines
                     if not speakers:
-                        speakers = ["UNKNOWN"]
-                        char_set.add("UNKNOWN")
+                        speakers = (
+                            fallback_speakers_from_who(sp)
+                            if uses_master_structure
+                            else []
+                        ) or ["UNKNOWN"]
+                        char_set.update(speakers)
                     for nm in speakers:
                         key = (play_id, nm)
                         if key not in characters:
@@ -338,12 +433,21 @@ def parse_play(path: Path, play_id: int, metadata: dict = None):
                 speaker_elems = [e for e in sp if localname(e.tag) == "speaker"]
                 speakers = []
                 for se in speaker_elems:
-                    nm = (text_of(se) or "").strip()
+                    raw_name = text_of(se) or ""
+                    nm = (
+                        re.sub(r"\s+", " ", raw_name).strip()
+                        if uses_master_structure
+                        else raw_name.strip()
+                    )
                     if nm: speakers.append(nm); char_set.add(nm)
                 # ensure character aggregates exist for the speakers before counting lines
                 if not speakers:
-                    speakers = ["UNKNOWN"]
-                    char_set.add("UNKNOWN")
+                    speakers = (
+                        fallback_speakers_from_who(sp)
+                        if uses_master_structure
+                        else []
+                    ) or ["UNKNOWN"]
+                    char_set.update(speakers)
                 for nm in speakers:
                     key = (play_id, nm)
                     if key not in characters:
@@ -490,11 +594,24 @@ def build(tei_dir: Path, out_dir: Path):
         except Exception:
             character_meta_map = {}
     
+    source_plays = []
+    seen_play_ids = set()
+    for path in tei_dir.glob("*.xml"):
+        metadata = play_metadata_map.get(path.name)
+        if metadata is None:
+            raise ValueError(f"Missing play metadata for TEI source {path.name}")
+        play_id = metadata.get("play_id")
+        if not isinstance(play_id, int) or isinstance(play_id, bool) or play_id < 1:
+            raise ValueError(f"Invalid play_id for {path.name}: {play_id!r}")
+        if play_id in seen_play_ids:
+            raise ValueError(f"Duplicate play_id {play_id} in play metadata")
+        seen_play_ids.add(play_id)
+        source_plays.append((play_id, path, metadata))
+    source_plays.sort(key=lambda item: item[0])
+
     plays=[]; scenes_all=[]; speech_rows_all=[]; token_idx_all={}; token2_idx_all={}; token3_idx_all={}; characters_rows=[]; tokens_char_idx={}; tokens_char2_idx={}; tokens_char3_idx={}
     all_lines = []  # Collect all lines from all plays with global metadata
-    play_id=1
-    for path in sorted(tei_dir.glob("*.xml")):
-        metadata = play_metadata_map.get(path.name)
+    for play_id, path, metadata in source_plays:
         scenes, lines_map, token_idx, token2_idx, token3_idx, characters, tokens_char_tmp, tokens_char2_tmp, tokens_char3_tmp, speech_rows, play_row = parse_play(path, play_id, metadata)
         # Attach play_abbr to each scene for easier joins by abbr
         for sc in scenes:
@@ -570,7 +687,7 @@ def build(tei_dir: Path, out_dir: Path):
             if cid is None: continue
             for tok, cnt in tokdict.items():
                 tokens_char3_idx.setdefault(tok, []).append((cid, cnt))
-        plays.append(play_row); play_id += 1
+        plays.append(play_row)
     # Attach gender to characters using metadata and heuristics
     def _heuristic_gender_from_name(name: str) -> str:
         n = _norm_name(name)
@@ -758,6 +875,15 @@ def build(tei_dir: Path, out_dir: Path):
     
     # Write consolidated all_lines.json file
     (lines_dir / "all_lines.json").write_text(json.dumps(all_lines, ensure_ascii=False), encoding="utf-8")
+
+    # Remove stale per-scene files left behind when scene ids change between
+    # builds. all_lines.json is the one intentional non-scene file here.
+    current_scene_ids = {str(scene["scene_id"]) for scene in scenes_all}
+    for line_path in lines_dir.glob("*.json"):
+        if line_path.name == "all_lines.json":
+            continue
+        if line_path.stem.isdigit() and line_path.stem not in current_scene_ids:
+            line_path.unlink()
     
     return {"play_count": len(plays), "scene_count": len(scenes_all), "speech_count": len(speech_rows_all), "line_count": len(all_lines)}
 

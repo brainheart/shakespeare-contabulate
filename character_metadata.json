@@ -159,7 +159,7 @@
     {
       "play_id": 1,
       "name": "TITANIA",
-      "sex": "M",
+      "sex": "F",
       "abbr": "MND"
     },
     {
@@ -189,7 +189,7 @@
     {
       "play_id": 2,
       "name": "DIANA",
-      "sex": "M",
+      "sex": "F",
       "abbr": "AWW"
     },
     {
@@ -243,7 +243,7 @@
     {
       "play_id": 2,
       "name": "HELEN",
-      "sex": "M",
+      "sex": "F",
       "abbr": "AWW"
     },
     {
@@ -273,7 +273,7 @@
     {
       "play_id": 2,
       "name": "MARIANA",
-      "sex": "M",
+      "sex": "F",
       "abbr": "AWW"
     },
     {
@@ -327,7 +327,7 @@
     {
       "play_id": 2,
       "name": "WIDOW",
-      "sex": "M",
+      "sex": "F",
       "abbr": "AWW"
     },
     {
@@ -399,7 +399,7 @@
     {
       "play_id": 3,
       "name": "CHARMIAN",
-      "sex": "M",
+      "sex": "F",
       "abbr": "ANT"
     },
     {
@@ -501,7 +501,7 @@
     {
       "play_id": 3,
       "name": "IRAS",
-      "sex": "M",
+      "sex": "F",
       "abbr": "ANT"
     },
     {
@@ -693,7 +693,7 @@
     {
       "play_id": 4,
       "name": "AUDREY",
-      "sex": "M",
+      "sex": "F",
       "abbr": "AYL"
     },
     {
@@ -789,7 +789,7 @@
     {
       "play_id": 4,
       "name": "PHOEBE",
-      "sex": "M",
+      "sex": "F",
       "abbr": "AYL"
     },
     {
@@ -1215,19 +1215,19 @@
     {
       "play_id": 5,
       "name": "VALERIA",
-      "sex": "M",
+      "sex": "F",
       "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "VALERIA , VIRGILIA",
-      "sex": "M",
+      "sex": "F",
       "abbr": "COR"
     },
     {
       "play_id": 5,
       "name": "VIRGILIA",
-      "sex": "M",
+      "sex": "F",
       "abbr": "COR"
     },
     {
@@ -1239,7 +1239,7 @@
     {
       "play_id": 5,
       "name": "VOLUMNIA",
-      "sex": "M",
+      "sex": "F",
       "abbr": "COR"
     },
     {
@@ -1809,7 +1809,7 @@
     {
       "play_id": 8,
       "name": "HOSTESS",
-      "sex": "M",
+      "sex": "F",
       "abbr": "1H4"
     },
     {
@@ -1995,7 +1995,7 @@
     {
       "play_id": 9,
       "name": "DOLL",
-      "sex": "M",
+      "sex": "F",
       "abbr": "2H4"
     },
     {
@@ -2055,7 +2055,7 @@
     {
       "play_id": 9,
       "name": "HOSTESS",
-      "sex": "M",
+      "sex": "F",
       "abbr": "2H4"
     },
     {
@@ -2421,7 +2421,7 @@
     {
       "play_id": 10,
       "name": "HOSTESS",
-      "sex": "M",
+      "sex": "F",
       "abbr": "H5"
     },
     {
@@ -2739,7 +2739,7 @@
     {
       "play_id": 11,
       "name": "PUCELLE",
-      "sex": "M",
+      "sex": "F",
       "abbr": "1H6"
     },
     {
@@ -3753,7 +3753,7 @@
     {
       "play_id": 14,
       "name": "PATIENCE",
-      "sex": "M",
+      "sex": "F",
       "abbr": "H8"
     },
     {
@@ -3849,7 +3849,7 @@
     {
       "play_id": 14,
       "name": "WOMAN",
-      "sex": "M",
+      "sex": "F",
       "abbr": "H8"
     },
     {
@@ -3885,7 +3885,7 @@
     {
       "play_id": 15,
       "name": "CALPHURNIA",
-      "sex": "M",
+      "sex": "F",
       "abbr": "JC"
     },
     {
@@ -4173,7 +4173,7 @@
     {
       "play_id": 16,
       "name": "BLANCHE",
-      "sex": "M",
+      "sex": "F",
       "abbr": "JN"
     },
     {
@@ -4539,7 +4539,7 @@
     {
       "play_id": 18,
       "name": "JAQUENETTA",
-      "sex": "M",
+      "sex": "F",
       "abbr": "LLL"
     },
     {
@@ -4587,7 +4587,7 @@
     {
       "play_id": 18,
       "name": "ROSALINE",
-      "sex": "M",
+      "sex": "F",
       "abbr": "LLL"
     },
     {
@@ -4683,7 +4683,7 @@
     {
       "play_id": 19,
       "name": "HECATE",
-      "sex": "M",
+      "sex": "F",
       "abbr": "MAC"
     },
     {
@@ -4881,7 +4881,7 @@
     {
       "play_id": 20,
       "name": "BAWD",
-      "sex": "M",
+      "sex": "F",
       "abbr": "MM"
     },
     {
@@ -4935,7 +4935,7 @@
     {
       "play_id": 20,
       "name": "ISABELLA",
-      "sex": "M",
+      "sex": "F",
       "abbr": "MM"
     },
     {
@@ -4959,7 +4959,7 @@
     {
       "play_id": 20,
       "name": "MARIANA",
-      "sex": "M",
+      "sex": "F",
       "abbr": "MM"
     },
     {
@@ -4971,7 +4971,7 @@
     {
       "play_id": 20,
       "name": "NUN",
-      "sex": "M",
+      "sex": "F",
       "abbr": "MM"
     },
     {
@@ -5151,7 +5151,7 @@
     {
       "play_id": 21,
       "name": "URSULA",
-      "sex": "M",
+      "sex": "F",
       "abbr": "ADO"
     },
     {
@@ -5325,7 +5325,7 @@
     {
       "play_id": 23,
       "name": "BAWD",
-      "sex": "M",
+      "sex": "F",
       "abbr": "PER"
     },
     {
@@ -5361,13 +5361,13 @@
     {
       "play_id": 23,
       "name": "DIANA",
-      "sex": "M",
+      "sex": "F",
       "abbr": "PER"
     },
     {
       "play_id": 23,
       "name": "DIONYZA",
-      "sex": "M",
+      "sex": "F",
       "abbr": "PER"
     },
     {
@@ -5457,7 +5457,7 @@
     {
       "play_id": 23,
       "name": "LYCHORIDA",
-      "sex": "M",
+      "sex": "F",
       "abbr": "PER"
     },
     {
@@ -5469,7 +5469,7 @@
     {
       "play_id": 23,
       "name": "MARINA",
-      "sex": "M",
+      "sex": "F",
       "abbr": "PER"
     },
     {
@@ -5565,7 +5565,7 @@
     {
       "play_id": 23,
       "name": "THAISA",
-      "sex": "M",
+      "sex": "F",
       "abbr": "PER"
     },
     {
@@ -6447,7 +6447,7 @@
     {
       "play_id": 27,
       "name": "ABBESS",
-      "sex": "M",
+      "sex": "F",
       "abbr": "ERR"
     },
     {
@@ -6483,7 +6483,7 @@
     {
       "play_id": 27,
       "name": "COURTESAN",
-      "sex": "M",
+      "sex": "F",
       "abbr": "ERR"
     },
     {
@@ -6525,7 +6525,7 @@
     {
       "play_id": 27,
       "name": "LUCE",
-      "sex": "M",
+      "sex": "F",
       "abbr": "ERR"
     },
     {
@@ -7041,7 +7041,7 @@
     {
       "play_id": 30,
       "name": "WIDOW",
-      "sex": "M",
+      "sex": "F",
       "abbr": "SHR"
     },
     {
@@ -7215,7 +7215,7 @@
     {
       "play_id": 32,
       "name": "LUCETTA",
-      "sex": "M",
+      "sex": "F",
       "abbr": "TGV"
     },
     {
@@ -7323,7 +7323,7 @@
     {
       "play_id": 33,
       "name": "DORCAS",
-      "sex": "M",
+      "sex": "F",
       "abbr": "WT"
     },
     {
@@ -7353,7 +7353,7 @@
     {
       "play_id": 33,
       "name": "HERMIONE",
-      "sex": "M",
+      "sex": "F",
       "abbr": "WT"
     },
     {
@@ -7395,7 +7395,7 @@
     {
       "play_id": 33,
       "name": "MOPSA",
-      "sex": "M",
+      "sex": "F",
       "abbr": "WT"
     },
     {
@@ -7689,7 +7689,7 @@
     {
       "play_id": 34,
       "name": "PHRYNIA",
-      "sex": "M",
+      "sex": "F",
       "abbr": "TIM"
     },
     {
@@ -7821,7 +7821,7 @@
     {
       "play_id": 34,
       "name": "TIMANDRA",
-      "sex": "M",
+      "sex": "F",
       "abbr": "TIM"
     },
     {
@@ -8073,7 +8073,7 @@
     {
       "play_id": 36,
       "name": "ANDROMACHE",
-      "sex": "M",
+      "sex": "F",
       "abbr": "TRO"
     },
     {
@@ -8097,13 +8097,13 @@
     {
       "play_id": 36,
       "name": "CASSANDRA",
-      "sex": "M",
+      "sex": "F",
       "abbr": "TRO"
     },
     {
       "play_id": 36,
       "name": "CRESSIDA",
-      "sex": "M",
+      "sex": "F",
       "abbr": "TRO"
     },
     {
@@ -8127,7 +8127,7 @@
     {
       "play_id": 36,
       "name": "HELEN",
-      "sex": "M",
+      "sex": "F",
       "abbr": "TRO"
     },
     {
@@ -8309,6 +8309,258 @@
       "name": "VIOLA",
       "sex": "F",
       "abbr": "TN"
+    },
+    {
+      "play_id": 38,
+      "name": "ALL",
+      "sex": "A",
+      "abbr": "TNK"
+    },
+    {
+      "play_id": 38,
+      "name": "ALL KNIGHTS",
+      "sex": "M",
+      "abbr": "TNK"
+    },
+    {
+      "play_id": 38,
+      "name": "ALL QUEENS",
+      "sex": "F",
+      "abbr": "TNK"
+    },
+    {
+      "play_id": 38,
+      "name": "ALL THE QUEENS",
+      "sex": "F",
+      "abbr": "TNK"
+    },
+    {
+      "play_id": 38,
+      "name": "ARCITE",
+      "sex": "M",
+      "abbr": "TNK"
+    },
+    {
+      "play_id": 38,
+      "name": "BAVIAN",
+      "sex": "M",
+      "abbr": "TNK"
+    },
+    {
+      "play_id": 38,
+      "name": "BOTH",
+      "sex": "M",
+      "abbr": "TNK"
+    },
+    {
+      "play_id": 38,
+      "name": "BOY",
+      "sex": "M",
+      "abbr": "TNK"
+    },
+    {
+      "play_id": 38,
+      "name": "BROTHER",
+      "sex": "M",
+      "abbr": "TNK"
+    },
+    {
+      "play_id": 38,
+      "name": "DAUGHTER",
+      "sex": "F",
+      "abbr": "TNK"
+    },
+    {
+      "play_id": 38,
+      "name": "DOCTOR",
+      "sex": "M",
+      "abbr": "TNK"
+    },
+    {
+      "play_id": 38,
+      "name": "EMILIA",
+      "sex": "F",
+      "abbr": "TNK"
+    },
+    {
+      "play_id": 38,
+      "name": "EPILOGUE",
+      "sex": "A",
+      "abbr": "TNK"
+    },
+    {
+      "play_id": 38,
+      "name": "FIRST COUNTRYMAN",
+      "sex": "M",
+      "abbr": "TNK"
+    },
+    {
+      "play_id": 38,
+      "name": "FIRST FRIEND",
+      "sex": "M",
+      "abbr": "TNK"
+    },
+    {
+      "play_id": 38,
+      "name": "FIRST KNIGHT",
+      "sex": "M",
+      "abbr": "TNK"
+    },
+    {
+      "play_id": 38,
+      "name": "FIRST QUEEN",
+      "sex": "F",
+      "abbr": "TNK"
+    },
+    {
+      "play_id": 38,
+      "name": "FOURTH COUNTRYMAN",
+      "sex": "M",
+      "abbr": "TNK"
+    },
+    {
+      "play_id": 38,
+      "name": "GENTLEMAN",
+      "sex": "M",
+      "abbr": "TNK"
+    },
+    {
+      "play_id": 38,
+      "name": "HERALD",
+      "sex": "M",
+      "abbr": "TNK"
+    },
+    {
+      "play_id": 38,
+      "name": "HIPPOLYTA",
+      "sex": "F",
+      "abbr": "TNK"
+    },
+    {
+      "play_id": 38,
+      "name": "JAILER",
+      "sex": "M",
+      "abbr": "TNK"
+    },
+    {
+      "play_id": 38,
+      "name": "MESSENGER",
+      "sex": "M",
+      "abbr": "TNK"
+    },
+    {
+      "play_id": 38,
+      "name": "NELL",
+      "sex": "F",
+      "abbr": "TNK"
+    },
+    {
+      "play_id": 38,
+      "name": "PALAMON",
+      "sex": "M",
+      "abbr": "TNK"
+    },
+    {
+      "play_id": 38,
+      "name": "PIRITHOUS",
+      "sex": "M",
+      "abbr": "TNK"
+    },
+    {
+      "play_id": 38,
+      "name": "PROLOGUE",
+      "sex": "A",
+      "abbr": "TNK"
+    },
+    {
+      "play_id": 38,
+      "name": "SCHOOLMASTER",
+      "sex": "M",
+      "abbr": "TNK"
+    },
+    {
+      "play_id": 38,
+      "name": "SECOND AND THIRD KNIGHTS",
+      "sex": "M",
+      "abbr": "TNK"
+    },
+    {
+      "play_id": 38,
+      "name": "SECOND COUNTRYMAN",
+      "sex": "M",
+      "abbr": "TNK"
+    },
+    {
+      "play_id": 38,
+      "name": "SECOND FRIEND",
+      "sex": "M",
+      "abbr": "TNK"
+    },
+    {
+      "play_id": 38,
+      "name": "SECOND KNIGHT",
+      "sex": "M",
+      "abbr": "TNK"
+    },
+    {
+      "play_id": 38,
+      "name": "SECOND QUEEN",
+      "sex": "F",
+      "abbr": "TNK"
+    },
+    {
+      "play_id": 38,
+      "name": "SERVANT",
+      "sex": "M",
+      "abbr": "TNK"
+    },
+    {
+      "play_id": 38,
+      "name": "TABORER",
+      "sex": "M",
+      "abbr": "TNK"
+    },
+    {
+      "play_id": 38,
+      "name": "THESEUS",
+      "sex": "M",
+      "abbr": "TNK"
+    },
+    {
+      "play_id": 38,
+      "name": "THIRD COUNTRYMAN",
+      "sex": "M",
+      "abbr": "TNK"
+    },
+    {
+      "play_id": 38,
+      "name": "THIRD KNIGHT",
+      "sex": "M",
+      "abbr": "TNK"
+    },
+    {
+      "play_id": 38,
+      "name": "THIRD QUEEN",
+      "sex": "F",
+      "abbr": "TNK"
+    },
+    {
+      "play_id": 38,
+      "name": "VALERIUS",
+      "sex": "M",
+      "abbr": "TNK"
+    },
+    {
+      "play_id": 38,
+      "name": "WOMAN",
+      "sex": "F",
+      "abbr": "TNK"
+    },
+    {
+      "play_id": 38,
+      "name": "WOOER",
+      "sex": "M",
+      "abbr": "TNK"
     }
   ]
 }

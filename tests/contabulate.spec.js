@@ -32,7 +32,7 @@ test.describe('Page Load', () => {
     await page.goto('/');
     await waitForDataLoaded(page);
     await page.waitForSelector('#results tbody tr', { timeout: 10000 });
-    await expect(page.locator('#results tbody tr')).toHaveCount(37);
+    await expect(page.locator('#results tbody tr')).toHaveCount(38);
     const texts = await page.locator('#results thead th').allTextContents();
     expect(texts.some(t => t.includes('Location'))).toBeTruthy();
     expect(texts.some(t => t.includes('Play'))).toBeTruthy();
@@ -90,7 +90,7 @@ test.describe('Segments Search', () => {
     await expect(page.locator('#gran')).toHaveValue('play');
     // Genre cell filters plays to that genre
     await page.locator('#results tbody tr').first().locator('td:nth-child(4) .drill-link').click();
-    await expect(page.locator('#results tbody tr')).toHaveCount(13);
+    await expect(page.locator('#results tbody tr')).toHaveCount(12);
     await expect(page.locator('#segmentsActiveFilters .active-filter-chip')).toContainText('is comedy');
   });
 
@@ -276,7 +276,7 @@ test('character counts are doors into speech, line, and main-table vocabulary vi
   await expect(page.locator('#segmentsActiveFilters .active-filter-chip')).toContainText('Character is HAMLET');
   await page.locator('#results tbody tr').first().locator('td:nth-child(3) button.drill-link').click();
   await expect(page.locator('#gran')).toHaveValue('character');
-  await expect(page.locator('#segmentsTotalInfo')).toContainText('(1134 total rows)');
+  await expect(page.locator('#segmentsTotalInfo')).toContainText('(1166 total rows)');
 });
 
 test('scene word counts open the exact scene vocabulary instead of an empty descendant scope', async ({ page }) => {
@@ -320,7 +320,7 @@ test('vocabulary distribution counts stay corpus-wide under location and genre s
   await waitForDataLoaded(page);
   await expect(page.locator('#results tbody tr')).toHaveCount(1);
   const genreScopedRow = page.locator('#results tbody tr').first();
-  await expect(genreScopedRow.locator('td:nth-child(2)')).toHaveText('53');
+  await expect(genreScopedRow.locator('td:nth-child(2)')).toHaveText('57');
   await expect(genreScopedRow.locator('td:nth-child(3)')).toHaveText('34');
   await expect(genreScopedRow.locator('td:nth-child(4)')).toHaveText('119');
 });

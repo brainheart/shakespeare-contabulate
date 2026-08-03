@@ -16,12 +16,12 @@
   ],
   "updated": "2026-08-03",
   "stats": {
-    "texts": 37,
+    "texts": 38,
     "text_label": "plays",
-    "segments": 109124,
+    "segments": 112538,
     "segment_label": "lines",
-    "words": 828823,
-    "distinct_words": 23572,
+    "words": 853481,
+    "distinct_words": 23895,
     "commentaries": 0,
     "comments": 0
   }
