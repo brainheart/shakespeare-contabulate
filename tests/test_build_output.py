@@ -335,6 +335,27 @@ class TestSpeeches(unittest.TestCase):
         self.assertEqual(len(matching), hamlet['num_speeches'])
 
 
+class TestLocationWidths(unittest.TestCase):
+    """Keep the compact browser location format collision-free."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.chunks = json.loads((DATA_DIR / 'chunks.json').read_text())
+        cls.speeches = json.loads((DATA_DIR / 'speeches.json').read_text())
+        cls.lines = json.loads((LINES_DIR / 'all_lines.json').read_text())
+
+    def test_compact_location_component_bounds(self):
+        self.assertEqual(max(chunk['act'] for chunk in self.chunks), 6)
+        self.assertEqual(max(chunk['scene'] for chunk in self.chunks), 15)
+        self.assertEqual(max(speech['speech_num'] for speech in self.speeches), 407)
+        self.assertEqual(max(line['line_num'] for line in self.lines), 4068)
+
+        self.assertLess(max(chunk['act'] for chunk in self.chunks), 10)
+        self.assertLess(max(chunk['scene'] for chunk in self.chunks), 100)
+        self.assertLess(max(speech['speech_num'] for speech in self.speeches), 1000)
+        self.assertLess(max(line['line_num'] for line in self.lines), 10000)
+
+
 class TestPublishedMetadata(unittest.TestCase):
     def test_no_commentary_data_ships(self):
         self.assertFalse((DATA_DIR / 'commentary_interest.json').exists())

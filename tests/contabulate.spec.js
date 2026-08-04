@@ -75,11 +75,18 @@ test.describe('Segments Search', () => {
   test('count cells drill down through acts, scenes, and lines', async ({ page }) => {
     await page.goto('/');
     await waitForDataLoaded(page);
-    // Plays → the 5 acts of A Midsummer Night's Dream
-    await page.locator('#results tbody tr').first().locator('td:nth-child(5) button.drill-link').click();
+    const playHeaderKeys = await page.locator('#results thead th').evaluateAll((ths) =>
+      ths.map((th) => th.dataset.key)
+    );
+    const playColumn = (key) => playHeaderKeys.indexOf(key) + 1;
+    const firstPlay = page.locator('#results tbody tr').first();
+    const playLocation = (await firstPlay.locator(`td:nth-child(${playColumn('location')})`).innerText()).trim();
+    const playGenre = (await firstPlay.locator(`td:nth-child(${playColumn('genre')})`).innerText()).trim();
+    // A play row → its five acts, scoped by its abbreviation-first location.
+    await firstPlay.locator(`td:nth-child(${playColumn('num_chapters')}) button.drill-link`).click();
     await expect(page.locator('#gran')).toHaveValue('act');
     await expect(page.locator('#segmentsTotalInfo')).toContainText('(5 total rows)');
-    await expect(page.locator('#segmentsActiveFilters .active-filter-chip')).toContainText('starts with 01.MND.');
+    await expect(page.locator('#segmentsActiveFilters .active-filter-chip')).toContainText(`starts with ${playLocation}.`);
     // Act row → its scenes
     await page.locator('#results tbody tr').first().locator('td:nth-child(4) button.drill-link').click();
     await expect(page.locator('#gran')).toHaveValue('scene');
@@ -89,9 +96,11 @@ test.describe('Segments Search', () => {
     await page.goBack();
     await expect(page.locator('#gran')).toHaveValue('play');
     // Genre cell filters plays to that genre
-    await page.locator('#results tbody tr').first().locator('td:nth-child(4) .drill-link').click();
-    await expect(page.locator('#results tbody tr')).toHaveCount(12);
-    await expect(page.locator('#segmentsActiveFilters .active-filter-chip')).toContainText('is comedy');
+    await page.locator('#results tbody tr').first().locator(`td:nth-child(${playColumn('genre')}) .drill-link`).click();
+    await expect(page.locator('#segmentsActiveFilters .active-filter-chip')).toContainText(`is ${playGenre}`);
+    const visibleGenres = await page.locator(`#results tbody tr td:nth-child(${playColumn('genre')})`).allTextContents();
+    expect(visibleGenres.length).toBeGreaterThan(0);
+    expect(visibleGenres.every((genre) => genre.trim() === playGenre)).toBeTruthy();
   });
 
   test('vocabulary granularities put n-grams in the rows with an active name toggle', async ({ page }) => {
@@ -181,24 +190,71 @@ test.describe('Lines View', () => {
 });
 
 test('vocabulary scope survives switching the n-gram size', async ({ page }) => {
-  await page.goto('/?gran=word&s_ft_location=%5E06%5C.MAC%5C.');
+  await page.goto('/?gran=word&s_ft_location=%5EMAC%5C.');
   await waitForDataLoaded(page);
   await page.waitForSelector('#results tbody tr', { timeout: 10000 });
-  await expect(page.locator('#segmentsActiveFilters .active-filter-chip')).toContainText('starts with 06.MAC.');
+  await expect(page.locator('#segmentsActiveFilters .active-filter-chip')).toContainText('starts with MAC.');
   // Switching word -> bigram keeps the same scope in place
   await page.selectOption('#gran', 'bigram');
   await page.waitForSelector('#results tbody tr', { timeout: 10000 });
-  await expect(page.locator('#segmentsActiveFilters .active-filter-chip')).toContainText('starts with 06.MAC.');
+  await expect(page.locator('#segmentsActiveFilters .active-filter-chip')).toContainText('starts with MAC.');
   await page.selectOption('#gran', 'trigram');
-  await expect(page.locator('#segmentsActiveFilters .active-filter-chip')).toContainText('starts with 06.MAC.');
+  await expect(page.locator('#segmentsActiveFilters .active-filter-chip')).toContainText('starts with MAC.');
   // ...and carries into the location granularities
   await page.selectOption('#gran', 'scene');
   await page.waitForSelector('#results tbody tr', { timeout: 10000 });
-  await expect(page.locator('#segmentsActiveFilters .active-filter-chip')).toContainText('starts with 06.MAC.');
+  await expect(page.locator('#segmentsActiveFilters .active-filter-chip')).toContainText('starts with MAC.');
   // Jumping coarser than the scope shows its containing row, not nothing
   await page.selectOption('#gran', 'play');
   await expect(page.locator('#results tbody tr')).toHaveCount(1);
-  await expect(page.locator('#segmentsActiveFilters .active-filter-chip')).toContainText('starts with 06.MAC.');
+  await expect(page.locator('#segmentsActiveFilters .active-filter-chip')).toContainText('starts with MAC.');
+});
+
+test('locations start with play abbreviations and ancestor cells preserve hierarchy scope', async ({ page }) => {
+  await page.goto('/?gran=line&sk=location&sd=asc');
+  await waitForDataLoaded(page);
+  await page.waitForSelector('#results tbody tr', { timeout: 15000 });
+
+  const headerKeys = await page.locator('#results thead th').evaluateAll((ths) =>
+    ths.map((th) => th.dataset.key)
+  );
+  const column = (key) => headerKeys.indexOf(key) + 1;
+  const firstRow = () => page.locator('#results tbody tr').first();
+  const firstLocation = (await firstRow().locator(`td:nth-child(${column('location')})`).innerText()).trim();
+  const locationParts = firstLocation.split('.');
+
+  expect(firstLocation).toMatch(/^[A-Z0-9]+\.\d\.\d{2}\.\d{4}$/);
+  expect(firstLocation).not.toMatch(/^\d{2}\./);
+
+  const expectLocationFilter = async (pattern) => {
+    await expect.poll(() => new URL(page.url()).searchParams.get('s_ft_location')).toBe(pattern);
+  };
+  const restoreUnscopedLineView = async () => {
+    await page.goBack();
+    await expectLocationFilter(null);
+    await page.waitForSelector('#results tbody tr');
+  };
+
+  await firstRow().locator(`td:nth-child(${column('play_title')}) button.drill-link`).click();
+  await expectLocationFilter(`^${locationParts[0]}\\.`);
+  await restoreUnscopedLineView();
+
+  await firstRow().locator(`td:nth-child(${column('act')}) button.drill-link`).click();
+  await expectLocationFilter(`^${locationParts[0]}\\.${locationParts[1]}\\.`);
+  await restoreUnscopedLineView();
+
+  await firstRow().locator(`td:nth-child(${column('scene')}) button.drill-link`).click();
+  await expectLocationFilter(`^${locationParts[0]}\\.${locationParts[1]}\\.${locationParts[2]}\\.`);
+
+  // Speech numbers need three digits: Love's Labour's Lost 5.2 reaches 407.
+  await page.goto('/?gran=speech&s_ft_location=%5ELLL%5C.5%5C.02%5C.S407%24');
+  await waitForDataLoaded(page);
+  await expect(page.locator('#results tbody tr')).toHaveCount(1);
+  const speechHeaderKeys = await page.locator('#results thead th').evaluateAll((ths) =>
+    ths.map((th) => th.dataset.key)
+  );
+  const speechLocationColumn = speechHeaderKeys.indexOf('location') + 1;
+  await expect(page.locator(`#results tbody tr td:nth-child(${speechLocationColumn})`)).toHaveText('LLL.5.02.S407');
 });
 
 test('character counts are doors into speech, line, and main-table vocabulary views', async ({ page }) => {
@@ -302,7 +358,7 @@ test('character counts are doors into speech, line, and main-table vocabulary vi
 });
 
 test('scene word counts open the exact scene vocabulary instead of an empty descendant scope', async ({ page }) => {
-  await page.goto('/?gran=scene&s_ft_location=%5E07%5C.HAM%5C.001%5C.002%24');
+  await page.goto('/?gran=scene&s_ft_location=%5EHAM%5C.1%5C.02%24');
   await waitForDataLoaded(page);
   await page.waitForSelector('#results tbody tr', { timeout: 15000 });
   await expect(page.locator('#results tbody tr')).toHaveCount(1);
@@ -310,11 +366,11 @@ test('scene word counts open the exact scene vocabulary instead of an empty desc
 
   await page.locator('#results tbody tr').first().locator('td[data-value="2059"] button.drill-link').click();
   await expect(page.locator('#gran')).toHaveValue('word');
-  await expect(page.locator('#segmentsActiveFilters .active-filter-chip')).toContainText('Location is 07.HAM.001.002');
+  await expect(page.locator('#segmentsActiveFilters .active-filter-chip')).toContainText('Location is HAM.1.02');
   await expect(page.locator('#segmentsTotalInfo')).toContainText('(718 total rows)');
   await expect(page.locator('#results tbody tr').first().locator('td:nth-child(1) span[dir="auto"]')).toHaveText('to');
   await expect(page.locator('#results tbody tr').first().locator('td:nth-child(2)')).toHaveText('71');
-  expect(new URL(page.url()).searchParams.get('s_ft_location')).toBe('^07\\.HAM\\.001\\.002$');
+  expect(new URL(page.url()).searchParams.get('s_ft_location')).toBe('^HAM\\.1\\.02$');
 });
 
 test('vocabulary distribution counts stay corpus-wide under location and genre scopes', async ({ page }) => {
@@ -322,7 +378,7 @@ test('vocabulary distribution counts stay corpus-wide under location and genre s
 
   // Othello 4.2 contains four instances of "hell", but the distribution
   // columns still describe every play and scene in which the word occurs.
-  await page.goto(`/?gran=word&co=${columns}&s_ft_location=%5E22%5C.OTH%5C.004%5C.002%24&s_ft_ngram=%5Ehell%24`);
+  await page.goto(`/?gran=word&co=${columns}&s_ft_location=%5EOTH%5C.4%5C.02%24&s_ft_ngram=%5Ehell%24`);
   await waitForDataLoaded(page);
   await expect(page.locator('#results tbody tr')).toHaveCount(1);
   const sceneScopedRow = page.locator('#results tbody tr').first();

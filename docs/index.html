@@ -838,16 +838,18 @@
   const charactersById = new Map(characters.map(c => [c.character_id, c]));
 
   // This build ships no location strings; derive the sortable, drillable
-  // "NN.ABBR.AAA.SSS" scheme from ids so scoping works like the sibling
-  // instances (characters stay outside the location hierarchy).
-  const pad3 = (v) => String(Number(v) || 0).padStart(3, '0');
+  // "ABBR.A.SS" scheme from the stable play abbreviation and hierarchy
+  // numbers (characters stay outside the location hierarchy).
+  const formatActLocationPart = (v) => String(Number(v) || 0);
+  const formatSceneLocationPart = (v) => String(Number(v) || 0).padStart(2, '0');
   for (const p of plays) {
-    if (!p.location) p.location = `${String(Number(p.play_id) || 0).padStart(2, '0')}.${p.abbr || 'PLAY' + p.play_id}`;
+    if (!p.location) p.location = String(p.abbr || `PLAY${p.play_id}`);
   }
   for (const r of chunks) {
     if (!r.location) {
       const p = playsById.get(r.play_id);
-      r.location = `${p ? p.location : String(Number(r.play_id) || 0).padStart(2, '0') + '.' + (r.play_abbr || '')}.${pad3(r.act)}.${pad3(r.scene)}`;
+      const playLocation = p ? p.location : String(r.play_abbr || `PLAY${r.play_id}`);
+      r.location = `${playLocation}.${formatActLocationPart(r.act)}.${formatSceneLocationPart(r.scene)}`;
     }
   }
 
@@ -1511,21 +1513,16 @@
     function getBaseCountLabel() {
       return '# words';
     }
-    function padLocationPart(value) {
-      const num = Number(value);
-      return String(Number.isFinite(num) ? num : 0).padStart(3, '0');
-    }
     function getBookLocation(play) {
       if (play && play.location) return String(play.location);
-      const bookNum = String(Number(play && play.play_id) || 0).padStart(2, '0');
-      const abbr = String((play && (play.abbr || play.play_abbr)) || '').trim() || `PLAY${bookNum}`;
-      return `${bookNum}.${abbr}`;
+      const playId = Number(play && play.play_id) || 0;
+      return String((play && (play.abbr || play.play_abbr)) || '').trim() || `PLAY${playId}`;
     }
     function getChapterLocation(play, act) {
-      return `${getBookLocation(play)}.${padLocationPart(act)}`;
+      return `${getBookLocation(play)}.${formatActLocationPart(act)}`;
     }
     function getVerseLocation(play, act, scene) {
-      return `${getChapterLocation(play, act)}.${padLocationPart(scene)}`;
+      return `${getChapterLocation(play, act)}.${formatSceneLocationPart(scene)}`;
     }
     function getLineLocation(play, act, scene, lineNum) {
       return `${getVerseLocation(play, act, scene)}.${String(Number(lineNum) || 0).padStart(4, '0')}`;
@@ -2177,7 +2174,7 @@
   }
 
   // --- Drill-down links: every count is a door into the things it counts ---
-  // Locations are play-rooted ("01.MND.001.001", plus a line part at Line
+  // Locations are play-rooted ("MND.001.001", plus a line part at Line
   // granularity), so genre scopes filter the genre column instead.
   function drillLocationPrefix(granVal, row) {
     if (granVal === 'genre') return '';
@@ -2302,8 +2299,8 @@
       return { target: 'play', prefix: '', genreScope: String(row.genre), termKey: '', text: String(row.genre), title: `Show the plays of the ${row.genre} genre` };
     }
     const locParts = String(row.location || '').split('.');
-    if ((granVal === 'act' || granVal === 'scene' || granVal === 'speech' || granVal === 'line') && key === 'play_title' && row.play_title && locParts.length >= 3) {
-      const prefix = locParts.slice(0, 2).join('.') + '.';
+    if ((granVal === 'act' || granVal === 'scene' || granVal === 'speech' || granVal === 'line') && key === 'play_title' && row.play_title && locParts.length >= 2) {
+      const prefix = locParts.slice(0, 1).join('.') + '.';
       return {
         target: granVal,
         prefix,
@@ -2312,8 +2309,8 @@
         title: `Show the ${DRILL_NOUNS[granVal]} of ${row.play_title}`
       };
     }
-    if ((granVal === 'scene' || granVal === 'speech' || granVal === 'line') && key === 'act' && row.act != null && locParts.length >= 4) {
-      const prefix = locParts.slice(0, 3).join('.') + '.';
+    if ((granVal === 'scene' || granVal === 'speech' || granVal === 'line') && key === 'act' && row.act != null && locParts.length >= 3) {
+      const prefix = locParts.slice(0, 2).join('.') + '.';
       return {
         target: granVal,
         prefix,
@@ -2322,8 +2319,8 @@
         title: `Show the ${DRILL_NOUNS[granVal]} of ${row.play_title || ''} act ${row.act}`.trim()
       };
     }
-    if ((granVal === 'speech' || granVal === 'line') && key === 'scene' && row.scene != null && locParts.length >= 5) {
-      const prefix = locParts.slice(0, 4).join('.') + '.';
+    if ((granVal === 'speech' || granVal === 'line') && key === 'scene' && row.scene != null && locParts.length >= 4) {
+      const prefix = locParts.slice(0, 3).join('.') + '.';
       return {
         target: granVal,
         prefix,
