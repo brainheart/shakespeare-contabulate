@@ -25,7 +25,7 @@ async function search(page, query, { gran = 'play', ngramMode = '1', matchMode =
 test.describe('Page Load', () => {
   test('loads and shows the Shakespeare title', async ({ page }) => {
     await page.goto('/');
-    await expect(page).toHaveTitle(/Shakespeare/);
+    await expect(page).toHaveTitle('Shakespeare Tabular Explorer');
   });
 
   test('shows base stats on first load with no search terms', async ({ page }) => {
