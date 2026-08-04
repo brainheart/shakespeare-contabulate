@@ -12,7 +12,7 @@
   <meta property="og:url" content="https://shakespeare.contabulate.org/">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ctext y='56' font-size='56'%3E🎭%3C/text%3E%3C/svg%3E">
   <title>🎭 Shakespeare Tabular Explorer</title>
-  <link rel="stylesheet" href="css/main.css?v=20260803-speech">
+  <link rel="stylesheet" href="css/main.css?v=20260804-speech-controls-compact">
   <style>
   </style>
 </head>
@@ -2697,35 +2697,43 @@
           const firstLine = String(r.speech_first_line || fullText.split('\n', 1)[0] || '');
           const expandable = fullText !== firstLine;
           const renderSpeechText = (expanded) => {
-            const displayText = expanded || !expandable ? fullText : `${firstLine} …`;
+            const displayText = expanded || !expandable ? fullText : firstLine;
             return (colorScaleState.highlightEnabled && r.speech_highlight_regex)
               ? highlightHTML(displayText, r.speech_highlight_regex)
               : escapeHTML(displayText);
           };
-          if (!expandable) {
-            const text = document.createElement('span');
-            text.className = 'speech-text-content';
-            text.innerHTML = renderSpeechText(true);
-            td.appendChild(text);
-          } else {
+          const text = document.createElement('span');
+          text.className = 'speech-text-content';
+          td.appendChild(text);
+          if (expandable) {
             const speechId = String(r.speech_id ?? r.id);
             const expanded = expandedSpeechIds.has(speechId);
+            const contentId = `speech-text-${speechId.replace(/[^a-zA-Z0-9_-]/g, '-')}`;
             const toggle = document.createElement('button');
             toggle.type = 'button';
             toggle.className = 'speech-text-toggle';
-            toggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
-            toggle.title = expanded ? 'Collapse speech' : 'Expand full speech';
-            toggle.innerHTML = renderSpeechText(expanded);
+            text.id = contentId;
+            toggle.setAttribute('aria-controls', contentId);
+            const updateSpeechDisplay = (isExpanded) => {
+              text.innerHTML = renderSpeechText(isExpanded);
+              toggle.setAttribute('aria-expanded', isExpanded ? 'true' : 'false');
+              toggle.setAttribute('aria-label', isExpanded ? 'Collapse speech' : 'Show full speech');
+              toggle.title = isExpanded ? 'Show only the first line' : 'Show the complete speech';
+              toggle.innerHTML = isExpanded
+                ? '<span aria-hidden="true">▴</span> less'
+                : '<span aria-hidden="true">▾</span> more';
+            };
+            updateSpeechDisplay(expanded);
             toggle.addEventListener('click', (event) => {
               event.stopPropagation();
               const nextExpanded = toggle.getAttribute('aria-expanded') !== 'true';
               if (nextExpanded) expandedSpeechIds.add(speechId);
               else expandedSpeechIds.delete(speechId);
-              toggle.setAttribute('aria-expanded', nextExpanded ? 'true' : 'false');
-              toggle.title = nextExpanded ? 'Collapse speech' : 'Expand full speech';
-              toggle.innerHTML = renderSpeechText(nextExpanded);
+              updateSpeechDisplay(nextExpanded);
             });
             td.appendChild(toggle);
+          } else {
+            text.innerHTML = renderSpeechText(true);
           }
         } else if (typeof isCommentaryDetailCell === 'function' && isCommentaryDetailCell(k)) {
           const v = r[k];

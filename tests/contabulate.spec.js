@@ -227,12 +227,34 @@ test('character counts are doors into speech, line, and main-table vocabulary vi
   expect(speechHeaders.some(t => t.includes('Speech'))).toBeTruthy();
   expect(speechHeaders.some(t => t.includes('Speaker'))).toBeTruthy();
   const speechToggle = page.locator('#results tbody .speech-text-toggle').first();
+  const speechText = page.locator('#results tbody .speech-text-content').first();
   await expect(speechToggle).toHaveAttribute('aria-expanded', 'false');
-  const collapsedSpeech = await speechToggle.innerText();
-  expect(collapsedSpeech.endsWith('…')).toBeTruthy();
+  await expect(speechToggle).toHaveAttribute('aria-label', 'Show full speech');
+  await expect(speechToggle).toHaveText(/more/);
+  const collapsedSpeech = await speechText.innerText();
   await speechToggle.click();
   await expect(speechToggle).toHaveAttribute('aria-expanded', 'true');
-  expect((await speechToggle.innerText()).length).toBeGreaterThan(collapsedSpeech.length);
+  await expect(speechToggle).toHaveAttribute('aria-label', 'Collapse speech');
+  await expect(speechToggle).toHaveText(/less/);
+  expect((await speechText.innerText()).length).toBeGreaterThan(collapsedSpeech.length);
+  // The expanded prose is ordinary selectable text, not a giant toggle:
+  // clicking or selecting it must leave the speech open.
+  await speechText.click();
+  await expect(speechToggle).toHaveAttribute('aria-expanded', 'true');
+  const selectedText = await speechText.evaluate((element) => {
+    const selection = window.getSelection();
+    const range = document.createRange();
+    range.selectNodeContents(element);
+    selection.removeAllRanges();
+    selection.addRange(range);
+    return selection.toString();
+  });
+  expect(selectedText.length).toBeGreaterThan(collapsedSpeech.length);
+  await expect(speechToggle).toHaveAttribute('aria-expanded', 'true');
+  await speechToggle.click();
+  await expect(speechToggle).toHaveAttribute('aria-expanded', 'false');
+  await expect(speechToggle).toHaveAttribute('aria-label', 'Show full speech');
+  await expect(speechToggle).toHaveText(/more/);
   await page.goBack();
   await expect(page.locator('#gran')).toHaveValue('character');
   // # lines → the Line view scoped to the character's play and speaker
