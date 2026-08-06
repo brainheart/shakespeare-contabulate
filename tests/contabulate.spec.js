@@ -249,7 +249,15 @@ test('vocabulary scope survives switching the n-gram size', async ({ page }) => 
 test('locations start with play abbreviations and ancestor cells preserve hierarchy scope', async ({ page }) => {
   await page.goto('/?gran=line&sk=location&sd=asc');
   await waitForDataLoaded(page);
-  await page.waitForSelector('#results tbody tr', { timeout: 15000 });
+  // The line view shows a single-cell "Loading line text..." row while
+  // all_lines.json streams in, so wait for the real header instead.
+  await page.waitForFunction(
+    () => Array.from(document.querySelectorAll('#results thead th'))
+      .some((th) => th.dataset.key === 'location'),
+    null,
+    { timeout: 30000 }
+  );
+  await page.waitForSelector('#results tbody tr td:nth-child(2)', { timeout: 15000 });
 
   const headerKeys = await page.locator('#results thead th').evaluateAll((ths) =>
     ths.map((th) => th.dataset.key)
