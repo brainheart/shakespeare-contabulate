@@ -14,7 +14,7 @@
       "url": "https://shakespeare.contabulate.org/?cs=1&zr=0&hl=1&q=dead%7Cdeath&nm=1&gran=character&mm=regex&ts=%255B%257B%2522t%2522%253A%2522dead%257Cdeath%2522%252C%2522m%2522%253A%2522regex%2522%252C%2522n%2522%253A1%252C%2522d%2522%253A%2522count%2522%257D%252C%257B%2522t%2522%253A%2522dead%257Cdeath%2522%252C%2522m%2522%253A%2522regex%2522%252C%2522n%2522%253A1%252C%2522d%2522%253A%2522pct%2522%257D%255D&qt=%255B%2522dead%257Cdeath%2522%255D&sk=t0_count&sd=desc&co=name%2Cgender%2Cplay_title%2Cnum_speeches%2Cngram_count%2Ct0_count%2Ct1_pct&s_ft_gender=F"
     }
   ],
-  "updated": "2026-08-03",
+  "updated": "2026-08-14",
   "stats": {
     "texts": 38,
     "text_label": "plays",

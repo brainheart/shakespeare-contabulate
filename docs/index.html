@@ -526,11 +526,11 @@
   const TERM_COUNT_KEY_RE = /^t\d+_count$/;
   const DRILL_TARGETS = {
     genre: { num_plays: 'play', num_chapters: 'act', num_scenes: 'scene', verse_count: 'line' },
-    play: { num_chapters: 'act', num_scenes: 'scene', verse_count: 'line' },
+    play: { num_chapters: 'act', num_scenes: 'scene', num_characters: 'character', verse_count: 'line' },
     act: { num_scenes: 'scene', verse_count: 'line' },
     scene: { verse_count: 'line' }
   };
-  const DRILL_NOUNS = { play: 'plays', act: 'acts', scene: 'scenes', speech: 'speeches', line: 'lines', word: 'words', bigram: 'bigrams', trigram: 'trigrams' };
+  const DRILL_NOUNS = { play: 'plays', act: 'acts', scene: 'scenes', character: 'characters', speech: 'speeches', line: 'lines', word: 'words', bigram: 'bigrams', trigram: 'trigrams' };
   // Declared early: deep links can render vocabulary views during startup
   const vocabRowsCache = new Map();
   // Segments pagination and rows (declare early for deep-link)
@@ -1631,7 +1631,7 @@
             const total_words = p.total_words ?? 0;
             const ngramCount = getRowNgramCount(total_words);
             const verseCount = p.total_lines ?? 0;
-            return addCommentaryFields({ play_id:p.play_id, location:getBookLocation(p), title:p.title, first_performance_year:p.first_performance_year, genre:p.genre, num_chapters:p.num_acts ?? 0, num_scenes:p.num_scenes ?? 0, verse_count: verseCount, num_lines: verseCount, total_words, ngram_count:ngramCount }, p);
+            return addCommentaryFields({ play_id:p.play_id, location:getBookLocation(p), title:p.title, first_performance_year:p.first_performance_year, genre:p.genre, num_chapters:p.num_acts ?? 0, num_scenes:p.num_scenes ?? 0, num_characters:p.num_characters ?? 0, verse_count: verseCount, num_lines: verseCount, total_words, ngram_count:ngramCount }, p);
           });
         });
       } else if (granVal === 'genre') {
@@ -1936,6 +1936,7 @@
         {key:'genre', label:'Genre', defaultDir:'asc', type:'text'},
         {key:'num_chapters', label:'# acts', type:'number'},
         {key:'num_scenes', label:'# scenes', type:'number'},
+        {key:'num_characters', label:'# characters', type:'number'},
         {key:'verse_count', label:'# lines', type:'number'},
         ...getVerseNormalizedCommentaryColumns(),
         {key:'ngram_count', label: getBaseCountLabel(), type:'number'}
@@ -1955,7 +1956,7 @@
             const total_words = p.total_words ?? 0;
             const ngramCount = getRowNgramCount(total_words);
             const verseCount = p.total_lines ?? 0;
-            return addCommentaryFields({ play_id:pid, location:getBookLocation(p), title:p.title, first_performance_year:p.first_performance_year, genre:p.genre, num_chapters:p.num_acts ?? 0, num_scenes:p.num_scenes ?? 0, verse_count: verseCount, num_lines: verseCount, total_words, ngram_count:ngramCount }, p);
+            return addCommentaryFields({ play_id:pid, location:getBookLocation(p), title:p.title, first_performance_year:p.first_performance_year, genre:p.genre, num_chapters:p.num_acts ?? 0, num_scenes:p.num_scenes ?? 0, num_characters:p.num_characters ?? 0, verse_count: verseCount, num_lines: verseCount, total_words, ngram_count:ngramCount }, p);
           });
           const d = denomFor(normalizeTermN(term.n) || 1,'play',{play_id:pid});
           row[`${termKeys[termIdx]}_count`] = count;

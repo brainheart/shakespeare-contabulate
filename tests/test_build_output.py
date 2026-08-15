@@ -51,7 +51,10 @@ class TestPlays(unittest.TestCase):
         self.assertEqual(len(self.plays), 38)
 
     def test_play_has_required_fields(self):
-        required = {'play_id', 'title', 'abbr', 'genre', 'total_words', 'total_lines', 'num_acts', 'num_scenes'}
+        required = {
+            'play_id', 'title', 'abbr', 'genre', 'total_words', 'total_lines',
+            'num_acts', 'num_scenes', 'num_characters'
+        }
         for p in self.plays:
             self.assertTrue(required.issubset(p.keys()), f"Play {p.get('title', '?')} missing fields: {required - set(p.keys())}")
 
@@ -112,6 +115,21 @@ class TestPlays(unittest.TestCase):
     def test_unique_abbreviations(self):
         abbrs = [p['abbr'] for p in self.plays]
         self.assertEqual(len(abbrs), len(set(abbrs)), 'abbreviations must be unique')
+
+    def test_character_counts_match_character_rows(self):
+        characters = json.loads((DATA_DIR / 'characters.json').read_text())
+        counts = {}
+        for character in characters:
+            play_id = character['play_id']
+            counts[play_id] = counts.get(play_id, 0) + 1
+        for play in self.plays:
+            self.assertEqual(
+                play['num_characters'],
+                counts.get(play['play_id'], 0),
+                f"Character count mismatch for {play['title']}"
+            )
+        hamlet = next(play for play in self.plays if play['abbr'] == 'HAM')
+        self.assertEqual(hamlet['num_characters'], 39)
 
 
 class TestChunks(unittest.TestCase):

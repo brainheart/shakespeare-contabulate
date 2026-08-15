@@ -682,6 +682,9 @@ def build(tei_dir: Path, out_dir: Path):
             if cid is None: continue
             for tok, cnt in tokdict.items():
                 tokens_char3_idx.setdefault(tok, []).append((cid, cnt))
+        # Keep the play-level character count aligned with the actual rows in
+        # characters.json so the UI's count drill opens exactly what it says.
+        play_row["num_characters"] = len(name_to_id)
         plays.append(play_row)
     # Attach gender to characters using metadata and heuristics
     def _heuristic_gender_from_name(name: str) -> str:

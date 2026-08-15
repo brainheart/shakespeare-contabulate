@@ -103,6 +103,42 @@ test.describe('Segments Search', () => {
     expect(visibleGenres.every((genre) => genre.trim() === playGenre)).toBeTruthy();
   });
 
+  test('play character counts open the Character table scoped to that play', async ({ page }) => {
+    await page.goto('/?gran=play&s_ft_title=%5EHamlet%24');
+    await waitForDataLoaded(page);
+    await expect(page.locator('#results tbody tr')).toHaveCount(1);
+
+    const playHeaderKeys = await page.locator('#results thead th').evaluateAll((ths) =>
+      ths.map((th) => th.dataset.key)
+    );
+    const characterCountColumn = playHeaderKeys.indexOf('num_characters') + 1;
+    expect(characterCountColumn).toBeGreaterThan(0);
+    const countCell = page.locator(`#results tbody tr td:nth-child(${characterCountColumn})`);
+    await expect(countCell).toHaveText('39');
+    await expect(countCell.locator('button.drill-link')).toHaveAttribute('title', 'Show the 39 characters of Hamlet');
+
+    await countCell.locator('button.drill-link').click();
+    await expect(page.locator('#gran')).toHaveValue('character');
+    await expect(page.locator('#segmentsActiveFilters .active-filter-chip')).toContainText('Location starts with HAM.');
+    await expect(page.locator('#segmentsTotalInfo')).toContainText('(39 total rows)');
+    expect(new URL(page.url()).searchParams.get('s_ft_location')).toBe('^HAM\\.');
+
+    const characterHeaderKeys = await page.locator('#results thead th').evaluateAll((ths) =>
+      ths.map((th) => th.dataset.key)
+    );
+    const playColumn = characterHeaderKeys.indexOf('play_title') + 1;
+    const visiblePlays = await page.locator(`#results tbody tr td:nth-child(${playColumn})`).allTextContents();
+    expect(visiblePlays).toHaveLength(39);
+    expect(visiblePlays.every((title) => title.trim() === 'Hamlet')).toBeTruthy();
+
+    await page.reload();
+    await waitForDataLoaded(page);
+    await expect(page.locator('#segmentsTotalInfo')).toContainText('(39 total rows)');
+    await page.goBack();
+    await expect(page.locator('#gran')).toHaveValue('play');
+    await expect(page.locator('#results tbody tr')).toHaveCount(1);
+  });
+
   test('vocabulary granularities put n-grams in the rows with an active name toggle', async ({ page }) => {
     await page.goto('/');
     await waitForDataLoaded(page);
